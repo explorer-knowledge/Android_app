@@ -1,5 +1,6 @@
 package com.example.billease.ui.bills
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -29,11 +31,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.BillItem
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -46,6 +51,8 @@ fun BillDetailScreen(
     viewModel: BillDetailViewModel = hiltViewModel(),
 ) {
     val billData by viewModel.bill.collectAsState()
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -58,6 +65,21 @@ fun BillDetailScreen(
                 },
                 actions = {
                     billData?.let { data ->
+                        IconButton(onClick = {
+                            coroutineScope.launch {
+                                val uri = viewModel.generatePdf(context)
+                                if (uri != null) {
+                                    val intent = Intent(Intent.ACTION_SEND).apply {
+                                        type = "application/pdf"
+                                        putExtra(Intent.EXTRA_STREAM, uri)
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    }
+                                    context.startActivity(Intent.createChooser(intent, "Share Bill"))
+                                }
+                            }
+                        }) {
+                            Icon(Icons.Default.Share, contentDescription = "Share PDF")
+                        }
                         IconButton(onClick = { onNavigateToEdit(data.bill.id) }) {
                             Icon(Icons.Default.Edit, contentDescription = "Edit")
                         }
