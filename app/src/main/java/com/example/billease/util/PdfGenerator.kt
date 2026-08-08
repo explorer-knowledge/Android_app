@@ -1,14 +1,14 @@
 package com.example.billease.util
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.text.TextUtils
-import android.graphics.BitmapFactory
-import android.graphics.Rect
 import androidx.core.content.FileProvider
 import com.example.billease.data.AppSettings
 import com.example.billease.data.BillWithItemsAndPerson
@@ -29,7 +29,7 @@ object PdfGenerator {
     fun generatePdf(
         context: Context,
         data: BillWithItemsAndPerson,
-        settings: AppSettings
+        settings: AppSettings,
     ): Uri? {
         val pdfDocument = PdfDocument()
         val pageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, 1).create()
@@ -61,7 +61,12 @@ object PdfGenerator {
                 val targetHeight = 80
                 val ratio = targetHeight.toFloat() / bitmap.height
                 val targetWidth = (bitmap.width * ratio).toInt()
-                canvas.drawBitmap(bitmap, null, Rect(MARGIN_LEFT.toInt(), yPos.toInt(), (MARGIN_LEFT + targetWidth).toInt(), (yPos + targetHeight).toInt()), paint)
+                canvas.drawBitmap(
+                    bitmap,
+                    null,
+                    Rect(MARGIN_LEFT.toInt(), yPos.toInt(), (MARGIN_LEFT + targetWidth).toInt(), (yPos + targetHeight).toInt()),
+                    paint,
+                )
                 yPos += 90f
             }
         }
@@ -72,7 +77,7 @@ object PdfGenerator {
         val bName = settings.businessName.ifBlank { "INVOICE" }
         canvas.drawText(bName, MARGIN_LEFT, yPos, paint)
         yPos += 20f
-        
+
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
         paint.textSize = 12f
         if (settings.address.isNotBlank()) {

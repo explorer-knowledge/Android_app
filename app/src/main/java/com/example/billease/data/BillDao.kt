@@ -59,10 +59,16 @@ interface BillDao {
     fun getBillsByPersonId(personId: Long): Flow<List<Bill>>
 
     @Query("SELECT COUNT(*) FROM bills WHERE billDate >= :startMillis AND billDate <= :endMillis")
-    fun getBillCountBetween(startMillis: Long, endMillis: Long): Flow<Int>
+    fun getBillCountBetween(
+        startMillis: Long,
+        endMillis: Long,
+    ): Flow<Int>
 
     @Query("SELECT SUM(grandTotal) FROM bills WHERE billDate >= :startMillis AND billDate <= :endMillis")
-    fun getRevenueBetween(startMillis: Long, endMillis: Long): Flow<Double?>
+    fun getRevenueBetween(
+        startMillis: Long,
+        endMillis: Long,
+    ): Flow<Double?>
 
     @Query("SELECT COUNT(*) FROM bills WHERE personId = :personId")
     suspend fun getBillCountForPerson(personId: Long): Int

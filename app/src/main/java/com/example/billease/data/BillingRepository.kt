@@ -47,9 +47,15 @@ class BillingRepository
 
         fun getBillsByPersonId(personId: Long): Flow<List<Bill>> = billDao.getBillsByPersonId(personId)
 
-        fun getBillCountBetween(startMillis: Long, endMillis: Long): Flow<Int> = billDao.getBillCountBetween(startMillis, endMillis)
+        fun getBillCountBetween(
+            startMillis: Long,
+            endMillis: Long,
+        ): Flow<Int> = billDao.getBillCountBetween(startMillis, endMillis)
 
-        fun getRevenueBetween(startMillis: Long, endMillis: Long): Flow<Double?> = billDao.getRevenueBetween(startMillis, endMillis)
+        fun getRevenueBetween(
+            startMillis: Long,
+            endMillis: Long,
+        ): Flow<Double?> = billDao.getRevenueBetween(startMillis, endMillis)
 
         suspend fun getBillCountForPerson(personId: Long): Int = billDao.getBillCountForPerson(personId)
 
