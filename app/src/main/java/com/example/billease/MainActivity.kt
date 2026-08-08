@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
 import com.example.billease.ui.theme.BillEaseTheme
 
+import com.example.billease.navigation.AppNavigation
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +24,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("BillEase")
+                    AppNavigation()
                 }
             }
         }
