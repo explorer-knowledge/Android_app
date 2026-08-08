@@ -1,12 +1,12 @@
 package com.example.billease.util
 
 import android.content.Context
-import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
+import android.text.TextUtils
 import androidx.core.content.FileProvider
 import com.example.billease.data.BillWithItemsAndPerson
 import java.io.File
@@ -17,13 +17,145 @@ import java.util.Locale
 
 object PdfGenerator {
 
+    private const val PAGE_WIDTH = 595
+    private const val PAGE_HEIGHT = 842
+    private const val MARGIN_LEFT = 50f
+    private const val MARGIN_RIGHT = 545f
+    private const val MARGIN_BOTTOM = 50f
+    private const val MAX_Y = PAGE_HEIGHT - MARGIN_BOTTOM
+
     fun generatePdf(context: Context, data: BillWithItemsAndPerson): Uri? {
         val pdfDocument = PdfDocument()
-        val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // A4 size at 72 PPI
-        val page = pdfDocument.startPage(pageInfo)
-        val canvas = page.canvas
+        val pageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, 1).create()
 
-        drawBill(canvas, data)
+        var page = pdfDocument.startPage(pageInfo)
+        var canvas = page.canvas
+        var yPos = 50f
+
+        val paint = Paint().apply {
+            color = Color.BLACK
+            textSize = 12f
+            isAntiAlias = true
+        }
+
+        fun checkPageBreak(requiredSpace: Float) {
+            if (yPos + requiredSpace > MAX_Y) {
+                pdfDocument.finishPage(page)
+                page = pdfDocument.startPage(pageInfo)
+                canvas = page.canvas
+                yPos = 50f
+            }
+        }
+
+        // Title
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        paint.textSize = 24f
+        canvas.drawText("INVOICE", MARGIN_LEFT, yPos, paint)
+        yPos += 30f
+
+        // Bill Info
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+        paint.textSize = 12f
+        canvas.drawText("Bill No: ${data.bill.billNumber}", MARGIN_LEFT, yPos, paint)
+        val dateStr = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(data.bill.billDate))
+        canvas.drawText("Date: $dateStr", MARGIN_LEFT, yPos + 15f, paint)
+        
+        yPos += 45f
+
+        // Bill To
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        canvas.drawText("Bill To:", MARGIN_LEFT, yPos, paint)
+        yPos += 15f
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+        canvas.drawText(data.person.name, MARGIN_LEFT, yPos, paint)
+        yPos += 15f
+        canvas.drawText(data.person.phone, MARGIN_LEFT, yPos, paint)
+        yPos += 15f
+        if (!data.person.gstNumber.isNullOrBlank()) {
+            canvas.drawText("GST: ${data.person.gstNumber}", MARGIN_LEFT, yPos, paint)
+            yPos += 15f
+        }
+
+        yPos += 30f
+
+        // Table Header
+        checkPageBreak(30f)
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        canvas.drawText("Item", MARGIN_LEFT, yPos, paint)
+        canvas.drawText("Qty", MARGIN_LEFT + 250f, yPos, paint)
+        canvas.drawText("Price", MARGIN_LEFT + 320f, yPos, paint)
+        canvas.drawText("Tax", MARGIN_LEFT + 390f, yPos, paint)
+        canvas.drawText("Total", MARGIN_RIGHT - paint.measureText("Total"), yPos, paint)
+        
+        yPos += 10f
+        canvas.drawLine(MARGIN_LEFT, yPos, MARGIN_RIGHT, yPos, paint)
+        yPos += 20f
+
+        // Table Items
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+        for (item in data.items) {
+            checkPageBreak(20f)
+            
+            // Truncate long product names
+            val maxNameWidth = 240f // up to 250f (margin_left + 250 is Qty)
+            val nameText = TextUtils.ellipsize(item.productNameSnapshot, android.text.TextPaint(paint), maxNameWidth, TextUtils.TruncateAt.END).toString()
+            
+            canvas.drawText(nameText, MARGIN_LEFT, yPos, paint)
+            canvas.drawText(item.quantity.toString(), MARGIN_LEFT + 250f, yPos, paint)
+            canvas.drawText(String.format(Locale.getDefault(), "%.2f", item.unitPriceSnapshot), MARGIN_LEFT + 320f, yPos, paint)
+            canvas.drawText(String.format(Locale.getDefault(), "%.1f%%", item.taxPercentSnapshot), MARGIN_LEFT + 390f, yPos, paint)
+            
+            val totalStr = String.format(Locale.getDefault(), "%.2f", item.lineTotal)
+            canvas.drawText(totalStr, MARGIN_RIGHT - paint.measureText(totalStr), yPos, paint)
+            yPos += 20f
+        }
+
+        checkPageBreak(120f) // enough space for totals
+
+        yPos += 10f
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        canvas.drawLine(MARGIN_LEFT, yPos, MARGIN_RIGHT, yPos, paint)
+        yPos += 20f
+
+        // Totals
+        val subtotalStr = String.format(Locale.getDefault(), "%.2f", data.bill.subtotal)
+        val taxTotalStr = String.format(Locale.getDefault(), "%.2f", data.bill.taxTotal)
+        val discountStr = String.format(Locale.getDefault(), "%.2f", data.bill.discount)
+        val grandTotalStr = String.format(Locale.getDefault(), "%.2f", data.bill.grandTotal)
+
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+        canvas.drawText("Subtotal:", MARGIN_LEFT + 350f, yPos, paint)
+        canvas.drawText(subtotalStr, MARGIN_RIGHT - paint.measureText(subtotalStr), yPos, paint)
+        yPos += 20f
+
+        canvas.drawText("Tax:", MARGIN_LEFT + 350f, yPos, paint)
+        canvas.drawText(taxTotalStr, MARGIN_RIGHT - paint.measureText(taxTotalStr), yPos, paint)
+        yPos += 20f
+
+        if (data.bill.discount > 0) {
+            canvas.drawText("Discount:", MARGIN_LEFT + 350f, yPos, paint)
+            canvas.drawText("-$discountStr", MARGIN_RIGHT - paint.measureText("-$discountStr"), yPos, paint)
+            yPos += 20f
+        }
+
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        canvas.drawText("Grand Total:", MARGIN_LEFT + 350f, yPos, paint)
+        canvas.drawText(grandTotalStr, MARGIN_RIGHT - paint.measureText(grandTotalStr), yPos, paint)
+        
+        yPos += 40f
+        
+        // Notes
+        if (!data.bill.notes.isNullOrBlank()) {
+            val noteLines = data.bill.notes.split("\n")
+            checkPageBreak(noteLines.size * 15f + 20f)
+            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+            canvas.drawText("Notes:", MARGIN_LEFT, yPos, paint)
+            yPos += 15f
+            noteLines.forEach { line ->
+                canvas.drawText(line, MARGIN_LEFT, yPos, paint)
+                yPos += 15f
+            }
+        }
 
         pdfDocument.finishPage(page)
 
@@ -45,117 +177,6 @@ object PdfGenerator {
             e.printStackTrace()
             pdfDocument.close()
             null
-        }
-    }
-
-    private fun drawBill(canvas: Canvas, data: BillWithItemsAndPerson) {
-        val paint = Paint().apply {
-            color = Color.BLACK
-            textSize = 12f
-            isAntiAlias = true
-        }
-
-        var yPos = 50f
-        val leftMargin = 50f
-        val rightMargin = 545f
-
-        // Title
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        paint.textSize = 24f
-        canvas.drawText("INVOICE", leftMargin, yPos, paint)
-        yPos += 30f
-
-        // Bill Info
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-        paint.textSize = 12f
-        canvas.drawText("Bill No: ${data.bill.billNumber}", leftMargin, yPos, paint)
-        val dateStr = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(data.bill.billDate))
-        canvas.drawText("Date: $dateStr", leftMargin, yPos + 15f, paint)
-        
-        yPos += 45f
-
-        // Bill To
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        canvas.drawText("Bill To:", leftMargin, yPos, paint)
-        yPos += 15f
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-        canvas.drawText(data.person.name, leftMargin, yPos, paint)
-        yPos += 15f
-        canvas.drawText(data.person.phone, leftMargin, yPos, paint)
-        yPos += 15f
-        if (!data.person.gstNumber.isNullOrBlank()) {
-            canvas.drawText("GST: ${data.person.gstNumber}", leftMargin, yPos, paint)
-            yPos += 15f
-        }
-
-        yPos += 30f
-
-        // Table Header
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        canvas.drawText("Item", leftMargin, yPos, paint)
-        canvas.drawText("Qty", leftMargin + 250f, yPos, paint)
-        canvas.drawText("Price", leftMargin + 320f, yPos, paint)
-        canvas.drawText("Tax", leftMargin + 390f, yPos, paint)
-        canvas.drawText("Total", rightMargin - paint.measureText("Total"), yPos, paint)
-        
-        yPos += 10f
-        canvas.drawLine(leftMargin, yPos, rightMargin, yPos, paint)
-        yPos += 20f
-
-        // Table Items
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-        for (item in data.items) {
-            canvas.drawText(item.productNameSnapshot, leftMargin, yPos, paint)
-            canvas.drawText(item.quantity.toString(), leftMargin + 250f, yPos, paint)
-            canvas.drawText(String.format(Locale.getDefault(), "%.2f", item.unitPriceSnapshot), leftMargin + 320f, yPos, paint)
-            canvas.drawText(String.format(Locale.getDefault(), "%.1f%%", item.taxPercentSnapshot), leftMargin + 390f, yPos, paint)
-            
-            val totalStr = String.format(Locale.getDefault(), "%.2f", item.lineTotal)
-            canvas.drawText(totalStr, rightMargin - paint.measureText(totalStr), yPos, paint)
-            yPos += 20f
-        }
-
-        yPos += 10f
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        canvas.drawLine(leftMargin, yPos, rightMargin, yPos, paint)
-        yPos += 20f
-
-        // Totals
-        val subtotalStr = String.format(Locale.getDefault(), "%.2f", data.bill.subtotal)
-        val taxTotalStr = String.format(Locale.getDefault(), "%.2f", data.bill.taxTotal)
-        val discountStr = String.format(Locale.getDefault(), "%.2f", data.bill.discount)
-        val grandTotalStr = String.format(Locale.getDefault(), "%.2f", data.bill.grandTotal)
-
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-        canvas.drawText("Subtotal:", leftMargin + 350f, yPos, paint)
-        canvas.drawText(subtotalStr, rightMargin - paint.measureText(subtotalStr), yPos, paint)
-        yPos += 20f
-
-        canvas.drawText("Tax:", leftMargin + 350f, yPos, paint)
-        canvas.drawText(taxTotalStr, rightMargin - paint.measureText(taxTotalStr), yPos, paint)
-        yPos += 20f
-
-        if (data.bill.discount > 0) {
-            canvas.drawText("Discount:", leftMargin + 350f, yPos, paint)
-            canvas.drawText("-$discountStr", rightMargin - paint.measureText("-$discountStr"), yPos, paint)
-            yPos += 20f
-        }
-
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        canvas.drawText("Grand Total:", leftMargin + 350f, yPos, paint)
-        canvas.drawText(grandTotalStr, rightMargin - paint.measureText(grandTotalStr), yPos, paint)
-        
-        yPos += 40f
-        
-        // Notes
-        if (!data.bill.notes.isNullOrBlank()) {
-            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-            canvas.drawText("Notes:", leftMargin, yPos, paint)
-            yPos += 15f
-            data.bill.notes.split("\n").forEach { line ->
-                canvas.drawText(line, leftMargin, yPos, paint)
-                yPos += 15f
-            }
         }
     }
 }
