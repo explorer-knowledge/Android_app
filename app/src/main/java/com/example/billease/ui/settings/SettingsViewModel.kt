@@ -12,20 +12,26 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor(
-    private val repository: SettingsRepository
-) : ViewModel() {
+class SettingsViewModel
+    @Inject
+    constructor(
+        private val repository: SettingsRepository,
+    ) : ViewModel() {
+        val appSettings: StateFlow<AppSettings> =
+            repository.appSettingsFlow
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5000),
+                    initialValue = AppSettings("", "", null),
+                )
 
-    val appSettings: StateFlow<AppSettings> = repository.appSettingsFlow
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = AppSettings("", "", null)
-        )
-
-    fun updateSettings(businessName: String, address: String, logoUri: String?) {
-        viewModelScope.launch {
-            repository.updateSettings(businessName, address, logoUri)
+        fun updateSettings(
+            businessName: String,
+            address: String,
+            logoUri: String?,
+        ) {
+            viewModelScope.launch {
+                repository.updateSettings(businessName, address, logoUri)
+            }
         }
     }
-}

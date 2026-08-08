@@ -13,8 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -39,10 +38,11 @@ import java.io.File
 import java.io.FileOutputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Suppress("LongMethod", "FunctionNaming")
 @Composable
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val settings by viewModel.appSettings.collectAsState()
@@ -57,14 +57,15 @@ fun SettingsScreen(
         logoPath = settings.logoUri
     }
 
-    val pickMedia = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) {
-            val newPath = copyUriToInternalStorage(context, uri)
-            if (newPath != null) {
-                logoPath = newPath
+    val pickMedia =
+        rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (uri != null) {
+                val newPath = copyUriToInternalStorage(context, uri)
+                if (newPath != null) {
+                    logoPath = newPath
+                }
             }
         }
-    }
 
     Scaffold(
         topBar = {
@@ -72,18 +73,19 @@ fun SettingsScreen(
                 title = { Text("Settings") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
         ) {
             Text("Business Identity", modifier = Modifier.padding(bottom = 16.dp))
 
@@ -91,7 +93,7 @@ fun SettingsScreen(
                 value = businessName,
                 onValueChange = { businessName = it },
                 label = { Text("Business Name") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             Spacer(Modifier.height(16.dp))
@@ -101,7 +103,7 @@ fun SettingsScreen(
                 onValueChange = { address = it },
                 label = { Text("Business Address") },
                 modifier = Modifier.fillMaxWidth(),
-                minLines = 3
+                minLines = 3,
             )
 
             Spacer(Modifier.height(16.dp))
@@ -112,16 +114,16 @@ fun SettingsScreen(
 
             OutlinedButton(
                 onClick = { pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(if (logoPath != null) "Change Logo" else "Select Logo")
             }
-            
+
             if (logoPath != null) {
                 Spacer(Modifier.height(8.dp))
                 OutlinedButton(
                     onClick = { logoPath = null },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text("Remove Logo")
                 }
@@ -134,7 +136,7 @@ fun SettingsScreen(
                     viewModel.updateSettings(businessName, address, logoPath)
                     onNavigateBack()
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text("Save Settings")
             }
@@ -142,7 +144,10 @@ fun SettingsScreen(
     }
 }
 
-fun copyUriToInternalStorage(context: Context, uri: Uri): String? {
+fun copyUriToInternalStorage(
+    context: Context,
+    uri: Uri,
+): String? {
     return try {
         val inputStream = context.contentResolver.openInputStream(uri) ?: return null
         val file = File(context.filesDir, "business_logo.jpg")
