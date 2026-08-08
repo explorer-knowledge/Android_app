@@ -67,7 +67,13 @@ interface BillDao {
     suspend fun deleteBillItemsByBillId(billId: Long)
 
     @Delete
-    suspend fun deleteBill(bill: Bill)
+    suspend fun deleteBillEntity(bill: Bill)
+
+    @Transaction
+    suspend fun deleteBill(bill: Bill) {
+        deleteBillItemsByBillId(bill.id)
+        deleteBillEntity(bill)
+    }
 
     @Transaction
     suspend fun insertBillWithItems(bill: Bill, items: List<BillItem>): Long {

@@ -24,7 +24,11 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "billease_database"
-        ).build()
+        )
+            // Pre-release: destructive migration acceptable while there is no shipped user data.
+            // Remove this before the first production release and replace with proper Migrations.
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides
