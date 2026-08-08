@@ -11,6 +11,22 @@ import com.example.billease.ui.persons.PersonFormScreen
 import com.example.billease.ui.persons.PersonsListScreen
 import com.example.billease.ui.products.ProductFormScreen
 import com.example.billease.ui.products.ProductsListScreen
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import androidx.navigation.NavType
+import androidx.compose.runtime.Composable
 
 @Composable
 fun AppNavigation() {
@@ -20,17 +36,17 @@ fun AppNavigation() {
         
         composable("home") {
             // Temporary dashboard with buttons to navigate
-            androidx.compose.foundation.layout.Column(
-                modifier = androidx.compose.foundation.layout.Modifier.fillMaxSize(),
-                verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
-                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                androidx.compose.material3.Button(onClick = { navController.navigate("persons_list") }) {
-                    androidx.compose.material3.Text("Persons")
+                Button(onClick = { navController.navigate("persons_list") }) {
+                    Text("Persons")
                 }
-                androidx.compose.foundation.layout.Spacer(modifier = androidx.compose.foundation.layout.Modifier.height(16.dp))
-                androidx.compose.material3.Button(onClick = { navController.navigate("products_list") }) {
-                    androidx.compose.material3.Text("Products")
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(onClick = { navController.navigate("products_list") }) {
+                    Text("Products")
                 }
             }
         }
