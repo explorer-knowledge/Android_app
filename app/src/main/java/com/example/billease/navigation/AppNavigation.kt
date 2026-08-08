@@ -24,26 +24,28 @@ import com.example.billease.ui.persons.PersonFormScreen
 import com.example.billease.ui.persons.PersonsListScreen
 import com.example.billease.ui.products.ProductFormScreen
 import com.example.billease.ui.products.ProductsListScreen
+import com.example.billease.ui.home.HomeScreen
+import com.example.billease.ui.settings.SettingsScreen
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "home") {
-        // ── Temporary Home Dashboard ──────────────────────────────────────────
-        // Will be replaced in Phase 7 with a proper dashboard + bottom nav.
+        // ── Home Dashboard ────────────────────────────────────────────────────
         composable("home") {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Button(onClick = { navController.navigate("persons_list") }) { Text("Persons") }
-                Spacer(Modifier.height(12.dp))
-                Button(onClick = { navController.navigate("products_list") }) { Text("Products") }
-                Spacer(Modifier.height(12.dp))
-                Button(onClick = { navController.navigate("bills_list") }) { Text("Bills") }
-            }
+            HomeScreen(
+                onNavigateToNewBill = { navController.navigate("bill_form/-1") },
+                onNavigateToPersons = { navController.navigate("persons_list") },
+                onNavigateToProducts = { navController.navigate("products_list") },
+                onNavigateToSettings = { navController.navigate("settings") },
+                onNavigateToBills = { navController.navigate("bills_list") }
+            )
+        }
+
+        // ── Settings ──────────────────────────────────────────────────────────
+        composable("settings") {
+            SettingsScreen(onNavigateBack = { navController.popBackStack() })
         }
 
         // ── Persons ───────────────────────────────────────────────────────────

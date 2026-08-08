@@ -7,7 +7,10 @@ import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.text.TextUtils
+import android.graphics.BitmapFactory
+import android.graphics.Rect
 import androidx.core.content.FileProvider
+import com.example.billease.data.AppSettings
 import com.example.billease.data.BillWithItemsAndPerson
 import java.io.File
 import java.io.FileOutputStream
@@ -26,6 +29,7 @@ object PdfGenerator {
     fun generatePdf(
         context: Context,
         data: BillWithItemsAndPerson,
+        settings: AppSettings
     ): Uri? {
         val pdfDocument = PdfDocument()
         val pageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, 1).create()
@@ -50,16 +54,39 @@ object PdfGenerator {
             }
         }
 
-        // Title
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        paint.textSize = 24f
-        canvas.drawText("INVOICE", MARGIN_LEFT, yPos, paint)
-        yPos += 30f
+        // Business Logo
+        if (!settings.logoUri.isNullOrBlank()) {
+            val bitmap = BitmapFactory.decodeFile(settings.logoUri)
+            if (bitmap != null) {
+                val targetHeight = 80
+                val ratio = targetHeight.toFloat() / bitmap.height
+                val targetWidth = (bitmap.width * ratio).toInt()
+                canvas.drawBitmap(bitmap, null, Rect(MARGIN_LEFT.toInt(), yPos.toInt(), (MARGIN_LEFT + targetWidth).toInt(), (yPos + targetHeight).toInt()), paint)
+                yPos += 90f
+            }
+        }
 
-        // Bill Info
+        // Business Info / Title
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        paint.textSize = 20f
+        val bName = settings.businessName.ifBlank { "INVOICE" }
+        canvas.drawText(bName, MARGIN_LEFT, yPos, paint)
+        yPos += 20f
+        
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
         paint.textSize = 12f
+        if (settings.address.isNotBlank()) {
+            settings.address.split("\n").forEach {
+                canvas.drawText(it, MARGIN_LEFT, yPos, paint)
+                yPos += 15f
+            }
+            yPos += 10f
+        }
+
+        // Bill Info
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         canvas.drawText("Bill No: ${data.bill.billNumber}", MARGIN_LEFT, yPos, paint)
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
         val dateStr = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(data.bill.billDate))
         canvas.drawText("Date: $dateStr", MARGIN_LEFT, yPos + 15f, paint)
 

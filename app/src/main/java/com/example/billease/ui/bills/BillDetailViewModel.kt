@@ -7,11 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.billease.data.BillWithItemsAndPerson
 import com.example.billease.data.BillingRepository
+import com.example.billease.data.SettingsRepository
 import com.example.billease.util.PdfGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -21,6 +23,7 @@ class BillDetailViewModel
     @Inject
     constructor(
         repository: BillingRepository,
+        private val settingsRepository: SettingsRepository,
         savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
         private val billId: Long = checkNotNull(savedStateHandle.get<Long>("billId"))
@@ -31,8 +34,9 @@ class BillDetailViewModel
 
         suspend fun generatePdf(context: Context): Uri? {
             val currentBill = bill.value ?: return null
+            val currentSettings = settingsRepository.appSettingsFlow.first()
             return withContext(Dispatchers.IO) {
-                PdfGenerator.generatePdf(context, currentBill)
+                PdfGenerator.generatePdf(context, currentBill, currentSettings)
             }
         }
     }
