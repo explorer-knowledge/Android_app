@@ -36,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.billease.data.Bill
 import com.example.billease.data.BillWithPerson
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -66,23 +65,25 @@ fun BillsListScreen(
             snackbarMsg?.let { msg ->
                 Snackbar(
                     modifier = Modifier.padding(16.dp),
-                    action = { TextButton(onClick = { snackbarMsg = null }) { Text("OK") } }
+                    action = { TextButton(onClick = { snackbarMsg = null }) { Text("OK") } },
                 ) { Text(msg) }
             }
-        }
+        },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding),
         ) {
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = viewModel::onSearchQueryChange,
                 placeholder = { Text("Search bill number or person") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
                 singleLine = true,
             )
 
@@ -132,21 +133,24 @@ private fun BillListItem(
 ) {
     val bill = billWithPerson.bill
     val person = billWithPerson.person
-    val dateStr = remember(bill.billDate) {
-        SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(bill.billDate))
-    }
+    val dateStr =
+        remember(bill.billDate) {
+            SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(bill.billDate))
+        }
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
-            .clickable(onClick = onClick),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 6.dp)
+                .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {

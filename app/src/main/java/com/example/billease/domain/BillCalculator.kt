@@ -8,9 +8,12 @@ package com.example.billease.domain
  */
 data class BillItemInput(
     val productId: Long,
-    val productName: String,     // snapshot
-    val unitPrice: Double,       // snapshot
-    val taxPercent: Double,      // snapshot
+    // snapshot
+    val productName: String,
+    // snapshot
+    val unitPrice: Double,
+    // snapshot
+    val taxPercent: Double,
     val quantity: Double,
 ) {
     companion object {
@@ -37,9 +40,12 @@ data class BillItemInput(
 }
 
 data class BillCalculationResult(
-    val subtotal: Double,   // sum of all lineSubtotals
-    val taxTotal: Double,   // sum of all lineTaxes
-    val grandTotal: Double, // subtotal + taxTotal - discount (≥ 0)
+    // sum of all lineSubtotals
+    val subtotal: Double,
+    // sum of all lineTaxes
+    val taxTotal: Double,
+    // subtotal + taxTotal - discount (≥ 0)
+    val grandTotal: Double,
 )
 
 /**
@@ -47,8 +53,10 @@ data class BillCalculationResult(
  * Decision: discount is applied to the post-tax grand total, not per-line.
  */
 object BillCalculator {
-
-    fun calculate(items: List<BillItemInput>, discount: Double = 0.0): BillCalculationResult {
+    fun calculate(
+        items: List<BillItemInput>,
+        discount: Double = 0.0,
+    ): BillCalculationResult {
         val subtotal = items.sumOf { it.lineSubtotal }
         val taxTotal = items.sumOf { it.lineTax }
         val grandTotal = maxOf(0.0, subtotal + taxTotal - discount)

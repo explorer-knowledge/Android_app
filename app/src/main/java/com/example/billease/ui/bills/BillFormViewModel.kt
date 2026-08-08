@@ -4,14 +4,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.billease.data.Bill
-import com.example.billease.data.BillingRepository
 import com.example.billease.data.BillItem
+import com.example.billease.data.BillingRepository
 import com.example.billease.data.Person
 import com.example.billease.data.Product
 import com.example.billease.domain.BillCalculator
 import com.example.billease.domain.BillItemInput
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -36,7 +35,8 @@ data class LineItemFormState(
 }
 
 data class BillFormUiState(
-    val billId: Long = 0L,        // 0 = new bill
+    // 0 = new bill
+    val billId: Long = 0L,
     val billNumber: String = "",
     val personId: Long = -1L,
     val selectedPerson: Person? = null,
@@ -56,195 +56,217 @@ data class BillFormUiState(
 )
 
 @HiltViewModel
-class BillFormViewModel @Inject constructor(
-    private val repository: BillingRepository,
-    savedStateHandle: SavedStateHandle,
-) : ViewModel() {
+class BillFormViewModel
+    @Inject
+    constructor(
+        private val repository: BillingRepository,
+        savedStateHandle: SavedStateHandle,
+    ) : ViewModel() {
+        private val billId: Long = savedStateHandle.get<Long>("billId") ?: -1L
+        private val isEditMode: Boolean = billId != -1L
 
-    private val billId: Long = savedStateHandle.get<Long>("billId") ?: -1L
-    private val isEditMode: Boolean = billId != -1L
+        private val _uiState = MutableStateFlow(BillFormUiState())
+        val uiState: StateFlow<BillFormUiState> = _uiState.asStateFlow()
 
-    private val _uiState = MutableStateFlow(BillFormUiState())
-    val uiState: StateFlow<BillFormUiState> = _uiState.asStateFlow()
+        val allPersons: StateFlow<List<Person>> =
+            repository.getAllPersons()
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    val allPersons: StateFlow<List<Person>> = repository.getAllPersons()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+        val allProducts: StateFlow<List<Product>> =
+            repository.getAllProducts()
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    val allProducts: StateFlow<List<Product>> = repository.getAllProducts()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
-
-    init {
-        viewModelScope.launch {
-            if (isEditMode) {
-                repository.getBillWithItemsById(billId).first()?.let { billData ->
-                    val items = billData.items.map { item ->
-                        LineItemFormState(
-                            product = Product(
-                                id = item.productId,
-                                name = item.productNameSnapshot,
-                                unitPrice = item.unitPriceSnapshot,
-                                unit = "",
-                                taxPercent = item.taxPercentSnapshot,
-                            ),
-                            quantityText = item.quantity.let {
-                                if (it == it.toLong().toDouble()) it.toLong().toString()
-                                else it.toString()
-                            },
-                        )
-                    }
-                    _uiState.update {
-                        it.copy(
-                            billId = billData.bill.id,
-                            billNumber = billData.bill.billNumber,
-                            personId = billData.bill.personId,
-                            selectedPerson = billData.person,
-                            discountText = billData.bill.discount.let { d ->
-                                if (d == d.toLong().toDouble()) d.toLong().toString() else d.toString()
-                            },
-                            notes = billData.bill.notes ?: "",
-                            lineItems = items,
-                        )
-                    }
-                    recalculate()
-                }
-            } else {
-                _uiState.update { it.copy(billNumber = generateBillNumber()) }
-            }
-        }
-    }
-
-    private fun generateBillNumber(): String {
-        val sdf = SimpleDateFormat("yyyyMMdd-HHmmss", Locale.getDefault())
-        return "BILL-${sdf.format(Date())}"
-    }
-
-    fun selectPerson(person: Person) {
-        _uiState.update { it.copy(selectedPerson = person, personId = person.id, personError = null) }
-    }
-
-    fun updateDiscount(text: String) {
-        _uiState.update { it.copy(discountText = text) }
-        recalculate()
-    }
-
-    fun updateNotes(notes: String) {
-        _uiState.update { it.copy(notes = notes) }
-    }
-
-    fun updateLineItemProduct(index: Int, product: Product) {
-        _uiState.update { state ->
-            val items = state.lineItems.toMutableList()
-            items[index] = items[index].copy(product = product, productError = null)
-            state.copy(lineItems = items, lineItemsError = null)
-        }
-        recalculate()
-    }
-
-    fun updateLineItemQuantity(index: Int, text: String) {
-        _uiState.update { state ->
-            val items = state.lineItems.toMutableList()
-            items[index] = items[index].copy(quantityText = text, quantityError = null)
-            state.copy(lineItems = items)
-        }
-        recalculate()
-    }
-
-    fun addLineItem() {
-        _uiState.update { it.copy(lineItems = it.lineItems + LineItemFormState()) }
-    }
-
-    fun removeLineItem(index: Int) {
-        if (_uiState.value.lineItems.size <= 1) return
-        _uiState.update { state ->
-            state.copy(lineItems = state.lineItems.toMutableList().also { it.removeAt(index) })
-        }
-        recalculate()
-    }
-
-    private fun recalculate() {
-        val state = _uiState.value
-        val inputs = state.lineItems.mapNotNull { row ->
-            val product = row.product ?: return@mapNotNull null
-            if (row.quantity <= 0) return@mapNotNull null
-            BillItemInput.fromProduct(product, row.quantity)
-        }
-        val discount = state.discountText.toDoubleOrNull() ?: 0.0
-        val result = BillCalculator.calculate(inputs, discount)
-        _uiState.update { it.copy(subtotal = result.subtotal, taxTotal = result.taxTotal, grandTotal = result.grandTotal) }
-    }
-
-    fun saveBill(onSuccess: () -> Unit) {
-        val state = _uiState.value
-        var valid = true
-
-        if (state.selectedPerson == null) {
-            _uiState.update { it.copy(personError = "Select a person") }
-            valid = false
-        }
-
-        // Validate each line item
-        val updatedItems = state.lineItems.mapIndexed { _, row ->
-            var r = row
-            if (r.product == null) r = r.copy(productError = "Select a product")
-            val qty = r.quantityText.toDoubleOrNull()
-            if (qty == null || qty <= 0) r = r.copy(quantityError = "Enter a valid quantity (> 0)")
-            r
-        }
-        _uiState.update { it.copy(lineItems = updatedItems) }
-
-        if (updatedItems.any { it.productError != null || it.quantityError != null }) {
-            _uiState.update { it.copy(lineItemsError = "Fix errors above") }
-            valid = false
-        }
-
-        if (!valid) return
-
-        _uiState.update { it.copy(isSaving = true) }
-        viewModelScope.launch {
-            try {
-                val person = state.selectedPerson!!
-                val discount = state.discountText.toDoubleOrNull() ?: 0.0
-                val billInputs = updatedItems.map { row ->
-                    BillItemInput.fromProduct(row.product!!, row.quantity)
-                }
-                val result = BillCalculator.calculate(billInputs, discount)
-                val now = System.currentTimeMillis()
-
-                val bill = Bill(
-                    id = if (isEditMode) billId else 0L,
-                    billNumber = state.billNumber,
-                    personId = person.id,
-                    billDate = now,
-                    discount = discount,
-                    notes = state.notes.takeIf { it.isNotBlank() },
-                    subtotal = result.subtotal,
-                    taxTotal = result.taxTotal,
-                    grandTotal = result.grandTotal,
-                    createdAt = if (isEditMode) now else now,
-                    updatedAt = now,
-                )
-
-                val billItems = billInputs.map { input ->
-                    BillItem(
-                        billId = 0L, // DAO sets this via insertBillWithItems
-                        productId = input.productId,
-                        productNameSnapshot = input.productName,
-                        unitPriceSnapshot = input.unitPrice,
-                        taxPercentSnapshot = input.taxPercent,
-                        quantity = input.quantity,
-                        lineTotal = input.lineTotal,
-                    )
-                }
-
+        init {
+            viewModelScope.launch {
                 if (isEditMode) {
-                    repository.updateBillWithItems(bill, billItems)
+                    repository.getBillWithItemsById(billId).first()?.let { billData ->
+                        val items =
+                            billData.items.map { item ->
+                                LineItemFormState(
+                                    product =
+                                        Product(
+                                            id = item.productId,
+                                            name = item.productNameSnapshot,
+                                            unitPrice = item.unitPriceSnapshot,
+                                            unit = "",
+                                            taxPercent = item.taxPercentSnapshot,
+                                        ),
+                                    quantityText =
+                                        item.quantity.let {
+                                            if (it == it.toLong().toDouble()) {
+                                                it.toLong().toString()
+                                            } else {
+                                                it.toString()
+                                            }
+                                        },
+                                )
+                            }
+                        _uiState.update {
+                            it.copy(
+                                billId = billData.bill.id,
+                                billNumber = billData.bill.billNumber,
+                                personId = billData.bill.personId,
+                                selectedPerson = billData.person,
+                                discountText =
+                                    billData.bill.discount.let { d ->
+                                        if (d == d.toLong().toDouble()) d.toLong().toString() else d.toString()
+                                    },
+                                notes = billData.bill.notes ?: "",
+                                lineItems = items,
+                            )
+                        }
+                        recalculate()
+                    }
                 } else {
-                    repository.insertBillWithItems(bill, billItems)
+                    _uiState.update { it.copy(billNumber = generateBillNumber()) }
                 }
-                onSuccess()
-            } finally {
-                _uiState.update { it.copy(isSaving = false) }
+            }
+        }
+
+        private fun generateBillNumber(): String {
+            val sdf = SimpleDateFormat("yyyyMMdd-HHmmss", Locale.getDefault())
+            return "BILL-${sdf.format(Date())}"
+        }
+
+        fun selectPerson(person: Person) {
+            _uiState.update { it.copy(selectedPerson = person, personId = person.id, personError = null) }
+        }
+
+        fun updateDiscount(text: String) {
+            _uiState.update { it.copy(discountText = text) }
+            recalculate()
+        }
+
+        fun updateNotes(notes: String) {
+            _uiState.update { it.copy(notes = notes) }
+        }
+
+        fun updateLineItemProduct(
+            index: Int,
+            product: Product,
+        ) {
+            _uiState.update { state ->
+                val items = state.lineItems.toMutableList()
+                items[index] = items[index].copy(product = product, productError = null)
+                state.copy(lineItems = items, lineItemsError = null)
+            }
+            recalculate()
+        }
+
+        fun updateLineItemQuantity(
+            index: Int,
+            text: String,
+        ) {
+            _uiState.update { state ->
+                val items = state.lineItems.toMutableList()
+                items[index] = items[index].copy(quantityText = text, quantityError = null)
+                state.copy(lineItems = items)
+            }
+            recalculate()
+        }
+
+        fun addLineItem() {
+            _uiState.update { it.copy(lineItems = it.lineItems + LineItemFormState()) }
+        }
+
+        fun removeLineItem(index: Int) {
+            if (_uiState.value.lineItems.size <= 1) return
+            _uiState.update { state ->
+                state.copy(lineItems = state.lineItems.toMutableList().also { it.removeAt(index) })
+            }
+            recalculate()
+        }
+
+        private fun recalculate() {
+            val state = _uiState.value
+            val inputs =
+                state.lineItems.mapNotNull { row ->
+                    val product = row.product ?: return@mapNotNull null
+                    if (row.quantity <= 0) return@mapNotNull null
+                    BillItemInput.fromProduct(product, row.quantity)
+                }
+            val discount = state.discountText.toDoubleOrNull() ?: 0.0
+            val result = BillCalculator.calculate(inputs, discount)
+            _uiState.update { it.copy(subtotal = result.subtotal, taxTotal = result.taxTotal, grandTotal = result.grandTotal) }
+        }
+
+        fun saveBill(onSuccess: () -> Unit) {
+            val state = _uiState.value
+            var valid = true
+
+            if (state.selectedPerson == null) {
+                _uiState.update { it.copy(personError = "Select a person") }
+                valid = false
+            }
+
+            // Validate each line item
+            val updatedItems =
+                state.lineItems.mapIndexed { _, row ->
+                    var r = row
+                    if (r.product == null) r = r.copy(productError = "Select a product")
+                    val qty = r.quantityText.toDoubleOrNull()
+                    if (qty == null || qty <= 0) r = r.copy(quantityError = "Enter a valid quantity (> 0)")
+                    r
+                }
+            _uiState.update { it.copy(lineItems = updatedItems) }
+
+            if (updatedItems.any { it.productError != null || it.quantityError != null }) {
+                _uiState.update { it.copy(lineItemsError = "Fix errors above") }
+                valid = false
+            }
+
+            if (!valid) return
+
+            _uiState.update { it.copy(isSaving = true) }
+            viewModelScope.launch {
+                try {
+                    val person = state.selectedPerson!!
+                    val discount = state.discountText.toDoubleOrNull() ?: 0.0
+                    val billInputs =
+                        updatedItems.map { row ->
+                            BillItemInput.fromProduct(row.product!!, row.quantity)
+                        }
+                    val result = BillCalculator.calculate(billInputs, discount)
+                    val now = System.currentTimeMillis()
+
+                    val bill =
+                        Bill(
+                            id = if (isEditMode) billId else 0L,
+                            billNumber = state.billNumber,
+                            personId = person.id,
+                            billDate = now,
+                            discount = discount,
+                            notes = state.notes.takeIf { it.isNotBlank() },
+                            subtotal = result.subtotal,
+                            taxTotal = result.taxTotal,
+                            grandTotal = result.grandTotal,
+                            createdAt = if (isEditMode) now else now,
+                            updatedAt = now,
+                        )
+
+                    val billItems =
+                        billInputs.map { input ->
+                            // DAO sets this via insertBillWithItems
+                            BillItem(
+                                billId = 0L,
+                                productId = input.productId,
+                                productNameSnapshot = input.productName,
+                                unitPriceSnapshot = input.unitPrice,
+                                taxPercentSnapshot = input.taxPercent,
+                                quantity = input.quantity,
+                                lineTotal = input.lineTotal,
+                            )
+                        }
+
+                    if (isEditMode) {
+                        repository.updateBillWithItems(bill, billItems)
+                    } else {
+                        repository.insertBillWithItems(bill, billItems)
+                    }
+                    onSuccess()
+                } finally {
+                    _uiState.update { it.copy(isSaving = false) }
+                }
             }
         }
     }
-}

@@ -16,33 +16,41 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BillsViewModel @Inject constructor(
-    private val repository: BillingRepository,
-) : ViewModel() {
+class BillsViewModel
+    @Inject
+    constructor(
+        private val repository: BillingRepository,
+    ) : ViewModel() {
+        private val _searchQuery = MutableStateFlow("")
+        val searchQuery: StateFlow<String> = _searchQuery
 
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery
+        @OptIn(ExperimentalCoroutinesApi::class)
+        val bills: StateFlow<List<BillWithPerson>> =
+            _searchQuery
+                .flatMapLatest { query ->
+                    if (query.isBlank()) {
+                        repository.getAllBills()
+                    } else {
+                        repository.searchBills(query)
+                    }
+                }
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val bills: StateFlow<List<BillWithPerson>> = _searchQuery
-        .flatMapLatest { query ->
-            if (query.isBlank()) repository.getAllBills()
-            else repository.searchBills(query)
+        fun onSearchQueryChange(query: String) {
+            _searchQuery.value = query
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    fun onSearchQueryChange(query: String) {
-        _searchQuery.value = query
-    }
-
-    fun deleteBill(bill: Bill, onResult: (Boolean, String) -> Unit) {
-        viewModelScope.launch {
-            try {
-                repository.deleteBill(bill)
-                onResult(true, "Bill deleted.")
-            } catch (e: Exception) {
-                onResult(false, "Could not delete bill: ${e.message}")
+        fun deleteBill(
+            bill: Bill,
+            onResult: (Boolean, String) -> Unit,
+        ) {
+            viewModelScope.launch {
+                try {
+                    repository.deleteBill(bill)
+                    onResult(true, "Bill deleted.")
+                } catch (e: Exception) {
+                    onResult(false, "Could not delete bill: ${e.message}")
+                }
             }
         }
     }
-}

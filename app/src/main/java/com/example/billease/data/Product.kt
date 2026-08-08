@@ -10,5 +10,5 @@ data class Product(
     val unitPrice: Double,
     val unit: String,
     val taxPercent: Double = 0.0,
-    val description: String? = null
+    val description: String? = null,
 )

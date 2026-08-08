@@ -13,24 +13,27 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
-class PersonDetailViewModel @Inject constructor(
-    repository: BillingRepository,
-    savedStateHandle: SavedStateHandle
-) : ViewModel() {
+class PersonDetailViewModel
+    @Inject
+    constructor(
+        repository: BillingRepository,
+        savedStateHandle: SavedStateHandle,
+    ) : ViewModel() {
+        private val personId: Long = checkNotNull(savedStateHandle.get<Long>("personId"))
 
-    private val personId: Long = checkNotNull(savedStateHandle.get<Long>("personId"))
+        val person: StateFlow<Person?> =
+            repository.getPersonById(personId)
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5000),
+                    initialValue = null,
+                )
 
-    val person: StateFlow<Person?> = repository.getPersonById(personId)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null
-        )
-
-    val bills: StateFlow<List<Bill>> = repository.getBillsByPersonId(personId)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-}
+        val bills: StateFlow<List<Bill>> =
+            repository.getBillsByPersonId(personId)
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5000),
+                    initialValue = emptyList(),
+                )
+    }

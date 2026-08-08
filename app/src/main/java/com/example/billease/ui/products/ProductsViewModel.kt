@@ -15,40 +15,45 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProductsViewModel @Inject constructor(
-    private val repository: BillingRepository
-) : ViewModel() {
+class ProductsViewModel
+    @Inject
+    constructor(
+        private val repository: BillingRepository,
+    ) : ViewModel() {
+        private val _searchQuery = MutableStateFlow("")
+        val searchQuery: StateFlow<String> = _searchQuery
 
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery
+        @OptIn(ExperimentalCoroutinesApi::class)
+        val products =
+            _searchQuery.flatMapLatest { query ->
+                if (query.isBlank()) {
+                    repository.getAllProducts()
+                } else {
+                    repository.searchProducts(query)
+                }
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList(),
+            )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val products = _searchQuery.flatMapLatest { query ->
-        if (query.isBlank()) {
-            repository.getAllProducts()
-        } else {
-            repository.searchProducts(query)
+        fun onSearchQueryChange(query: String) {
+            _searchQuery.value = query
         }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
 
-    fun onSearchQueryChange(query: String) {
-        _searchQuery.value = query
-    }
-
-    // Decision: Prevent deletion if product is referenced in existing bills.
-    fun deleteProduct(product: Product, onResult: (Boolean, String) -> Unit) {
-        viewModelScope.launch {
-            val count = repository.getBillItemCountForProduct(product.id)
-            if (count > 0) {
-                onResult(false, "Cannot delete product used in existing bills.")
-            } else {
-                repository.deleteProduct(product)
-                onResult(true, "Product deleted successfully.")
+        // Decision: Prevent deletion if product is referenced in existing bills.
+        fun deleteProduct(
+            product: Product,
+            onResult: (Boolean, String) -> Unit,
+        ) {
+            viewModelScope.launch {
+                val count = repository.getBillItemCountForProduct(product.id)
+                if (count > 0) {
+                    onResult(false, "Cannot delete product used in existing bills.")
+                } else {
+                    repository.deleteProduct(product)
+                    onResult(true, "Product deleted successfully.")
+                }
             }
         }
     }
-}

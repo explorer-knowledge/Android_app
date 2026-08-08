@@ -73,11 +73,12 @@ fun BillDetailScreen(
                             coroutineScope.launch {
                                 val uri = viewModel.generatePdf(context)
                                 if (uri != null) {
-                                    val intent = Intent(Intent.ACTION_SEND).apply {
-                                        type = "application/pdf"
-                                        putExtra(Intent.EXTRA_STREAM, uri)
-                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                    }
+                                    val intent =
+                                        Intent(Intent.ACTION_SEND).apply {
+                                            type = "application/pdf"
+                                            putExtra(Intent.EXTRA_STREAM, uri)
+                                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                        }
                                     context.startActivity(Intent.createChooser(intent, "Share Bill"))
                                 } else {
                                     snackbarHostState.showSnackbar("Failed to generate PDF")
@@ -92,7 +93,7 @@ fun BillDetailScreen(
                     }
                 },
             )
-        }
+        },
     ) { padding ->
         val data = billData
         if (data == null) {
@@ -106,15 +107,17 @@ fun BillDetailScreen(
         val person = data.person
         val items = data.items
 
-        val dateStr = remember(bill.billDate) {
-            SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(Date(bill.billDate))
-        }
+        val dateStr =
+            remember(bill.billDate) {
+                SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(Date(bill.billDate))
+            }
 
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             // Header card
@@ -190,9 +193,10 @@ fun BillDetailScreen(
 @Composable
 private fun LineItemDetailRow(item: BillItem) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top,
     ) {
@@ -212,7 +216,10 @@ private fun LineItemDetailRow(item: BillItem) {
 }
 
 @Composable
-private fun DetailRow(label: String, value: String) {
+private fun DetailRow(
+    label: String,
+    value: String,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,

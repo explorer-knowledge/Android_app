@@ -30,7 +30,6 @@ fun AppNavigation() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "home") {
-
         // ── Temporary Home Dashboard ──────────────────────────────────────────
         // Will be replaced in Phase 7 with a proper dashboard + bottom nav.
         composable("home") {

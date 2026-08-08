@@ -6,10 +6,12 @@ import androidx.room.RoomDatabase
 @Database(
     entities = [Person::class, Product::class, Bill::class, BillItem::class],
     version = 2,
-    exportSchema = false
+    exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun personDao(): PersonDao
+
     abstract fun productDao(): ProductDao
+
     abstract fun billDao(): BillDao
 }

@@ -16,14 +16,15 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-
     @Provides
     @Singleton
-    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
+    fun provideAppDatabase(
+        @ApplicationContext context: Context,
+    ): AppDatabase {
         return Room.databaseBuilder(
             context,
             AppDatabase::class.java,
-            "billease_database"
+            "billease_database",
         )
             // Pre-release: destructive migration acceptable while there is no shipped user data.
             // Remove this before the first production release and replace with proper Migrations.

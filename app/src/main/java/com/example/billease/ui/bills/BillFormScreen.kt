@@ -67,7 +67,7 @@ fun BillFormScreen(
                     }
                 },
             )
-        }
+        },
     ) { padding ->
         if (uiState.isSaving) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -77,10 +77,11 @@ fun BillFormScreen(
         }
 
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item {
@@ -169,9 +170,10 @@ fun BillFormScreen(
             item {
                 Button(
                     onClick = { viewModel.saveBill(onSuccess = onNavigateBack) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 24.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 24.dp),
                     enabled = !uiState.isSaving,
                 ) { Text("Save Bill") }
             }
@@ -283,10 +285,12 @@ private fun LineItemRow(
                     singleLine = true,
                 )
                 // Live line total
-                val lineTotal = (row.product?.let { p ->
-                    val qty = row.quantityText.toDoubleOrNull() ?: 0.0
-                    p.unitPrice * qty * (1 + p.taxPercent / 100.0)
-                } ?: 0.0)
+                val lineTotal = (
+                    row.product?.let { p ->
+                        val qty = row.quantityText.toDoubleOrNull() ?: 0.0
+                        p.unitPrice * qty * (1 + p.taxPercent / 100.0)
+                    } ?: 0.0
+                )
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
                     Text("Line Total", style = MaterialTheme.typography.labelSmall)
                     Text("₹%.2f".format(lineTotal), style = MaterialTheme.typography.bodyMedium)
@@ -297,7 +301,11 @@ private fun LineItemRow(
 }
 
 @Composable
-private fun TotalsSummaryCard(subtotal: Double, taxTotal: Double, grandTotal: Double) {
+private fun TotalsSummaryCard(
+    subtotal: Double,
+    taxTotal: Double,
+    grandTotal: Double,
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),

@@ -17,20 +17,22 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class BillDetailViewModel @Inject constructor(
-    repository: BillingRepository,
-    savedStateHandle: SavedStateHandle,
-) : ViewModel() {
+class BillDetailViewModel
+    @Inject
+    constructor(
+        repository: BillingRepository,
+        savedStateHandle: SavedStateHandle,
+    ) : ViewModel() {
+        private val billId: Long = checkNotNull(savedStateHandle.get<Long>("billId"))
 
-    private val billId: Long = checkNotNull(savedStateHandle.get<Long>("billId"))
+        val bill: StateFlow<BillWithItemsAndPerson?> =
+            repository.getBillWithItemsById(billId)
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val bill: StateFlow<BillWithItemsAndPerson?> = repository.getBillWithItemsById(billId)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
-
-    suspend fun generatePdf(context: Context): Uri? {
-        val currentBill = bill.value ?: return null
-        return withContext(Dispatchers.IO) {
-            PdfGenerator.generatePdf(context, currentBill)
+        suspend fun generatePdf(context: Context): Uri? {
+            val currentBill = bill.value ?: return null
+            return withContext(Dispatchers.IO) {
+                PdfGenerator.generatePdf(context, currentBill)
+            }
         }
     }
-}

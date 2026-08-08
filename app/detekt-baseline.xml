@@ -3,25 +3,25 @@
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>FunctionNaming:AppNavigation.kt$@Composable fun AppNavigation()</ID>
-    <ID>FunctionNaming:BillDetailScreen.kt$@Composable private fun DetailRow(label: String, value: String)</ID>
+    <ID>FunctionNaming:BillDetailScreen.kt$@Composable private fun DetailRow( label: String, value: String, )</ID>
     <ID>FunctionNaming:BillDetailScreen.kt$@Composable private fun LineItemDetailRow(item: BillItem)</ID>
     <ID>FunctionNaming:BillDetailScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BillDetailScreen( onNavigateBack: () -&gt; Unit, onNavigateToEdit: (Long) -&gt; Unit, viewModel: BillDetailViewModel = hiltViewModel(), )</ID>
     <ID>FunctionNaming:BillFormScreen.kt$@Composable private fun LineItemRow( row: LineItemFormState, allProducts: List&lt;Product&gt;, onProductSelected: (Product) -&gt; Unit, onQuantityChange: (String) -&gt; Unit, onRemove: () -&gt; Unit, canRemove: Boolean, )</ID>
     <ID>FunctionNaming:BillFormScreen.kt$@Composable private fun PersonDropdown( selectedPerson: Person?, allPersons: List&lt;Person&gt;, error: String?, onPersonSelected: (Person) -&gt; Unit, )</ID>
-    <ID>FunctionNaming:BillFormScreen.kt$@Composable private fun TotalsSummaryCard(subtotal: Double, taxTotal: Double, grandTotal: Double)</ID>
+    <ID>FunctionNaming:BillFormScreen.kt$@Composable private fun TotalsSummaryCard( subtotal: Double, taxTotal: Double, grandTotal: Double, )</ID>
     <ID>FunctionNaming:BillFormScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BillFormScreen( onNavigateBack: () -&gt; Unit, viewModel: BillFormViewModel = hiltViewModel(), )</ID>
     <ID>FunctionNaming:BillsListScreen.kt$@Composable private fun BillListItem( billWithPerson: BillWithPerson, onClick: () -&gt; Unit, onDeleteClick: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:BillsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BillsListScreen( onNavigateToBillDetail: (Long) -&gt; Unit, onNavigateToCreateBill: () -&gt; Unit, viewModel: BillsViewModel = hiltViewModel(), )</ID>
     <ID>FunctionNaming:MainActivity.kt$@Composable fun Greeting(name: String)</ID>
-    <ID>FunctionNaming:PersonDetailScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BillHistoryItem(bill: Bill, onClick: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:PersonDetailScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PersonDetailScreen( onNavigateBack: () -&gt; Unit, onNavigateToEdit: (Long) -&gt; Unit, onNavigateToBillDetail: (Long) -&gt; Unit, viewModel: PersonDetailViewModel = hiltViewModel() )</ID>
-    <ID>FunctionNaming:PersonFormScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PersonFormScreen( onNavigateBack: () -&gt; Unit, viewModel: PersonFormViewModel = hiltViewModel() )</ID>
-    <ID>FunctionNaming:PersonsListScreen.kt$@Composable fun PersonListItem( person: Person, onClick: () -&gt; Unit, onDeleteClick: () -&gt; Unit )</ID>
-    <ID>FunctionNaming:PersonsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PersonsListScreen( onNavigateToPersonDetail: (Long) -&gt; Unit, onNavigateToPersonForm: (Long?) -&gt; Unit, viewModel: PersonsViewModel = hiltViewModel() )</ID>
-    <ID>FunctionNaming:ProductFormScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ProductFormScreen( onNavigateBack: () -&gt; Unit, viewModel: ProductFormViewModel = hiltViewModel() )</ID>
-    <ID>FunctionNaming:ProductsListScreen.kt$@Composable fun ProductListItem( product: Product, onClick: () -&gt; Unit, onDeleteClick: () -&gt; Unit )</ID>
-    <ID>FunctionNaming:ProductsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ProductsListScreen( onNavigateToProductForm: (Long?) -&gt; Unit, viewModel: ProductsViewModel = hiltViewModel() )</ID>
-    <ID>FunctionNaming:Theme.kt$@Composable fun BillEaseTheme( darkTheme: Boolean = isSystemInDarkTheme(), // Dynamic color is available on Android 12+ dynamicColor: Boolean = true, content: @Composable () -&gt; Unit )</ID>
+    <ID>FunctionNaming:PersonDetailScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BillHistoryItem( bill: Bill, onClick: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:PersonDetailScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PersonDetailScreen( onNavigateBack: () -&gt; Unit, onNavigateToEdit: (Long) -&gt; Unit, onNavigateToBillDetail: (Long) -&gt; Unit, viewModel: PersonDetailViewModel = hiltViewModel(), )</ID>
+    <ID>FunctionNaming:PersonFormScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PersonFormScreen( onNavigateBack: () -&gt; Unit, viewModel: PersonFormViewModel = hiltViewModel(), )</ID>
+    <ID>FunctionNaming:PersonsListScreen.kt$@Composable fun PersonListItem( person: Person, onClick: () -&gt; Unit, onDeleteClick: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:PersonsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PersonsListScreen( onNavigateToPersonDetail: (Long) -&gt; Unit, onNavigateToPersonForm: (Long?) -&gt; Unit, viewModel: PersonsViewModel = hiltViewModel(), )</ID>
+    <ID>FunctionNaming:ProductFormScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ProductFormScreen( onNavigateBack: () -&gt; Unit, viewModel: ProductFormViewModel = hiltViewModel(), )</ID>
+    <ID>FunctionNaming:ProductsListScreen.kt$@Composable fun ProductListItem( product: Product, onClick: () -&gt; Unit, onDeleteClick: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:ProductsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ProductsListScreen( onNavigateToProductForm: (Long?) -&gt; Unit, viewModel: ProductsViewModel = hiltViewModel(), )</ID>
+    <ID>FunctionNaming:Theme.kt$@Composable fun BillEaseTheme( darkTheme: Boolean = isSystemInDarkTheme(), // Dynamic color is available on Android 12+ dynamicColor: Boolean = true, content: @Composable () -&gt; Unit, )</ID>
     <ID>ImplicitDefaultLocale:PersonDetailScreen.kt$String.format("$%.2f", bill.grandTotal)</ID>
     <ID>ImplicitDefaultLocale:ProductsListScreen.kt$String.format("$%.2f", product.unitPrice)</ID>
     <ID>LongMethod:AppNavigation.kt$@Composable fun AppNavigation()</ID>
@@ -30,12 +30,12 @@
     <ID>LongMethod:BillFormScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BillFormScreen( onNavigateBack: () -&gt; Unit, viewModel: BillFormViewModel = hiltViewModel(), )</ID>
     <ID>LongMethod:BillFormViewModel.kt$BillFormViewModel$fun saveBill(onSuccess: () -&gt; Unit)</ID>
     <ID>LongMethod:BillsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BillsListScreen( onNavigateToBillDetail: (Long) -&gt; Unit, onNavigateToCreateBill: () -&gt; Unit, viewModel: BillsViewModel = hiltViewModel(), )</ID>
-    <ID>LongMethod:PdfGenerator.kt$PdfGenerator$fun generatePdf(context: Context, data: BillWithItemsAndPerson): Uri?</ID>
-    <ID>LongMethod:PersonDetailScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PersonDetailScreen( onNavigateBack: () -&gt; Unit, onNavigateToEdit: (Long) -&gt; Unit, onNavigateToBillDetail: (Long) -&gt; Unit, viewModel: PersonDetailViewModel = hiltViewModel() )</ID>
-    <ID>LongMethod:PersonFormScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PersonFormScreen( onNavigateBack: () -&gt; Unit, viewModel: PersonFormViewModel = hiltViewModel() )</ID>
-    <ID>LongMethod:PersonsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PersonsListScreen( onNavigateToPersonDetail: (Long) -&gt; Unit, onNavigateToPersonForm: (Long?) -&gt; Unit, viewModel: PersonsViewModel = hiltViewModel() )</ID>
-    <ID>LongMethod:ProductFormScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ProductFormScreen( onNavigateBack: () -&gt; Unit, viewModel: ProductFormViewModel = hiltViewModel() )</ID>
-    <ID>LongMethod:ProductsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ProductsListScreen( onNavigateToProductForm: (Long?) -&gt; Unit, viewModel: ProductsViewModel = hiltViewModel() )</ID>
+    <ID>LongMethod:PdfGenerator.kt$PdfGenerator$fun generatePdf( context: Context, data: BillWithItemsAndPerson, ): Uri?</ID>
+    <ID>LongMethod:PersonDetailScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PersonDetailScreen( onNavigateBack: () -&gt; Unit, onNavigateToEdit: (Long) -&gt; Unit, onNavigateToBillDetail: (Long) -&gt; Unit, viewModel: PersonDetailViewModel = hiltViewModel(), )</ID>
+    <ID>LongMethod:PersonFormScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PersonFormScreen( onNavigateBack: () -&gt; Unit, viewModel: PersonFormViewModel = hiltViewModel(), )</ID>
+    <ID>LongMethod:PersonsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PersonsListScreen( onNavigateToPersonDetail: (Long) -&gt; Unit, onNavigateToPersonForm: (Long?) -&gt; Unit, viewModel: PersonsViewModel = hiltViewModel(), )</ID>
+    <ID>LongMethod:ProductFormScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ProductFormScreen( onNavigateBack: () -&gt; Unit, viewModel: ProductFormViewModel = hiltViewModel(), )</ID>
+    <ID>LongMethod:ProductsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ProductsListScreen( onNavigateToProductForm: (Long?) -&gt; Unit, viewModel: ProductsViewModel = hiltViewModel(), )</ID>
     <ID>LongParameterList:BillFormScreen.kt$( row: LineItemFormState, allProducts: List&lt;Product&gt;, onProductSelected: (Product) -&gt; Unit, onQuantityChange: (String) -&gt; Unit, onRemove: () -&gt; Unit, canRemove: Boolean, )</ID>
     <ID>MagicNumber:BillCalculator.kt$BillItemInput$100.0</ID>
     <ID>MagicNumber:BillDetailViewModel.kt$BillDetailViewModel$5_000</ID>
@@ -71,7 +71,6 @@
     <ID>MaxLineLength:BillFormViewModel.kt$BillFormViewModel$_uiState.update { it.copy(subtotal = result.subtotal, taxTotal = result.taxTotal, grandTotal = result.grandTotal) }</ID>
     <ID>MaxLineLength:PdfGenerator.kt$PdfGenerator$canvas.drawText(String.format(Locale.getDefault(), "%.1f%%", item.taxPercentSnapshot), MARGIN_LEFT + 390f, yPos, paint)</ID>
     <ID>MaxLineLength:PdfGenerator.kt$PdfGenerator$canvas.drawText(String.format(Locale.getDefault(), "%.2f", item.unitPriceSnapshot), MARGIN_LEFT + 320f, yPos, paint)</ID>
-    <ID>MaxLineLength:PdfGenerator.kt$PdfGenerator$val nameText = TextUtils.ellipsize(item.productNameSnapshot, android.text.TextPaint(paint), maxNameWidth, TextUtils.TruncateAt.END).toString()</ID>
     <ID>MaxLineLength:PersonDao.kt$PersonDao$@Query("SELECT * FROM persons WHERE name LIKE '%' || :query || '%' OR phone LIKE '%' || :query || '%' ORDER BY name ASC")</ID>
     <ID>MaxLineLength:ProductsListScreen.kt$Text(text = "${String.format("$%.2f", product.unitPrice)} / ${product.unit}", style = MaterialTheme.typography.bodyMedium)</ID>
     <ID>PrintStackTrace:PdfGenerator.kt$PdfGenerator$e</ID>
@@ -79,22 +78,5 @@
     <ID>TooGenericExceptionCaught:PdfGenerator.kt$PdfGenerator$e: Exception</ID>
     <ID>TooManyFunctions:BillDao.kt$BillDao</ID>
     <ID>TooManyFunctions:BillingRepository.kt$BillingRepository</ID>
-    <ID>WildcardImport:BillDao.kt$import androidx.room.*</ID>
-    <ID>WildcardImport:PersonDao.kt$import androidx.room.*</ID>
-    <ID>WildcardImport:PersonDetailScreen.kt$import androidx.compose.foundation.layout.*</ID>
-    <ID>WildcardImport:PersonDetailScreen.kt$import androidx.compose.material3.*</ID>
-    <ID>WildcardImport:PersonFormScreen.kt$import androidx.compose.foundation.layout.*</ID>
-    <ID>WildcardImport:PersonFormScreen.kt$import androidx.compose.material3.*</ID>
-    <ID>WildcardImport:PersonFormScreen.kt$import androidx.compose.runtime.*</ID>
-    <ID>WildcardImport:PersonsListScreen.kt$import androidx.compose.foundation.layout.*</ID>
-    <ID>WildcardImport:PersonsListScreen.kt$import androidx.compose.material3.*</ID>
-    <ID>WildcardImport:PersonsListScreen.kt$import androidx.compose.runtime.*</ID>
-    <ID>WildcardImport:ProductDao.kt$import androidx.room.*</ID>
-    <ID>WildcardImport:ProductFormScreen.kt$import androidx.compose.foundation.layout.*</ID>
-    <ID>WildcardImport:ProductFormScreen.kt$import androidx.compose.material3.*</ID>
-    <ID>WildcardImport:ProductFormScreen.kt$import androidx.compose.runtime.*</ID>
-    <ID>WildcardImport:ProductsListScreen.kt$import androidx.compose.foundation.layout.*</ID>
-    <ID>WildcardImport:ProductsListScreen.kt$import androidx.compose.material3.*</ID>
-    <ID>WildcardImport:ProductsListScreen.kt$import androidx.compose.runtime.*</ID>
   </CurrentIssues>
 </SmellBaseline>

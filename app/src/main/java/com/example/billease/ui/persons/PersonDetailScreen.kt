@@ -1,12 +1,27 @@
 package com.example.billease.ui.persons
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,7 +40,7 @@ fun PersonDetailScreen(
     onNavigateBack: () -> Unit,
     onNavigateToEdit: (Long) -> Unit,
     onNavigateToBillDetail: (Long) -> Unit,
-    viewModel: PersonDetailViewModel = hiltViewModel()
+    viewModel: PersonDetailViewModel = hiltViewModel(),
 ) {
     val person by viewModel.person.collectAsState()
     val bills by viewModel.bills.collectAsState()
@@ -45,22 +60,24 @@ fun PersonDetailScreen(
                             Icon(Icons.Default.Edit, contentDescription = "Edit Person")
                         }
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         person?.let { p ->
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(padding),
             ) {
                 // Person Info Card
                 Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text("Phone: ${p.phone}", style = MaterialTheme.typography.bodyLarge)
@@ -73,7 +90,7 @@ fun PersonDetailScreen(
                 Text(
                     text = "Bill History",
                     style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 )
 
                 if (bills.isEmpty()) {
@@ -98,23 +115,28 @@ fun PersonDetailScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BillHistoryItem(bill: Bill, onClick: () -> Unit) {
+fun BillHistoryItem(
+    bill: Bill,
+    onClick: () -> Unit,
+) {
     val formatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
     val dateString = formatter.format(Date(bill.billDate))
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         onClick = onClick,
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column {
                 Text(text = bill.billNumber, style = MaterialTheme.typography.titleMedium)
@@ -123,7 +145,7 @@ fun BillHistoryItem(bill: Bill, onClick: () -> Unit) {
             Text(
                 text = String.format("$%.2f", bill.grandTotal),
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
         }
     }

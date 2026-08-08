@@ -10,5 +10,5 @@ data class Person(
     val phone: String,
     val email: String? = null,
     val address: String? = null,
-    val gstNumber: String? = null
+    val gstNumber: String? = null,
 )

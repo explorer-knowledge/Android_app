@@ -16,7 +16,6 @@ import java.util.Date
 import java.util.Locale
 
 object PdfGenerator {
-
     private const val PAGE_WIDTH = 595
     private const val PAGE_HEIGHT = 842
     private const val MARGIN_LEFT = 50f
@@ -24,7 +23,10 @@ object PdfGenerator {
     private const val MARGIN_BOTTOM = 50f
     private const val MAX_Y = PAGE_HEIGHT - MARGIN_BOTTOM
 
-    fun generatePdf(context: Context, data: BillWithItemsAndPerson): Uri? {
+    fun generatePdf(
+        context: Context,
+        data: BillWithItemsAndPerson,
+    ): Uri? {
         val pdfDocument = PdfDocument()
         val pageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, 1).create()
 
@@ -32,11 +34,12 @@ object PdfGenerator {
         var canvas = page.canvas
         var yPos = 50f
 
-        val paint = Paint().apply {
-            color = Color.BLACK
-            textSize = 12f
-            isAntiAlias = true
-        }
+        val paint =
+            Paint().apply {
+                color = Color.BLACK
+                textSize = 12f
+                isAntiAlias = true
+            }
 
         fun checkPageBreak(requiredSpace: Float) {
             if (yPos + requiredSpace > MAX_Y) {
@@ -59,7 +62,7 @@ object PdfGenerator {
         canvas.drawText("Bill No: ${data.bill.billNumber}", MARGIN_LEFT, yPos, paint)
         val dateStr = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(data.bill.billDate))
         canvas.drawText("Date: $dateStr", MARGIN_LEFT, yPos + 15f, paint)
-        
+
         yPos += 45f
 
         // Bill To
@@ -86,7 +89,7 @@ object PdfGenerator {
         canvas.drawText("Price", MARGIN_LEFT + 320f, yPos, paint)
         canvas.drawText("Tax", MARGIN_LEFT + 390f, yPos, paint)
         canvas.drawText("Total", MARGIN_RIGHT - paint.measureText("Total"), yPos, paint)
-        
+
         yPos += 10f
         canvas.drawLine(MARGIN_LEFT, yPos, MARGIN_RIGHT, yPos, paint)
         yPos += 20f
@@ -95,16 +98,22 @@ object PdfGenerator {
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
         for (item in data.items) {
             checkPageBreak(20f)
-            
+
             // Truncate long product names
             val maxNameWidth = 240f // up to 250f (margin_left + 250 is Qty)
-            val nameText = TextUtils.ellipsize(item.productNameSnapshot, android.text.TextPaint(paint), maxNameWidth, TextUtils.TruncateAt.END).toString()
-            
+            val nameText =
+                TextUtils.ellipsize(
+                    item.productNameSnapshot,
+                    android.text.TextPaint(paint),
+                    maxNameWidth,
+                    TextUtils.TruncateAt.END,
+                ).toString()
+
             canvas.drawText(nameText, MARGIN_LEFT, yPos, paint)
             canvas.drawText(item.quantity.toString(), MARGIN_LEFT + 250f, yPos, paint)
             canvas.drawText(String.format(Locale.getDefault(), "%.2f", item.unitPriceSnapshot), MARGIN_LEFT + 320f, yPos, paint)
             canvas.drawText(String.format(Locale.getDefault(), "%.1f%%", item.taxPercentSnapshot), MARGIN_LEFT + 390f, yPos, paint)
-            
+
             val totalStr = String.format(Locale.getDefault(), "%.2f", item.lineTotal)
             canvas.drawText(totalStr, MARGIN_RIGHT - paint.measureText(totalStr), yPos, paint)
             yPos += 20f
@@ -141,9 +150,9 @@ object PdfGenerator {
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         canvas.drawText("Grand Total:", MARGIN_LEFT + 350f, yPos, paint)
         canvas.drawText(grandTotalStr, MARGIN_RIGHT - paint.measureText(grandTotalStr), yPos, paint)
-        
+
         yPos += 40f
-        
+
         // Notes
         if (!data.bill.notes.isNullOrBlank()) {
             val noteLines = data.bill.notes.split("\n")
@@ -171,7 +180,7 @@ object PdfGenerator {
             FileProvider.getUriForFile(
                 context,
                 "${context.packageName}.fileprovider",
-                file
+                file,
             )
         } catch (e: Exception) {
             e.printStackTrace()

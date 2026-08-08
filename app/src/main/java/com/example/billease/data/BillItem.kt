@@ -12,16 +12,16 @@ import androidx.room.PrimaryKey
             entity = Bill::class,
             parentColumns = ["id"],
             childColumns = ["billId"],
-            onDelete = ForeignKey.RESTRICT
+            onDelete = ForeignKey.RESTRICT,
         ),
         ForeignKey(
             entity = Product::class,
             parentColumns = ["id"],
             childColumns = ["productId"],
-            onDelete = ForeignKey.RESTRICT
-        )
+            onDelete = ForeignKey.RESTRICT,
+        ),
     ],
-    indices = [Index("billId"), Index("productId")]
+    indices = [Index("billId"), Index("productId")],
 )
 data class BillItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -31,5 +31,5 @@ data class BillItem(
     val quantity: Double,
     val unitPriceSnapshot: Double,
     val taxPercentSnapshot: Double,
-    val lineTotal: Double
+    val lineTotal: Double,
 )

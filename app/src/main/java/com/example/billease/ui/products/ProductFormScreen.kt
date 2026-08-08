@@ -1,12 +1,26 @@
 package com.example.billease.ui.products
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -15,7 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun ProductFormScreen(
     onNavigateBack: () -> Unit,
-    viewModel: ProductFormViewModel = hiltViewModel()
+    viewModel: ProductFormViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -27,17 +41,18 @@ fun ProductFormScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             OutlinedTextField(
                 value = uiState.name,
@@ -46,7 +61,7 @@ fun ProductFormScreen(
                 modifier = Modifier.fillMaxWidth(),
                 isError = uiState.nameError != null,
                 supportingText = uiState.nameError?.let { { Text(it) } },
-                singleLine = true
+                singleLine = true,
             )
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -57,7 +72,7 @@ fun ProductFormScreen(
                     modifier = Modifier.weight(1f),
                     isError = uiState.unitPriceError != null,
                     supportingText = uiState.unitPriceError?.let { { Text(it) } },
-                    singleLine = true
+                    singleLine = true,
                 )
 
                 OutlinedTextField(
@@ -67,7 +82,7 @@ fun ProductFormScreen(
                     modifier = Modifier.weight(1f),
                     isError = uiState.unitError != null,
                     supportingText = uiState.unitError?.let { { Text(it) } },
-                    singleLine = true
+                    singleLine = true,
                 )
             }
 
@@ -78,7 +93,7 @@ fun ProductFormScreen(
                 modifier = Modifier.fillMaxWidth(),
                 isError = uiState.taxPercentError != null,
                 supportingText = uiState.taxPercentError?.let { { Text(it) } },
-                singleLine = true
+                singleLine = true,
             )
 
             OutlinedTextField(
@@ -86,12 +101,12 @@ fun ProductFormScreen(
                 onValueChange = viewModel::updateDescription,
                 label = { Text("Description (Optional)") },
                 modifier = Modifier.fillMaxWidth(),
-                minLines = 3
+                minLines = 3,
             )
 
             Button(
                 onClick = { viewModel.saveProduct(onSuccess = onNavigateBack) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text("Save")
             }
