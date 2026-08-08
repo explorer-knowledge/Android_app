@@ -11,10 +11,3 @@ app/build/
 local.properties
 graphify-out/
 
-AGENTS.md
-PROJECT.md
-BUILD_STEPS.md
-REFERENCE_REPOS.md
-KOTLIN_STYLE_GUIDE.md
-CI_CD_SETUP.md
-MEMORY.md

@@ -103,16 +103,16 @@ fun HomeScreen(
                     modifier = Modifier.weight(1f),
                     title = "Bills This Month",
                     value = billsThisMonth.toString(),
-                    // Light blue matching design
-                    backgroundColor = Color(0xFFD4E4F7),
+                    backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                    textColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
 
                 StatCard(
                     modifier = Modifier.weight(1f),
                     title = "Revenue This Month",
                     value = currencyFormatter.format(revenueThisMonth),
-                    // Light green matching design
-                    backgroundColor = Color(0xFFD8F3DC),
+                    backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+                    textColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 )
             }
 
@@ -136,8 +136,8 @@ fun HomeScreen(
                     title = "New Bill",
                     subtitle = "Create invoice",
                     icon = Icons.Default.Add,
-                    backgroundColor = Color(0xFF1A5296),
-                    textColor = Color.White,
+                    backgroundColor = MaterialTheme.colorScheme.primary,
+                    textColor = MaterialTheme.colorScheme.onPrimary,
                     onClick = onNavigateToNewBill,
                 )
 
@@ -146,8 +146,8 @@ fun HomeScreen(
                     title = "Persons",
                     subtitle = "Manage clients",
                     icon = Icons.Default.Person,
-                    backgroundColor = Color(0xFF5C7C99),
-                    textColor = Color.White,
+                    backgroundColor = MaterialTheme.colorScheme.secondary,
+                    textColor = MaterialTheme.colorScheme.onSecondary,
                     onClick = onNavigateToPersons,
                 )
 
@@ -156,8 +156,8 @@ fun HomeScreen(
                     title = "Products",
                     subtitle = "Inventory items",
                     icon = Icons.AutoMirrored.Filled.List,
-                    backgroundColor = Color(0xFFA8E6CF),
-                    textColor = Color(0xFF1E3A34),
+                    backgroundColor = MaterialTheme.colorScheme.tertiary,
+                    textColor = MaterialTheme.colorScheme.onTertiary,
                     onClick = onNavigateToProducts,
                 )
             }
@@ -185,12 +185,14 @@ fun HomeScreen(
     }
 }
 
+@Suppress("FunctionNaming")
 @Composable
-fun StatCard(
+private fun StatCard(
     modifier: Modifier = Modifier,
     title: String,
     value: String,
     backgroundColor: Color,
+    textColor: Color,
 ) {
     Column(
         modifier =
@@ -201,21 +203,22 @@ fun StatCard(
     ) {
         Text(
             text = title,
-            color = Color.DarkGray,
+            color = textColor.copy(alpha = 0.8f),
             fontSize = 14.sp,
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = value,
-            color = Color.Black,
+            color = textColor,
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
         )
     }
 }
 
+@Suppress("FunctionNaming")
 @Composable
-fun QuickActionCard(
+private fun QuickActionCard(
     modifier: Modifier = Modifier,
     title: String,
     subtitle: String,
