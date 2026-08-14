@@ -57,6 +57,10 @@ class BillingRepository
             endMillis: Long,
         ): Flow<Double?> = billDao.getRevenueBetween(startMillis, endMillis)
 
+        fun getTotalBillCount(): Flow<Int> = billDao.getTotalBillCount()
+
+        fun getTotalRevenue(): Flow<Double?> = billDao.getTotalRevenue()
+
         suspend fun getBillCountForPerson(personId: Long): Int = billDao.getBillCountForPerson(personId)
 
         suspend fun getBillItemCountForProduct(productId: Long): Int = billDao.getBillItemCountForProduct(productId)

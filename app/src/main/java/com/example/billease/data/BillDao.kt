@@ -34,8 +34,21 @@ data class BillWithItemsAndPerson(
     val items: List<BillItem>,
 )
 
+data class MonthlyRevenue(
+    // e.g. "Aug 2026"
+    val monthLabel: String,
+    val totalRevenue: Double,
+    val billCount: Int,
+)
+
 @Dao
 interface BillDao {
+    @Query("SELECT COUNT(*) FROM bills")
+    fun getTotalBillCount(): Flow<Int>
+
+    @Query("SELECT SUM(grandTotal) FROM bills")
+    fun getTotalRevenue(): Flow<Double?>
+
     @Transaction
     @Query("SELECT * FROM bills ORDER BY billDate DESC")
     fun getAllBillsWithPerson(): Flow<List<BillWithPerson>>

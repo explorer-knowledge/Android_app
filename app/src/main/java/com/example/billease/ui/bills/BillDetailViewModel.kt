@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -22,7 +23,7 @@ import javax.inject.Inject
 class BillDetailViewModel
     @Inject
     constructor(
-        repository: BillingRepository,
+        private val repository: BillingRepository,
         private val settingsRepository: SettingsRepository,
         savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
@@ -37,6 +38,19 @@ class BillDetailViewModel
             val currentSettings = settingsRepository.appSettingsFlow.first()
             return withContext(Dispatchers.IO) {
                 PdfGenerator.generatePdf(context, currentBill, currentSettings)
+            }
+        }
+
+        @Suppress("TooGenericExceptionCaught", "SwallowedException")
+        fun deleteBill(onResult: (Boolean) -> Unit) {
+            val currentBill = bill.value?.bill ?: return
+            viewModelScope.launch {
+                try {
+                    repository.deleteBill(currentBill)
+                    onResult(true)
+                } catch (e: Exception) {
+                    onResult(false)
+                }
             }
         }
     }

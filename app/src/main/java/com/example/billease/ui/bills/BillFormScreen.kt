@@ -20,6 +20,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +35,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -46,6 +49,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.Person
 import com.example.billease.data.Product
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,6 +100,13 @@ fun BillFormScreen(
                     modifier = Modifier.fillMaxWidth(),
                     readOnly = true,
                     singleLine = true,
+                )
+            }
+
+            item {
+                BillDateField(
+                    currentMillis = uiState.billDateMillis,
+                    onDateSelected = viewModel::updateBillDate,
                 )
             }
 
@@ -181,6 +194,50 @@ fun BillFormScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Suppress("FunctionNaming")
+@Composable
+private fun BillDateField(
+    currentMillis: Long,
+    onDateSelected: (Long) -> Unit,
+) {
+    var showPicker by remember { mutableStateOf(false) }
+    val dateStr =
+        remember(currentMillis) {
+            SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(currentMillis))
+        }
+
+    OutlinedTextField(
+        value = dateStr,
+        onValueChange = {},
+        label = { Text("Bill Date") },
+        modifier = Modifier.fillMaxWidth(),
+        readOnly = true,
+        trailingIcon = {
+            TextButton(onClick = { showPicker = true }) { Text("Change") }
+        },
+    )
+
+    if (showPicker) {
+        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = currentMillis)
+        DatePickerDialog(
+            onDismissRequest = { showPicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { onDateSelected(it) }
+                    showPicker = false
+                }) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPicker = false }) { Text("Cancel") }
+            },
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+}
+
+@Suppress("FunctionNaming")
 @Composable
 private fun PersonDropdown(
     selectedPerson: Person?,

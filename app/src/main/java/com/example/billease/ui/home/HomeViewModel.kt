@@ -2,22 +2,36 @@ package com.example.billease.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.billease.data.BillWithPerson
 import com.example.billease.data.BillingRepository
+import com.example.billease.data.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.util.Calendar
 import javax.inject.Inject
 
+@Suppress("MagicNumber")
 @HiltViewModel
 class HomeViewModel
     @Inject
     constructor(
-        repository: BillingRepository,
+        private val repository: BillingRepository,
+        settingsRepository: SettingsRepository,
     ) : ViewModel() {
         private val monthBounds = getMonthBounds()
+
+        private val _homeSearchQuery = MutableStateFlow("")
+        val homeSearchQuery: StateFlow<String> = _homeSearchQuery
+
+        fun onHomeSearchChange(query: String) {
+            _homeSearchQuery.value = query
+        }
 
         val billsThisMonth: StateFlow<Int> =
             repository.getBillCountBetween(monthBounds.first, monthBounds.second)
@@ -35,6 +49,34 @@ class HomeViewModel
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(5000),
                     initialValue = 0.0,
+                )
+
+        // Expose a limited list of recent bills for the dashboard
+        @OptIn(ExperimentalCoroutinesApi::class)
+        val recentBills: StateFlow<List<BillWithPerson>> =
+            _homeSearchQuery
+                .flatMapLatest { query ->
+                    if (query.isBlank()) {
+                        repository.getAllBills().map { it.take(5) }
+                    } else {
+                        repository.searchBills(query)
+                    }
+                }
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5000),
+                    initialValue = emptyList(),
+                )
+
+        val businessNameInitial: StateFlow<String> =
+            settingsRepository.appSettingsFlow
+                .map { settings ->
+                    settings.businessName.trim().firstOrNull()?.uppercaseChar()?.toString() ?: "B"
+                }
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5000),
+                    initialValue = "B",
                 )
 
         private fun getMonthBounds(): Pair<Long, Long> {

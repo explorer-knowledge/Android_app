@@ -42,6 +42,7 @@ data class BillFormUiState(
     val selectedPerson: Person? = null,
     val discountText: String = "0",
     val notes: String = "",
+    val billDateMillis: Long = System.currentTimeMillis(),
     val lineItems: List<LineItemFormState> = listOf(LineItemFormState()),
     val allPersons: List<Person> = emptyList(),
     val allProducts: List<Product> = emptyList(),
@@ -56,6 +57,7 @@ data class BillFormUiState(
 )
 
 @HiltViewModel
+@Suppress("TooManyFunctions")
 class BillFormViewModel
     @Inject
     constructor(
@@ -112,6 +114,7 @@ class BillFormViewModel
                                         if (d == d.toLong().toDouble()) d.toLong().toString() else d.toString()
                                     },
                                 notes = billData.bill.notes ?: "",
+                                billDateMillis = billData.bill.billDate,
                                 lineItems = items,
                             )
                         }
@@ -139,6 +142,10 @@ class BillFormViewModel
 
         fun updateNotes(notes: String) {
             _uiState.update { it.copy(notes = notes) }
+        }
+
+        fun updateBillDate(millis: Long) {
+            _uiState.update { it.copy(billDateMillis = millis) }
         }
 
         fun updateLineItemProduct(
@@ -234,7 +241,7 @@ class BillFormViewModel
                             id = if (isEditMode) billId else 0L,
                             billNumber = state.billNumber,
                             personId = person.id,
-                            billDate = now,
+                            billDate = state.billDateMillis,
                             discount = discount,
                             notes = state.notes.takeIf { it.isNotBlank() },
                             subtotal = result.subtotal,
