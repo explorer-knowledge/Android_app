@@ -106,6 +106,16 @@ object PdfGenerator {
         yPos += 15f
         canvas.drawText(data.person.phone, MARGIN_LEFT, yPos, paint)
         yPos += 15f
+        if (!data.person.email.isNullOrBlank()) {
+            canvas.drawText(data.person.email, MARGIN_LEFT, yPos, paint)
+            yPos += 15f
+        }
+        if (!data.person.address.isNullOrBlank()) {
+            data.person.address.split("\n").forEach {
+                canvas.drawText(it, MARGIN_LEFT, yPos, paint)
+                yPos += 15f
+            }
+        }
         if (!data.person.gstNumber.isNullOrBlank()) {
             canvas.drawText("GST: ${data.person.gstNumber}", MARGIN_LEFT, yPos, paint)
             yPos += 15f

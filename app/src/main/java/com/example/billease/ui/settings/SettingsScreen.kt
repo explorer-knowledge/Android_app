@@ -51,11 +51,13 @@ fun SettingsScreen(
     var businessName by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var logoPath by remember { mutableStateOf<String?>(null) }
+    var invoicePrefix by remember { mutableStateOf("BILL-") }
 
     LaunchedEffect(settings) {
         businessName = settings.businessName
         address = settings.address
         logoPath = settings.logoUri
+        invoicePrefix = settings.invoicePrefix
     }
 
     val pickMedia =
@@ -109,6 +111,15 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(16.dp))
 
+            OutlinedTextField(
+                value = invoicePrefix,
+                onValueChange = { invoicePrefix = it },
+                label = { Text("Invoice Prefix") },
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            Spacer(Modifier.height(16.dp))
+
             Text("Logo: ${if (logoPath != null) "Selected" else "Not selected"}")
 
             Spacer(Modifier.height(8.dp))
@@ -134,7 +145,7 @@ fun SettingsScreen(
 
             Button(
                 onClick = {
-                    viewModel.updateSettings(businessName, address, logoPath)
+                    viewModel.updateSettings(businessName, address, logoPath, invoicePrefix)
                     onNavigateBack()
                 },
                 modifier = Modifier.fillMaxWidth(),

@@ -8,6 +8,7 @@ import com.example.billease.data.BillItem
 import com.example.billease.data.BillingRepository
 import com.example.billease.data.Person
 import com.example.billease.data.Product
+import com.example.billease.data.SettingsRepository
 import com.example.billease.domain.BillCalculator
 import com.example.billease.domain.BillItemInput
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +31,7 @@ data class LineItemFormState(
     val quantityText: String = "1",
     val quantityError: String? = null,
     val productError: String? = null,
+    val lineTotal: Double = 0.0,
 ) {
     val quantity: Double get() = quantityText.toDoubleOrNull() ?: 0.0
 }
@@ -62,6 +64,7 @@ class BillFormViewModel
     @Inject
     constructor(
         private val repository: BillingRepository,
+        private val settingsRepository: SettingsRepository,
         savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
         private val billId: Long = savedStateHandle.get<Long>("billId") ?: -1L
@@ -69,6 +72,9 @@ class BillFormViewModel
 
         private val _uiState = MutableStateFlow(BillFormUiState())
         val uiState: StateFlow<BillFormUiState> = _uiState.asStateFlow()
+
+        private val _isDirty = MutableStateFlow(false)
+        val isDirty: StateFlow<Boolean> = _isDirty.asStateFlow()
 
         val allPersons: StateFlow<List<Person>> =
             repository.getAllPersons()
@@ -121,31 +127,36 @@ class BillFormViewModel
                         recalculate()
                     }
                 } else {
-                    _uiState.update { it.copy(billNumber = generateBillNumber()) }
+                    val settings = settingsRepository.appSettingsFlow.first()
+                    _uiState.update { it.copy(billNumber = generateBillNumber(settings.invoicePrefix)) }
                 }
             }
         }
 
-        private fun generateBillNumber(): String {
+        private fun generateBillNumber(prefix: String): String {
             val sdf = SimpleDateFormat("yyyyMMdd-HHmmss", Locale.getDefault())
-            return "BILL-${sdf.format(Date())}"
+            return "${prefix}${sdf.format(Date())}"
         }
 
         fun selectPerson(person: Person) {
             _uiState.update { it.copy(selectedPerson = person, personId = person.id, personError = null) }
+            _isDirty.value = true
         }
 
         fun updateDiscount(text: String) {
             _uiState.update { it.copy(discountText = text) }
+            _isDirty.value = true
             recalculate()
         }
 
         fun updateNotes(notes: String) {
             _uiState.update { it.copy(notes = notes) }
+            _isDirty.value = true
         }
 
         fun updateBillDate(millis: Long) {
             _uiState.update { it.copy(billDateMillis = millis) }
+            _isDirty.value = true
         }
 
         fun updateLineItemProduct(
@@ -157,6 +168,7 @@ class BillFormViewModel
                 items[index] = items[index].copy(product = product, productError = null)
                 state.copy(lineItems = items, lineItemsError = null)
             }
+            _isDirty.value = true
             recalculate()
         }
 
@@ -169,11 +181,13 @@ class BillFormViewModel
                 items[index] = items[index].copy(quantityText = text, quantityError = null)
                 state.copy(lineItems = items)
             }
+            _isDirty.value = true
             recalculate()
         }
 
         fun addLineItem() {
             _uiState.update { it.copy(lineItems = it.lineItems + LineItemFormState()) }
+            _isDirty.value = true
         }
 
         fun removeLineItem(index: Int) {
@@ -181,20 +195,39 @@ class BillFormViewModel
             _uiState.update { state ->
                 state.copy(lineItems = state.lineItems.toMutableList().also { it.removeAt(index) })
             }
+            _isDirty.value = true
             recalculate()
         }
 
         private fun recalculate() {
             val state = _uiState.value
+            val updatedLineItems =
+                state.lineItems.map { row ->
+                    val product = row.product
+                    val qty = row.quantity
+                    if (product != null && qty > 0) {
+                        val input = BillItemInput.fromProduct(product, qty)
+                        row.copy(lineTotal = input.lineTotal)
+                    } else {
+                        row.copy(lineTotal = 0.0)
+                    }
+                }
             val inputs =
-                state.lineItems.mapNotNull { row ->
+                updatedLineItems.mapNotNull { row ->
                     val product = row.product ?: return@mapNotNull null
                     if (row.quantity <= 0) return@mapNotNull null
                     BillItemInput.fromProduct(product, row.quantity)
                 }
             val discount = state.discountText.toDoubleOrNull() ?: 0.0
             val result = BillCalculator.calculate(inputs, discount)
-            _uiState.update { it.copy(subtotal = result.subtotal, taxTotal = result.taxTotal, grandTotal = result.grandTotal) }
+            _uiState.update {
+                it.copy(
+                    lineItems = updatedLineItems,
+                    subtotal = result.subtotal,
+                    taxTotal = result.taxTotal,
+                    grandTotal = result.grandTotal,
+                )
+            }
         }
 
         fun saveBill(onSuccess: () -> Unit) {

@@ -1,5 +1,6 @@
 package com.example.billease.ui.bills
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -62,13 +64,51 @@ fun BillFormScreen(
     val uiState by viewModel.uiState.collectAsState()
     val allPersons by viewModel.allPersons.collectAsState()
     val allProducts by viewModel.allProducts.collectAsState()
+    val isDirty by viewModel.isDirty.collectAsState()
+
+    var showDiscardDialog by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = isDirty) {
+        showDiscardDialog = true
+    }
+
+    if (showDiscardDialog) {
+        AlertDialog(
+            onDismissRequest = { showDiscardDialog = false },
+            title = { Text("Discard changes?") },
+            text = { Text("You have unsaved changes. Go back and lose them?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDiscardDialog = false
+                        onNavigateBack()
+                    },
+                ) {
+                    Text("Discard", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDiscardDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+        )
+    }
+
+    val handleBackNavigation = {
+        if (isDirty) {
+            showDiscardDialog = true
+        } else {
+            onNavigateBack()
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(if (uiState.billId == 0L) "New Bill" else "Edit Bill") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = handleBackNavigation) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
@@ -342,15 +382,9 @@ private fun LineItemRow(
                     singleLine = true,
                 )
                 // Live line total
-                val lineTotal = (
-                    row.product?.let { p ->
-                        val qty = row.quantityText.toDoubleOrNull() ?: 0.0
-                        p.unitPrice * qty * (1 + p.taxPercent / 100.0)
-                    } ?: 0.0
-                )
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
                     Text("Line Total", style = MaterialTheme.typography.labelSmall)
-                    Text("₹%.2f".format(lineTotal), style = MaterialTheme.typography.bodyMedium)
+                    Text("₹%.2f".format(row.lineTotal), style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }

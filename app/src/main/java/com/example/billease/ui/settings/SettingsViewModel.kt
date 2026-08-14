@@ -22,16 +22,17 @@ class SettingsViewModel
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(5000),
-                    initialValue = AppSettings("", "", null),
+                    initialValue = AppSettings("", "", null, "BILL-"),
                 )
 
         fun updateSettings(
             businessName: String,
             address: String,
             logoUri: String?,
+            invoicePrefix: String = "BILL-",
         ) {
             viewModelScope.launch {
-                repository.updateSettings(businessName, address, logoUri)
+                repository.updateSettings(businessName, address, logoUri, invoicePrefix)
             }
         }
     }

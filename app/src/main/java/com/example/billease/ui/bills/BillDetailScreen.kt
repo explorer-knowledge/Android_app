@@ -172,6 +172,12 @@ fun BillDetailScreen(
                         Text("Bill To", style = MaterialTheme.typography.labelMedium)
                         Text(person.name, style = MaterialTheme.typography.bodyLarge)
                         Text(person.phone, style = MaterialTheme.typography.bodyMedium)
+                        if (!person.email.isNullOrBlank()) {
+                            Text(person.email, style = MaterialTheme.typography.bodyMedium)
+                        }
+                        if (!person.address.isNullOrBlank()) {
+                            Text(person.address, style = MaterialTheme.typography.bodyMedium)
+                        }
                         person.gstNumber?.let { Text("GST: $it", style = MaterialTheme.typography.bodySmall) }
                     }
                 }
