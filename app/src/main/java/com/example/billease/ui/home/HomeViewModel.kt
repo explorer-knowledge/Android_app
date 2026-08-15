@@ -41,6 +41,14 @@ class HomeViewModel
                     initialValue = 0,
                 )
 
+        val totalBills: StateFlow<Int> =
+            repository.getTotalBillCount()
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5000),
+                    initialValue = 0,
+                )
+
         val revenueThisMonth: StateFlow<Double> =
             repository.getRevenueBetween(monthBounds.first, monthBounds.second)
                 // Room returns null for SUM() on empty sets, so map it to 0.0

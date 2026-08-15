@@ -15,14 +15,15 @@ Native Android (Kotlin + Jetpack Compose + Material 3) billing & invoice app for
 | 2 | `@ForeignKey` + `@Index` constraints (personId, billId, productId) with `onDelete = ForeignKey.RESTRICT` |
 | 3 | Added `bills.paymentStatus` TEXT NOT NULL DEFAULT 'PENDING' |
 | 4 | Added `bill_sequences` table (prefix PK, lastNumber) for sequential bill numbers |
+| 5 | Added `bill_items.unitSnapshot` TEXT (preserves unit in historical bills) |
 
-- `MIGRATION_2_3` and `MIGRATION_3_4` live in `di/DatabaseModule.kt` alongside the DB builder.
+- `MIGRATION_2_3` and `MIGRATION_3_4` live in `di/DatabaseModule.kt` alongside the DB builder. The v4→v5 change has **no migration yet** (deferred to end-of-project migration batch).
 - **Known risk:** the builder still calls `fallbackToDestructiveMigration()` (`DatabaseModule.kt:34`) — any un-migrated schema bump wipes user data. Planned to be replaced with Room `@AutoMigration` + schema export (see `docs/improvements.md` #5 in the Obsidian vault).
 
 ## Architecture Decisions
 - **Delete behavior:** deletion is blocked (not cascaded). Enforced twice — a ViewModel count check and a DB-level `ForeignKey.RESTRICT`. Attempting to delete a person/product with existing bills fails with a confirmation warning.
 - **PDF generation:** Android's built-in `PdfDocument` API — lightweight, no third-party dependency, sufficient for the invoice layout.
-- **Bill snapshots:** `BillItem` stores `productNameSnapshot` / `unitPriceSnapshot` / `taxPercentSnapshot` so historical bills never change when a product is later edited or deleted.
+- **Bill snapshots:** `BillItem` stores `productNameSnapshot` / `unitPriceSnapshot` / `taxPercentSnapshot` / `unitSnapshot` so historical bills never change when a product is later edited or deleted.
 - **Invoice prefix:** configurable in Settings (DataStore-backed, default `BILL-`). Numbers are sequential per prefix (`BILL-0001`, `BILL-0002`, …) via a `bill_sequences` table, atomic in the DAO transaction.
 - **Money math:** all totals live in `domain/BillCalculator.kt` (single source of truth), unit-tested in `BillCalculatorTest.kt`.
 

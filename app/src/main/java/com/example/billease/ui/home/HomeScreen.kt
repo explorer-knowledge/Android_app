@@ -54,6 +54,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val customerCount by viewModel.customerCount.collectAsState()
+    val totalBills by viewModel.totalBills.collectAsState()
     val revenueThisMonth by viewModel.revenueThisMonth.collectAsState()
     val recentBills by viewModel.recentBills.collectAsState()
     val businessNameInitial by viewModel.businessNameInitial.collectAsState()
@@ -163,7 +164,7 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "$customerCount customers",
+                    text = "$totalBills sales • $customerCount customers",
                     color = Color(0xFF64748B),
                     fontSize = 13.sp,
                 )
