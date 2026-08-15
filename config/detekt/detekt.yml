@@ -1,0 +1,8 @@
+# Detekt configuration.
+# buildUponDefaultConfig = true (see app/build.gradle.kts), so only overrides
+# from the defaults live here. Compose composable functions follow PascalCase
+# by convention (ktlint's own compose rules), so allow them.
+naming:
+  FunctionNaming:
+    active: true
+    functionPattern: '[a-zA-Z][a-zA-Z0-9]*'

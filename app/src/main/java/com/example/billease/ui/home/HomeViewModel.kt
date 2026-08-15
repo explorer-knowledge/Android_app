@@ -16,7 +16,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-@Suppress("MagicNumber")
+private const val RECENT_BILL_LIMIT = 5
+
 @HiltViewModel
 class HomeViewModel
     @Inject
@@ -37,7 +38,7 @@ class HomeViewModel
             repository.getPersonCount()
                 .stateIn(
                     scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(5000),
+                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                     initialValue = 0,
                 )
 
@@ -45,7 +46,7 @@ class HomeViewModel
             repository.getTotalBillCount()
                 .stateIn(
                     scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(5000),
+                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                     initialValue = 0,
                 )
 
@@ -55,7 +56,7 @@ class HomeViewModel
                 .map { it ?: 0.0 }
                 .stateIn(
                     scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(5000),
+                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                     initialValue = 0.0,
                 )
 
@@ -65,14 +66,14 @@ class HomeViewModel
             _homeSearchQuery
                 .flatMapLatest { query ->
                     if (query.isBlank()) {
-                        repository.getAllBills().map { it.take(5) }
+                        repository.getAllBills().map { it.take(RECENT_BILL_LIMIT) }
                     } else {
                         repository.searchBills(query)
                     }
                 }
                 .stateIn(
                     scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(5000),
+                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                     initialValue = emptyList(),
                 )
 
@@ -83,7 +84,7 @@ class HomeViewModel
                 }
                 .stateIn(
                     scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(5000),
+                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                     initialValue = "B",
                 )
     }

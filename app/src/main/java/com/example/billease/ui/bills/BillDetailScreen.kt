@@ -213,7 +213,7 @@ fun BillDetailScreen(
                         if (bill.discount > 0) {
                             DetailRow("Discount", "- ${formatMoney(bill.discount, LocalCurrencyCode.current)}")
                         }
-                        DetailRow("Status", bill.paymentStatus)
+                        DetailRow("Status", bill.paymentStatus.name)
                         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),

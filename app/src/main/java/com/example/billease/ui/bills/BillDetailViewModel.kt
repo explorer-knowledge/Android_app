@@ -31,7 +31,7 @@ class BillDetailViewModel
 
         val bill: StateFlow<BillWithItemsAndPerson?> =
             repository.getBillWithItemsById(billId)
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000), null)
 
         suspend fun generatePdf(context: Context): Uri? {
             val currentBill = bill.value ?: return null

@@ -45,6 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.data.BillStatus
 import com.example.billease.data.BillWithPerson
 import com.example.billease.ui.components.ConfirmDeleteDialog
 import com.example.billease.ui.components.DismissableSnackbar
@@ -134,7 +135,6 @@ fun BillsListScreen(
     }
 }
 
-@Suppress("MagicNumber", "LongMethod", "FunctionNaming")
 @Composable
 private fun BillListItem(
     billWithPerson: BillWithPerson,
@@ -168,27 +168,7 @@ private fun BillListItem(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(bill.billNumber, style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.width(8.dp))
-                    val statusText = bill.paymentStatus
-                    val (statusColor, statusBg) =
-                        when (statusText.uppercase()) {
-                            "PAID" -> Color(0xFF15803D) to Color(0xFFDCFCE7)
-                            "OVERDUE" -> Color(0xFFB91C1C) to Color(0xFFFEE2E2)
-                            else -> Color(0xFFB45309) to Color(0xFFFEF3C7)
-                        }
-                    Box(
-                        modifier =
-                            Modifier
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(statusBg)
-                                .padding(horizontal = 6.dp, vertical = 2.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = statusText,
-                            color = statusColor,
-                            style = MaterialTheme.typography.labelSmall,
-                        )
-                    }
+                    StatusBadge(bill.paymentStatus)
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(person.name, style = MaterialTheme.typography.bodyMedium)
@@ -208,8 +188,32 @@ private fun BillListItem(
     }
 }
 
+@Suppress("MagicNumber")
+@Composable
+private fun StatusBadge(status: BillStatus) {
+    val (statusColor, statusBg) =
+        when (status) {
+            BillStatus.PAID -> Color(0xFF15803D) to Color(0xFFDCFCE7)
+            BillStatus.OVERDUE -> Color(0xFFB91C1C) to Color(0xFFFEE2E2)
+            BillStatus.PENDING -> Color(0xFFB45309) to Color(0xFFFEF3C7)
+        }
+    Box(
+        modifier =
+            Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(statusBg)
+                .padding(horizontal = 6.dp, vertical = 2.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = status.name,
+            color = statusColor,
+            style = MaterialTheme.typography.labelSmall,
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
-@Suppress("FunctionNaming")
 @Composable
 private fun DateRangeFilterRow(
     range: Pair<Long?, Long?>,
@@ -247,7 +251,6 @@ private fun DateRangeFilterRow(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Suppress("FunctionNaming", "MagicNumber")
 @Composable
 private fun FilterDateField(
     millis: Long?,

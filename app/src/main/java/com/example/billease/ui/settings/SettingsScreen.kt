@@ -46,7 +46,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Suppress("LongMethod", "FunctionNaming")
+@Suppress("LongMethod")
 @Composable
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
@@ -172,7 +172,6 @@ fun SettingsScreen(
     }
 }
 
-@Suppress("FunctionNaming")
 @Composable
 private fun CurrencyDropdown(
     currencyCode: String,

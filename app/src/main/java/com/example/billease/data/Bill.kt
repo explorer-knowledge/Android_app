@@ -28,7 +28,7 @@ data class Bill(
     val subtotal: Double,
     val taxTotal: Double,
     val grandTotal: Double,
-    val paymentStatus: String = "PENDING",
+    val paymentStatus: BillStatus = BillStatus.PENDING,
     val createdAt: Long,
     val updatedAt: Long,
 )

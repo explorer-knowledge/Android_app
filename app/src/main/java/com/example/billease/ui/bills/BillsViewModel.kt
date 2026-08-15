@@ -38,7 +38,7 @@ class BillsViewModel
                     val endExclusive = range.second?.let { endOfDayMillis(it) }
                     repository.getFilteredBills(query, start, endExclusive)
                 }
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000), emptyList())
 
         fun onSearchQueryChange(query: String) {
             _searchQuery.value = query

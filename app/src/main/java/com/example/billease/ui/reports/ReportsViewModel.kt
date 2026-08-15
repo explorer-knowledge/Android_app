@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-@Suppress("MagicNumber")
 @HiltViewModel
 class ReportsViewModel
     @Inject
@@ -22,19 +21,19 @@ class ReportsViewModel
 
         val totalBillCount: StateFlow<Int> =
             repository.getTotalBillCount()
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000), 0)
 
         val totalRevenue: StateFlow<Double> =
             repository.getTotalRevenue()
                 .map { it ?: 0.0 }
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0.0)
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000), 0.0)
 
         val billsThisMonth: StateFlow<Int> =
             repository.getBillCountBetween(thisMonth.first, thisMonth.second)
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000), 0)
 
         val revenueThisMonth: StateFlow<Double> =
             repository.getRevenueBetween(thisMonth.first, thisMonth.second)
                 .map { it ?: 0.0 }
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0.0)
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000), 0.0)
     }

@@ -40,12 +40,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.data.BillStatus
 import com.example.billease.data.BillWithPerson
 import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatDate
 import com.example.billease.util.formatMoney
 
-@Suppress("FunctionNaming", "MagicNumber", "LongMethod", "LongParameterList")
+@Suppress("MagicNumber", "LongMethod", "LongParameterList")
 @Composable
 fun HomeScreen(
     onNavigateToSettings: () -> Unit,
@@ -228,7 +229,7 @@ fun HomeScreen(
     }
 }
 
-@Suppress("FunctionNaming", "MagicNumber")
+@Suppress("MagicNumber")
 @Composable
 private fun QuickAddButton(
     label: String,
@@ -251,7 +252,7 @@ private fun QuickAddButton(
     }
 }
 
-@Suppress("FunctionNaming", "MagicNumber")
+@Suppress("MagicNumber")
 @Composable
 private fun HeroCard(
     revenueThisMonth: Double,
@@ -310,7 +311,7 @@ private fun HeroCard(
     }
 }
 
-@Suppress("FunctionNaming", "MagicNumber")
+@Suppress("MagicNumber")
 @Composable
 private fun HeroStat(
     label: String,
@@ -334,18 +335,10 @@ private fun HeroStat(
     }
 }
 
-@Suppress("FunctionNaming", "MagicNumber", "LongMethod")
+@Suppress("MagicNumber")
 @Composable
 private fun RecentBillCard(billWithPerson: BillWithPerson) {
     val dateString = formatDate(billWithPerson.bill.createdAt)
-
-    val statusText = billWithPerson.bill.paymentStatus
-    val (statusColor, statusBg) =
-        when (statusText.uppercase()) {
-            "PAID" -> Color(0xFF22C55E) to Color(0xFF14532D)
-            "OVERDUE" -> Color(0xFFEF4444) to Color(0xFF7F1D1D)
-            else -> Color(0xFFF59E0B) to Color(0xFF78350F)
-        }
 
     Row(
         modifier =
@@ -358,26 +351,10 @@ private fun RecentBillCard(billWithPerson: BillWithPerson) {
                 .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // Icon
-        Box(
-            modifier =
-                Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF0F172A)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.List,
-                contentDescription = null,
-                tint = Color(0xFF94A3B8),
-                modifier = Modifier.size(20.dp),
-            )
-        }
+        RecentBillIcon()
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        // Content
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = billWithPerson.person.name,
@@ -395,7 +372,6 @@ private fun RecentBillCard(billWithPerson: BillWithPerson) {
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        // Amount & Status
         Column(horizontalAlignment = Alignment.End) {
             Text(
                 text = formatMoney(billWithPerson.bill.grandTotal, LocalCurrencyCode.current),
@@ -404,21 +380,53 @@ private fun RecentBillCard(billWithPerson: BillWithPerson) {
                 fontSize = 15.sp,
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Box(
-                modifier =
-                    Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(statusBg)
-                        .padding(horizontal = 8.dp, vertical = 2.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = statusText,
-                    color = statusColor,
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
+            RecentBillStatusBadge(billWithPerson.bill.paymentStatus)
         }
+    }
+}
+
+@Suppress("MagicNumber")
+@Composable
+private fun RecentBillIcon() {
+    Box(
+        modifier =
+            Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(Color(0xFF0F172A)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.List,
+            contentDescription = null,
+            tint = Color(0xFF94A3B8),
+            modifier = Modifier.size(20.dp),
+        )
+    }
+}
+
+@Suppress("MagicNumber")
+@Composable
+private fun RecentBillStatusBadge(status: BillStatus) {
+    val (statusColor, statusBg) =
+        when (status) {
+            BillStatus.PAID -> Color(0xFF22C55E) to Color(0xFF14532D)
+            BillStatus.OVERDUE -> Color(0xFFEF4444) to Color(0xFF7F1D1D)
+            BillStatus.PENDING -> Color(0xFFF59E0B) to Color(0xFF78350F)
+        }
+    Box(
+        modifier =
+            Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(statusBg)
+                .padding(horizontal = 8.dp, vertical = 2.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = status.name,
+            color = statusColor,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Bold,
+        )
     }
 }

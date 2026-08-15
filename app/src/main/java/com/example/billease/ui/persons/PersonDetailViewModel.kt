@@ -25,7 +25,7 @@ class PersonDetailViewModel
             repository.getPersonById(personId)
                 .stateIn(
                     scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(5000),
+                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                     initialValue = null,
                 )
 
@@ -33,7 +33,7 @@ class PersonDetailViewModel
             repository.getBillsByPersonId(personId)
                 .stateIn(
                     scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(5000),
+                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                     initialValue = emptyList(),
                 )
     }

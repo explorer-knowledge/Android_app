@@ -30,7 +30,6 @@ import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatMoney
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Suppress("FunctionNaming", "LongMethod")
 @Composable
 fun ReportsScreen(
     onNavigateToSettings: () -> Unit,
@@ -60,14 +59,12 @@ fun ReportsScreen(
         ) {
             Text("This Month", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                StatCard(label = "Bills", value = billsThisMonth.toString(), modifier = Modifier.weight(1f))
-                StatCard(
-                    label = "Revenue",
-                    value = formatMoney(revenueThisMonth, LocalCurrencyCode.current),
-                    modifier = Modifier.weight(1f),
-                )
-            }
+            StatsRow(
+                firstLabel = "Bills",
+                firstValue = billsThisMonth.toString(),
+                secondLabel = "Revenue",
+                secondValue = formatMoney(revenueThisMonth, LocalCurrencyCode.current),
+            )
 
             Spacer(Modifier.height(8.dp))
             HorizontalDivider()
@@ -75,19 +72,29 @@ fun ReportsScreen(
 
             Text("All Time", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                StatCard(label = "Total Bills", value = totalBillCount.toString(), modifier = Modifier.weight(1f))
-                StatCard(
-                    label = "Total Revenue",
-                    value = formatMoney(totalRevenue, LocalCurrencyCode.current),
-                    modifier = Modifier.weight(1f),
-                )
-            }
+            StatsRow(
+                firstLabel = "Total Bills",
+                firstValue = totalBillCount.toString(),
+                secondLabel = "Total Revenue",
+                secondValue = formatMoney(totalRevenue, LocalCurrencyCode.current),
+            )
         }
     }
 }
 
-@Suppress("FunctionNaming")
+@Composable
+private fun StatsRow(
+    firstLabel: String,
+    firstValue: String,
+    secondLabel: String,
+    secondValue: String,
+) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        StatCard(label = firstLabel, value = firstValue, modifier = Modifier.weight(1f))
+        StatCard(label = secondLabel, value = secondValue, modifier = Modifier.weight(1f))
+    }
+}
+
 @Composable
 private fun StatCard(
     label: String,

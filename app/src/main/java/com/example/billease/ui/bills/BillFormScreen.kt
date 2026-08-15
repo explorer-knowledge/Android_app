@@ -49,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.data.BillStatus
 import com.example.billease.data.Person
 import com.example.billease.data.Product
 import com.example.billease.ui.components.ProfileIconButton
@@ -245,7 +246,6 @@ fun BillFormScreen(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Suppress("FunctionNaming")
 @Composable
 private fun BillDateField(
     currentMillis: Long,
@@ -287,7 +287,6 @@ private fun BillDateField(
     }
 }
 
-@Suppress("FunctionNaming")
 @Composable
 private fun PersonDropdown(
     selectedPerson: Person?,
@@ -436,18 +435,17 @@ private fun TotalsSummaryCard(
     }
 }
 
-@Suppress("FunctionNaming")
 @Composable
 private fun PaymentStatusPicker(
-    currentStatus: String,
-    onStatusSelected: (String) -> Unit,
+    currentStatus: BillStatus,
+    onStatusSelected: (BillStatus) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val statuses = listOf("PENDING", "PAID", "OVERDUE")
+    val statuses = BillStatus.entries
 
     Box {
         OutlinedTextField(
-            value = currentStatus,
+            value = currentStatus.name,
             onValueChange = {},
             label = { Text("Payment Status") },
             modifier = Modifier.fillMaxWidth(),
@@ -459,7 +457,7 @@ private fun PaymentStatusPicker(
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             statuses.forEach { status ->
                 DropdownMenuItem(
-                    text = { Text(status) },
+                    text = { Text(status.name) },
                     onClick = {
                         onStatusSelected(status)
                         expanded = false

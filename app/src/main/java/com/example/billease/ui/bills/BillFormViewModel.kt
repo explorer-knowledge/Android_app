@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.billease.data.Bill
 import com.example.billease.data.BillItem
+import com.example.billease.data.BillStatus
 import com.example.billease.data.BillingRepository
 import com.example.billease.data.Person
 import com.example.billease.data.Product
@@ -42,7 +43,7 @@ data class BillFormUiState(
     val discountText: String = "0",
     val notes: String = "",
     val billDateMillis: Long = System.currentTimeMillis(),
-    val paymentStatus: String = "PENDING",
+    val paymentStatus: BillStatus = BillStatus.PENDING,
     val lineItems: List<LineItemFormState> = listOf(LineItemFormState()),
     val allPersons: List<Person> = emptyList(),
     val allProducts: List<Product> = emptyList(),
@@ -77,11 +78,11 @@ class BillFormViewModel
 
         val allPersons: StateFlow<List<Person>> =
             repository.getAllPersons()
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000), emptyList())
 
         val allProducts: StateFlow<List<Product>> =
             repository.getAllProducts()
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000), emptyList())
 
         init {
             viewModelScope.launch {
@@ -156,7 +157,7 @@ class BillFormViewModel
             _isDirty.value = true
         }
 
-        fun updatePaymentStatus(status: String) {
+        fun updatePaymentStatus(status: BillStatus) {
             _uiState.update { it.copy(paymentStatus = status) }
             _isDirty.value = true
         }

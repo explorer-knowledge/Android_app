@@ -44,7 +44,7 @@ import com.example.billease.ui.settings.SettingsScreen
 import com.example.billease.ui.settings.SettingsViewModel
 import com.example.billease.util.LocalCurrencyCode
 
-@Suppress("FunctionNaming", "MagicNumber", "LongMethod", "MaxLineLength")
+@Suppress("MagicNumber", "LongMethod", "MaxLineLength")
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
