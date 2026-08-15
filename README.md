@@ -26,6 +26,8 @@ Native Android (Kotlin + Jetpack Compose + Material 3) billing & invoice app for
 - **Bill snapshots:** `BillItem` stores `productNameSnapshot` / `unitPriceSnapshot` / `taxPercentSnapshot` / `unitSnapshot` so historical bills never change when a product is later edited or deleted.
 - **Invoice prefix:** configurable in Settings (DataStore-backed, default `BILL-`). Numbers are sequential per prefix (`BILL-0001`, `BILL-0002`, …) via a `bill_sequences` table, atomic in the DAO transaction.
 - **Money math:** all totals live in `domain/BillCalculator.kt` (single source of truth), unit-tested in `BillCalculatorTest.kt`.
+- **Payment status:** `Bill.paymentStatus` is a typed `BillStatus` enum (`data/BillStatus.kt`). Persists as TEXT via Room's built-in enum converter (no custom `@TypeConverter`), so the v3 `paymentStatus` column needs no schema change.
+- **Lint/quality:** `config/detekt/detekt.yml` overrides detekt's default `FunctionNaming` pattern to allow PascalCase (the Jetpack Compose composable convention); `buildUponDefaultConfig` inherits all other defaults.
 
 ## Docs
 The planning/reference docs live in the Obsidian vault (`Android_app_easebill/docs/`), not in this repo. `AGENTS.md` here is the index — it maps each doc to its vault path and when to read it.
