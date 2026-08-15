@@ -21,8 +21,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -32,7 +30,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,6 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.BillStatus
 import com.example.billease.data.BillWithPerson
 import com.example.billease.ui.components.ConfirmDeleteDialog
+import com.example.billease.ui.components.DateSelectionDialog
 import com.example.billease.ui.components.DismissableSnackbar
 import com.example.billease.ui.components.EmptyState
 import com.example.billease.ui.components.ScreenHeader
@@ -268,23 +266,10 @@ private fun FilterDateField(
     }
 
     if (showPicker) {
-        val pickerState =
-            rememberDatePickerState(
-                initialSelectedDateMillis = millis ?: otherMillis ?: System.currentTimeMillis(),
-            )
-        DatePickerDialog(
-            onDismissRequest = { showPicker = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    pickerState.selectedDateMillis?.let(onPicked)
-                    showPicker = false
-                }) { Text("OK") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showPicker = false }) { Text("Cancel") }
-            },
-        ) {
-            DatePicker(state = pickerState)
-        }
+        DateSelectionDialog(
+            initialDateMillis = millis ?: otherMillis ?: System.currentTimeMillis(),
+            onDateSelected = onPicked,
+            onDismiss = { showPicker = false },
+        )
     }
 }

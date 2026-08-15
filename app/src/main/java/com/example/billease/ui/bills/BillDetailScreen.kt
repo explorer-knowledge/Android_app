@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Share
@@ -31,7 +30,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,6 +43,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.BillItem
+import com.example.billease.ui.components.DetailTopAppBar
 import com.example.billease.ui.components.ProfileIconButton
 import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatMoney
@@ -96,47 +95,42 @@ fun BillDetailScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            TopAppBar(
-                title = { Text(billData?.bill?.billNumber ?: "Bill Detail") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            DetailTopAppBar(
+                title = billData?.bill?.billNumber ?: "Bill Detail",
+                onNavigateBack = onNavigateBack,
+            ) {
+                billData?.let { data ->
+                    IconButton(onClick = { showDeleteDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete Bill",
+                            tint = MaterialTheme.colorScheme.error,
+                        )
                     }
-                },
-                actions = {
-                    billData?.let { data ->
-                        IconButton(onClick = { showDeleteDialog = true }) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete Bill",
-                                tint = MaterialTheme.colorScheme.error,
-                            )
-                        }
-                        IconButton(onClick = {
-                            coroutineScope.launch {
-                                val uri = viewModel.generatePdf(context)
-                                if (uri != null) {
-                                    val intent =
-                                        Intent(Intent.ACTION_SEND).apply {
-                                            type = "application/pdf"
-                                            putExtra(Intent.EXTRA_STREAM, uri)
-                                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                        }
-                                    context.startActivity(Intent.createChooser(intent, "Share Bill"))
-                                } else {
-                                    snackbarHostState.showSnackbar("Failed to generate PDF")
-                                }
+                    IconButton(onClick = {
+                        coroutineScope.launch {
+                            val uri = viewModel.generatePdf(context)
+                            if (uri != null) {
+                                val intent =
+                                    Intent(Intent.ACTION_SEND).apply {
+                                        type = "application/pdf"
+                                        putExtra(Intent.EXTRA_STREAM, uri)
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    }
+                                context.startActivity(Intent.createChooser(intent, "Share Bill"))
+                            } else {
+                                snackbarHostState.showSnackbar("Failed to generate PDF")
                             }
-                        }) {
-                            Icon(Icons.Default.Share, contentDescription = "Share PDF")
                         }
-                        IconButton(onClick = { onNavigateToEdit(data.bill.id) }) {
-                            Icon(Icons.Default.Edit, contentDescription = "Edit")
-                        }
+                    }) {
+                        Icon(Icons.Default.Share, contentDescription = "Share PDF")
                     }
-                    ProfileIconButton(onClick = onNavigateToSettings)
-                },
-            )
+                    IconButton(onClick = { onNavigateToEdit(data.bill.id) }) {
+                        Icon(Icons.Default.Edit, contentDescription = "Edit")
+                    }
+                }
+                ProfileIconButton(onClick = onNavigateToSettings)
+            }
         },
     ) { padding ->
         val data = billData

@@ -15,15 +15,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,8 +33,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -52,6 +47,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.BillStatus
 import com.example.billease.data.Person
 import com.example.billease.data.Product
+import com.example.billease.ui.components.DateSelectionDialog
+import com.example.billease.ui.components.DetailTopAppBar
 import com.example.billease.ui.components.ProfileIconButton
 import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatDate
@@ -108,15 +105,12 @@ fun BillFormScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(if (uiState.billId == 0L) "New Bill" else "Edit Bill") },
-                navigationIcon = {
-                    IconButton(onClick = handleBackNavigation) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = { ProfileIconButton(onClick = onNavigateToSettings) },
-            )
+            DetailTopAppBar(
+                title = if (uiState.billId == 0L) "New Bill" else "Edit Bill",
+                onNavigateBack = handleBackNavigation,
+            ) {
+                ProfileIconButton(onClick = onNavigateToSettings)
+            }
         },
     ) { padding ->
         if (uiState.isSaving) {
@@ -269,21 +263,11 @@ private fun BillDateField(
     )
 
     if (showPicker) {
-        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = currentMillis)
-        DatePickerDialog(
-            onDismissRequest = { showPicker = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    datePickerState.selectedDateMillis?.let { onDateSelected(it) }
-                    showPicker = false
-                }) { Text("OK") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showPicker = false }) { Text("Cancel") }
-            },
-        ) {
-            DatePicker(state = datePickerState)
-        }
+        DateSelectionDialog(
+            initialDateMillis = currentMillis,
+            onDateSelected = onDateSelected,
+            onDismiss = { showPicker = false },
+        )
     }
 }
 
