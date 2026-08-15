@@ -2,5 +2,25 @@
   "$schema": "https://opencode.ai/config.json",
   "plugin": [
     "@dietrichgebert/ponytail"
-  ]
+  ],
+  "mcp": {
+    "obsidian": {
+      "type": "local",
+      "command": [
+        "npx",
+        "@bitbonsai/mcpvault@latest",
+        "/home/user/Documents/Obsidian Vault/Antigravity_MCP/Android_app_easebill"
+      ]
+    },
+    "context7": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@upstash/context7-mcp",
+        "--api-key",
+        "ctx7sk-3ee26dbd-3b04-453f-9480-176e0b04221d"
+      ]
+    }
+  }
 }

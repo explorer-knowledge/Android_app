@@ -40,14 +40,14 @@ This machine is a low end pc with 12GB RAM. It froze for ~40 minutes the one tim
 3. Commit + push
 4. `gh run watch` — confirm CI green (build + ktlint + detekt all pass)
 5. Download CI artifact, install on device, launch, check logcat for crashes
-6. Only then mark the phase complete and move to the next one in BUILD_STEPS.md
+6. Only then mark the phase complete and move to the next one in `docs/BUILD_STEPS.md` (vault)
 7. Before reporting a phase complete: confirm the Obsidian phase note and
    any decisions.md entries via read_note, and quote that raw tool
    output directly in your response to the human — not just an action
-   log line. If you edit AGENTS.md, BUILD_STEPS.md, PROJECT.md, or any
-   other standing-rules file mid-session, show the diff to the human in
-   the same turn — don't fold rule-file edits into a general commit
-   without flagging them.
+   log line. If you edit AGENTS.md, or any standing-rules doc in the
+   vault (`docs/BUILD_STEPS.md`, `docs/PROJECT.md`, etc.) mid-session,
+   show the diff to the human in the same turn — don't fold rule-file
+   edits into a general commit without flagging them.
 
 ## Handling model switches mid-project
 This project is built across multiple AI models (Gemini 3.1 Pro, Claude Sonnet 4.6) depending on task type. Whichever model picks up work from another:
@@ -57,16 +57,22 @@ This project is built across multiple AI models (Gemini 3.1 Pro, Claude Sonnet 4
 - Report explicitly whether you kept, extended, or rewrote prior work, and why.
 
 ## Decision-making autonomy
-- Where the planning docs (PROJECT.md) say "decide and document" (e.g. delete-cascade behavior, PDF library choice), make the call yourself, note it in a code comment + README.md, and keep going.
+- Where the planning docs (`docs/PROJECT.md` in the vault) say "decide and document" (e.g. delete-cascade behavior, PDF library choice), make the call yourself, note it in a code comment + README.md, and keep going.
 - Only interrupt the human for: something genuinely ambiguous not covered by any planning doc, a library/tool turning out broken or abandoned, or end-of-phase/final review.
 - If you find yourself about to deviate from a rule in this file, stop and flag it explicitly instead of just doing it.
 
-## Reference documents (read fully before starting work)
-- `PROJECT.md` — full app spec
-- `BUILD_STEPS.md` — phase-by-phase build order and checklists
-- `REFERENCE_REPOS.md` — pattern inspiration only, never copy verbatim
-- `KOTLIN_STYLE_GUIDE.md` — coding conventions, enforced now via ktlint + detekt in CI
-- `CI_CD_SETUP.md` — how the GitHub Actions pipeline is wired
+## Reference documents — in the Obsidian vault, not in this repo
+The planning/reference docs live in the Obsidian vault (MCP root `Android_app_easebill/`, `docs/` subfolder), not in this repo. Read each on demand with `obsidian_read_note(path="docs/<file>")`. This file is the index — nothing else in the repo is loaded on every run.
+
+| Vault doc (`docs/`) | Purpose | Read when |
+|---|---|---|
+| `PROJECT.md` | Full app spec + acceptance criteria | before any feature work |
+| `BUILD_STEPS.md` | Phase-by-phase build order + checklists | per phase / batch |
+| `CODEBASE_MAP.md` | Codebase context map (gap status view) | model handoffs / navigation |
+| `improvements.md` | Triaged backlog #1–24 | gap-fixing / polish mode |
+| `KOTLIN_STYLE_GUIDE.md` | Coding conventions (CI-enforced via ktlint+detekt) | before writing code |
+| `REFERENCE_REPOS.md` | Pattern inspiration only, never copy verbatim | before large features |
+| `CI_CD_SETUP.md` | GitHub Actions pipeline wiring | when touching CI |
 
 ## Code quality gates (CI-enforced)
 - `ktlintCheck` and `detekt` both run in CI and must pass — style/quality issues are not optional cleanup, they block the build same as a compile error.

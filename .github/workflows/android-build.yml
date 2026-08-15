@@ -55,7 +55,7 @@ jobs:
 
       # Optional: uncomment below to also produce a signed release APK.
       # Requires 4 GitHub repo secrets: KEYSTORE_BASE64, KEYSTORE_PASSWORD,
-      # KEY_ALIAS, KEY_PASSWORD (see CI_CD_SETUP.md for how to create these).
+      # KEY_ALIAS, KEY_PASSWORD (see docs/CI_CD_SETUP.md in the Obsidian vault for how to create these).
       #
       # - name: Decode signing keystore
       #   if: github.ref == 'refs/heads/main'

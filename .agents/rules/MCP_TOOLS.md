@@ -18,12 +18,12 @@ If any tool name below doesn't match what's in your live tool list, **do not gue
 
 ## 1. Obsidian MCP (`@bitbonsai/mcpvault`)
 
-This project runs the real `@bitbonsai/mcpvault` package (confirmed from `mcp_config.jsonc`):
+This project runs the real `@bitbonsai/mcpvault` package, configured in `opencode.json`:
 
 ```json
 "obsidian": {
-  "command": "npx",
-  "args": ["@bitbonsai/mcpvault@latest", "~/Documents/Obsidian Vault/Antigravity_MCP/Android_app_easebill"]
+  "type": "local",
+  "command": ["npx", "@bitbonsai/mcpvault@latest", "/home/user/Documents/Obsidian Vault/Antigravity_MCP/Android_app_easebill"]
 }
 ```
 
@@ -107,13 +107,13 @@ Used for current, version-accurate docs on external libraries (Compose, Room, Hi
 
 ### Common failure modes to watch for
 - Calling `get-library-docs` with a guessed library ID instead of one returned by `resolve-library-id` — this silently returns empty or irrelevant results.
-- Treating a Context7 response as confirmation of *this project's* usage when it's actually generic library documentation — cross-check against the project's actual style (`KOTLIN_STYLE_GUIDE.md`) before applying a suggested pattern verbatim.
+- Treating a Context7 response as confirmation of *this project's* usage when it's actually generic library documentation — cross-check against the project's actual style (`docs/KOTLIN_STYLE_GUIDE.md` in the vault) before applying a suggested pattern verbatim.
 
 ---
 
 ## 3. Quick reference: what to do at the start of any session
 
-1. Read `AGENTS.md`, `PROJECT.md`, `BUILD_STEPS.md` (already in context / read from disk).
+1. Read `AGENTS.md` (the index), plus any vault planning docs relevant to the task via `obsidian_read_note(path="docs/...")`.
 2. `list_files_in_dir` the Obsidian vault, then `get_file_contents` anything relevant to the task at hand.
 3. Proceed with the task.
-4. Before ending the session or moving to the next BUILD_STEPS.md phase: write the phase note and any decisions, and **verify each write with a read-back per Section 0 of this file** before reporting anything as saved.
+4. Before ending the session or moving to the next `docs/BUILD_STEPS.md` phase: write the phase note and any decisions, and **verify each write with a read-back per Section 0 of this file** before reporting anything as saved.

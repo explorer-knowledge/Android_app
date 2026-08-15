@@ -38,10 +38,10 @@ This applies to every note type below (phase notes, decisions.md entries, bugs-a
 
 ### What goes in memory vs. what doesn't
 - **Goes in memory:** architectural decisions and why they were made, bugs that were hard to find and their root cause, anything explicitly marked "decide and document" in PROJECT.md, the outcome of any model-handoff audit (what was kept vs. rewritten and why), anything a future session (possibly a different model) needs to know before touching related code.
-- **Does NOT go in memory:** routine progress updates, anything already fully captured in git commit messages, anything already in AGENTS.md/PROJECT.md/BUILD_STEPS.md (link to them instead of duplicating), raw file contents (the code itself is the source of truth, not a copy of it in a note).
+- **Does NOT go in memory:** routine progress updates, anything already fully captured in git commit messages, anything already in AGENTS.md or the vault planning docs (`docs/PROJECT.md`, `docs/BUILD_STEPS.md` — link to them instead of duplicating), raw file contents (the code itself is the source of truth, not a copy of it in a note).
 
 ### When to write a note
-- At the end of each phase in BUILD_STEPS.md, before moving to the next
+- At the end of each phase in `docs/BUILD_STEPS.md` (vault), before moving to the next
 - Any time you make a "decide and document" call
 - Any time you find and fix a non-obvious bug (e.g. the snapshot-vs-live-data issue in BillCalculator, the RESTRICT delete-order fix in BillDao, the PDF pagination/null-handling fixes)
 - Any time you audit prior work from a different model and decide to keep/extend/rewrite it
@@ -110,7 +110,7 @@ Alternatives considered: <if any>
 
 ### How it fits with the other tools
 Rough division of labor when starting new work:
-1. **AGENTS.md / PROJECT.md / BUILD_STEPS.md** — what to build and the standing rules (always read first)
+1. **AGENTS.md** + vault planning docs (`docs/PROJECT.md`, `docs/BUILD_STEPS.md`) — what to build and the standing rules (always read first)
 2. **obsidian memory** — why past decisions were made, what's already been tried
 3. **graphify** — what currently exists in the codebase and how it connects
 4. **context7** — whether the external library API you're about to use is still current
@@ -118,4 +118,4 @@ Rough division of labor when starting new work:
 ---
 
 ## Ground rule
-Memory and Context7 are supplements to the planning docs, not replacements. If AGENTS.md, PROJECT.md, or BUILD_STEPS.md already answers a question, use those first — they're the source of truth and are always in context. Memory exists for the *history and reasoning* those docs don't capture; Context7 exists for *external API accuracy* neither the docs nor training data can guarantee. And per Part 0: nothing counts as "in memory" until a tool call has actually confirmed it's there.
+Memory and Context7 are supplements to the planning docs, not replacements. If AGENTS.md or the vault planning docs (`docs/PROJECT.md`, `docs/BUILD_STEPS.md`) already answers a question, use those first — they're the source of truth. Memory exists for the *history and reasoning* those docs don't capture; Context7 exists for *external API accuracy* neither the docs nor training data can guarantee. And per Part 0: nothing counts as "in memory" until a tool call has actually confirmed it's there.
