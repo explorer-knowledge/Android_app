@@ -117,6 +117,9 @@ fun AppNavigation() {
                     HomeScreen(
                         onNavigateToSettings = onNavigateToSettings,
                         onNavigateToBills = { navController.navigate("bills_list") },
+                        onNavigateToProductForm = { navController.navigate("product_form/-1") },
+                        onNavigateToBillForm = onNavigateToBillForm,
+                        onNavigateToPersonForm = { navController.navigate("person_form/-1") },
                     )
                 }
 

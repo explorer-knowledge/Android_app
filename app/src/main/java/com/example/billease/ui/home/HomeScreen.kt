@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -42,14 +43,17 @@ import com.example.billease.util.formatMoney
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-@Suppress("FunctionNaming", "MagicNumber", "LongMethod")
+@Suppress("FunctionNaming", "MagicNumber", "LongMethod", "LongParameterList")
 @Composable
 fun HomeScreen(
     onNavigateToSettings: () -> Unit,
     onNavigateToBills: () -> Unit,
+    onNavigateToProductForm: () -> Unit,
+    onNavigateToBillForm: () -> Unit,
+    onNavigateToPersonForm: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val billsThisMonth by viewModel.billsThisMonth.collectAsState()
+    val customerCount by viewModel.customerCount.collectAsState()
     val revenueThisMonth by viewModel.revenueThisMonth.collectAsState()
     val recentBills by viewModel.recentBills.collectAsState()
     val businessNameInitial by viewModel.businessNameInitial.collectAsState()
@@ -159,11 +163,33 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text =
-                        "${formatMoney(revenueThisMonth, LocalCurrencyCode.current)} in sales • " +
-                            "$billsThisMonth total bills",
+                    text = "$customerCount customers",
                     color = Color(0xFF64748B),
                     fontSize = 13.sp,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Quick Add Buttons: Product, Bill, Customer
+            Row(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+            ) {
+                QuickAddButton(
+                    label = "Add Product",
+                    onClick = onNavigateToProductForm,
+                )
+                QuickAddButton(
+                    label = "Add Bill",
+                    onClick = onNavigateToBillForm,
+                )
+                QuickAddButton(
+                    label = "Add Customer",
+                    onClick = onNavigateToPersonForm,
                 )
             }
 
@@ -219,6 +245,42 @@ fun HomeScreen(
                 }
             }
         }
+    }
+}
+
+@Suppress("FunctionNaming", "MagicNumber")
+@Composable
+private fun QuickAddButton(
+    label: String,
+    onClick: () -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable(onClick = onClick),
+    ) {
+        Box(
+            modifier =
+                Modifier
+                    .size(56.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF1E293B))
+                    .border(1.dp, Color(0xFF334155), CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = label,
+                tint = Color(0xFF3B82F6),
+                modifier = Modifier.size(26.dp),
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = label,
+            color = Color(0xFF94A3B8),
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+        )
     }
 }
 

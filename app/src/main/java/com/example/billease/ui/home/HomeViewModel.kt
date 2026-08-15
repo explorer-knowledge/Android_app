@@ -33,8 +33,8 @@ class HomeViewModel
             _homeSearchQuery.value = query
         }
 
-        val billsThisMonth: StateFlow<Int> =
-            repository.getBillCountBetween(monthBounds.first, monthBounds.second)
+        val customerCount: StateFlow<Int> =
+            repository.getPersonCount()
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(5000),

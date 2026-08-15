@@ -19,6 +19,9 @@ interface PersonDao {
     @Query("SELECT * FROM persons WHERE id = :id")
     fun getById(id: Long): Flow<Person?>
 
+    @Query("SELECT COUNT(*) FROM persons")
+    fun getCount(): Flow<Int>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(person: Person): Long
 

@@ -19,6 +19,8 @@ class BillingRepository
 
         fun getPersonById(id: Long): Flow<Person?> = personDao.getById(id)
 
+        fun getPersonCount(): Flow<Int> = personDao.getCount()
+
         suspend fun insertPerson(person: Person) = personDao.insert(person)
 
         suspend fun updatePerson(person: Person) = personDao.update(person)
