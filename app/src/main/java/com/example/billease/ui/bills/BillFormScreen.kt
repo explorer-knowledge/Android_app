@@ -212,6 +212,13 @@ fun BillFormScreen(
             }
 
             item {
+                PaymentStatusPicker(
+                    currentStatus = uiState.paymentStatus,
+                    onStatusSelected = viewModel::updatePaymentStatus,
+                )
+            }
+
+            item {
                 // Totals summary
                 TotalsSummaryCard(
                     subtotal = uiState.subtotal,
@@ -417,6 +424,40 @@ private fun TotalsSummaryCard(
                     "₹%.2f".format(grandTotal),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
+                )
+            }
+        }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun PaymentStatusPicker(
+    currentStatus: String,
+    onStatusSelected: (String) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val statuses = listOf("PENDING", "PAID", "OVERDUE")
+
+    Box {
+        OutlinedTextField(
+            value = currentStatus,
+            onValueChange = {},
+            label = { Text("Payment Status") },
+            modifier = Modifier.fillMaxWidth(),
+            readOnly = true,
+            trailingIcon = {
+                TextButton(onClick = { expanded = true }) { Text("Change") }
+            },
+        )
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            statuses.forEach { status ->
+                DropdownMenuItem(
+                    text = { Text(status) },
+                    onClick = {
+                        onStatusSelected(status)
+                        expanded = false
+                    },
                 )
             }
         }

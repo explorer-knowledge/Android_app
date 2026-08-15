@@ -34,13 +34,6 @@ data class BillWithItemsAndPerson(
     val items: List<BillItem>,
 )
 
-data class MonthlyRevenue(
-    // e.g. "Aug 2026"
-    val monthLabel: String,
-    val totalRevenue: Double,
-    val billCount: Int,
-)
-
 @Dao
 interface BillDao {
     @Query("SELECT COUNT(*) FROM bills")

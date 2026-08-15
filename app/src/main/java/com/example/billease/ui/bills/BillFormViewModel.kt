@@ -45,6 +45,7 @@ data class BillFormUiState(
     val discountText: String = "0",
     val notes: String = "",
     val billDateMillis: Long = System.currentTimeMillis(),
+    val paymentStatus: String = "PENDING",
     val lineItems: List<LineItemFormState> = listOf(LineItemFormState()),
     val allPersons: List<Person> = emptyList(),
     val allProducts: List<Product> = emptyList(),
@@ -121,6 +122,7 @@ class BillFormViewModel
                                     },
                                 notes = billData.bill.notes ?: "",
                                 billDateMillis = billData.bill.billDate,
+                                paymentStatus = billData.bill.paymentStatus,
                                 lineItems = items,
                             )
                         }
@@ -156,6 +158,11 @@ class BillFormViewModel
 
         fun updateBillDate(millis: Long) {
             _uiState.update { it.copy(billDateMillis = millis) }
+            _isDirty.value = true
+        }
+
+        fun updatePaymentStatus(status: String) {
+            _uiState.update { it.copy(paymentStatus = status) }
             _isDirty.value = true
         }
 
@@ -280,7 +287,8 @@ class BillFormViewModel
                             subtotal = result.subtotal,
                             taxTotal = result.taxTotal,
                             grandTotal = result.grandTotal,
-                            createdAt = if (isEditMode) now else now,
+                            paymentStatus = state.paymentStatus,
+                            createdAt = now,
                             updatedAt = now,
                         )
 

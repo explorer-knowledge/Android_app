@@ -223,7 +223,6 @@ fun AppNavigation() {
             composable("bills_list") {
                 BillsListScreen(
                     onNavigateToBillDetail = { navController.navigate("bill_detail/$it") },
-                    onNavigateToCreateBill = { navController.navigate("bill_form/-1") },
                 )
             }
 

@@ -28,6 +28,7 @@ data class Bill(
     val subtotal: Double,
     val taxTotal: Double,
     val grandTotal: Double,
+    val paymentStatus: String = "PENDING",
     val createdAt: Long,
     val updatedAt: Long,
 )

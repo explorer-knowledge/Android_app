@@ -2,6 +2,8 @@ package com.example.billease.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.billease.data.AppDatabase
 import com.example.billease.data.BillDao
 import com.example.billease.data.PersonDao
@@ -26,6 +28,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             "billease_database",
         )
+            .addMigrations(MIGRATION_2_3)
             // Pre-release: destructive migration acceptable while there is no shipped user data.
             // Remove this before the first production release and replace with proper Migrations.
             .fallbackToDestructiveMigration()
@@ -41,3 +44,11 @@ object DatabaseModule {
     @Provides
     fun provideBillDao(database: AppDatabase): BillDao = database.billDao()
 }
+
+@Suppress("MagicNumber")
+val MIGRATION_2_3 =
+    object : Migration(2, 3) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE bills ADD COLUMN paymentStatus TEXT NOT NULL DEFAULT 'PENDING'")
+        }
+    }

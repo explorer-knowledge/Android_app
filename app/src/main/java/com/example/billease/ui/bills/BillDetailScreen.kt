@@ -208,6 +208,7 @@ fun BillDetailScreen(
                         if (bill.discount > 0) {
                             DetailRow("Discount", "- ₹%.2f".format(bill.discount))
                         }
+                        DetailRow("Status", bill.paymentStatus)
                         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
