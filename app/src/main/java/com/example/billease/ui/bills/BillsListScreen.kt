@@ -32,7 +32,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -50,8 +49,7 @@ import com.example.billease.data.BillWithPerson
 import com.example.billease.ui.components.ConfirmDeleteDialog
 import com.example.billease.ui.components.DismissableSnackbar
 import com.example.billease.ui.components.EmptyState
-import com.example.billease.ui.components.ProfileIconButton
-import com.example.billease.ui.components.SearchField
+import com.example.billease.ui.components.ScreenHeader
 import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatDate
 import com.example.billease.util.formatMoney
@@ -72,12 +70,6 @@ fun BillsListScreen(
     var snackbarMsg by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Bills") },
-                actions = { ProfileIconButton(onClick = onNavigateToSettings) },
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(onClick = onNavigateToBillForm) {
                 Icon(Icons.Default.Add, contentDescription = "New Bill")
@@ -95,10 +87,11 @@ fun BillsListScreen(
                     .fillMaxSize()
                     .padding(padding),
         ) {
-            SearchField(
+            ScreenHeader(
+                heading = "Bills",
                 query = searchQuery,
                 onQueryChange = viewModel::onSearchQueryChange,
-                placeholder = "Search bill number or person",
+                onNavigateToSettings = onNavigateToSettings,
             )
 
             DateRangeFilterRow(

@@ -15,14 +15,12 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,10 +35,8 @@ import com.example.billease.data.Person
 import com.example.billease.ui.components.ConfirmDeleteDialog
 import com.example.billease.ui.components.DismissableSnackbar
 import com.example.billease.ui.components.EmptyState
-import com.example.billease.ui.components.ProfileIconButton
-import com.example.billease.ui.components.SearchField
+import com.example.billease.ui.components.ScreenHeader
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PersonsListScreen(
     onNavigateToPersonDetail: (Long) -> Unit,
@@ -55,12 +51,6 @@ fun PersonsListScreen(
     var snackbarMessage by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Persons") },
-                actions = { ProfileIconButton(onClick = onNavigateToSettings) },
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(onClick = { onNavigateToPersonForm(null) }) {
                 Icon(Icons.Default.Add, contentDescription = "Add Person")
@@ -78,10 +68,11 @@ fun PersonsListScreen(
                     .fillMaxSize()
                     .padding(padding),
         ) {
-            SearchField(
+            ScreenHeader(
+                heading = "Persons",
                 query = searchQuery,
                 onQueryChange = viewModel::onSearchQueryChange,
-                placeholder = "Search by name or phone",
+                onNavigateToSettings = onNavigateToSettings,
             )
 
             if (persons.isEmpty()) {

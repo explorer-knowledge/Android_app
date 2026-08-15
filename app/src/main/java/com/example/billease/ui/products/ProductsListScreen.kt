@@ -15,14 +15,12 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,12 +35,10 @@ import com.example.billease.data.Product
 import com.example.billease.ui.components.ConfirmDeleteDialog
 import com.example.billease.ui.components.DismissableSnackbar
 import com.example.billease.ui.components.EmptyState
-import com.example.billease.ui.components.ProfileIconButton
-import com.example.billease.ui.components.SearchField
+import com.example.billease.ui.components.ScreenHeader
 import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatMoney
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductsListScreen(
     onNavigateToProductForm: (Long?) -> Unit,
@@ -56,12 +52,6 @@ fun ProductsListScreen(
     var snackbarMessage by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Products") },
-                actions = { ProfileIconButton(onClick = onNavigateToSettings) },
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(onClick = { onNavigateToProductForm(null) }) {
                 Icon(Icons.Default.Add, contentDescription = "Add Product")
@@ -79,10 +69,11 @@ fun ProductsListScreen(
                     .fillMaxSize()
                     .padding(padding),
         ) {
-            SearchField(
+            ScreenHeader(
+                heading = "Products",
                 query = searchQuery,
                 onQueryChange = viewModel::onSearchQueryChange,
-                placeholder = "Search by name",
+                onNavigateToSettings = onNavigateToSettings,
             )
 
             if (products.isEmpty()) {
