@@ -142,7 +142,7 @@ fun PersonsListScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        viewModel.deletePerson(person) { success, message ->
+                        viewModel.deletePerson(person) { message ->
                             snackbarMessage = message
                             showDeleteDialog = null
                         }

@@ -43,6 +43,12 @@ class BillingRepository
 
         fun searchBills(query: String): Flow<List<BillWithPerson>> = billDao.searchBillsWithPerson(query)
 
+        fun getFilteredBills(
+            query: String,
+            startMillis: Long?,
+            endExclusiveMillis: Long?,
+        ): Flow<List<BillWithPerson>> = billDao.getFilteredBills(query, startMillis, endExclusiveMillis)
+
         fun getBillWithItemsById(id: Long): Flow<BillWithItemsAndPerson?> = billDao.getBillWithItemsAndPersonById(id)
 
         fun getBillsByPersonId(personId: Long): Flow<List<Bill>> = billDao.getBillsByPersonId(personId)

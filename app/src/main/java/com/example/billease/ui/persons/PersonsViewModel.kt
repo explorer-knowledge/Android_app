@@ -44,15 +44,15 @@ class PersonsViewModel
         // Decision: Prevent deletion if person has existing bills.
         fun deletePerson(
             person: Person,
-            onResult: (Boolean, String) -> Unit,
+            onResult: (String) -> Unit,
         ) {
             viewModelScope.launch {
                 val billCount = repository.getBillCountForPerson(person.id)
                 if (billCount > 0) {
-                    onResult(false, "Cannot delete person with existing bills.")
+                    onResult("Cannot delete person with existing bills.")
                 } else {
                     repository.deletePerson(person)
-                    onResult(true, "Person deleted successfully.")
+                    onResult("Person deleted successfully.")
                 }
             }
         }

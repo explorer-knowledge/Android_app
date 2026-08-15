@@ -44,15 +44,15 @@ class ProductsViewModel
         // Decision: Prevent deletion if product is referenced in existing bills.
         fun deleteProduct(
             product: Product,
-            onResult: (Boolean, String) -> Unit,
+            onResult: (String) -> Unit,
         ) {
             viewModelScope.launch {
                 val count = repository.getBillItemCountForProduct(product.id)
                 if (count > 0) {
-                    onResult(false, "Cannot delete product used in existing bills.")
+                    onResult("Cannot delete product used in existing bills.")
                 } else {
                     repository.deleteProduct(product)
-                    onResult(true, "Product deleted successfully.")
+                    onResult("Product deleted successfully.")
                 }
             }
         }

@@ -141,7 +141,7 @@ fun ProductsListScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        viewModel.deleteProduct(product) { success, message ->
+                        viewModel.deleteProduct(product) { message ->
                             snackbarMessage = message
                             showDeleteDialog = null
                         }

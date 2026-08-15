@@ -58,6 +58,23 @@ interface BillDao {
     fun searchBillsWithPerson(query: String): Flow<List<BillWithPerson>>
 
     @Transaction
+    @Query(
+        """
+        SELECT bills.* FROM bills 
+        INNER JOIN persons ON bills.personId = persons.id 
+        WHERE (:query = '' OR bills.billNumber LIKE '%' || :query || '%' OR persons.name LIKE '%' || :query || '%')
+          AND (:startMillis IS NULL OR bills.billDate >= :startMillis)
+          AND (:endExclusiveMillis IS NULL OR bills.billDate < :endExclusiveMillis)
+        ORDER BY bills.billDate DESC
+    """,
+    )
+    fun getFilteredBills(
+        query: String,
+        startMillis: Long?,
+        endExclusiveMillis: Long?,
+    ): Flow<List<BillWithPerson>>
+
+    @Transaction
     @Query("SELECT * FROM bills WHERE id = :id")
     fun getBillWithItemsAndPersonById(id: Long): Flow<BillWithItemsAndPerson?>
 
