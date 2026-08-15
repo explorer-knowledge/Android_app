@@ -22,6 +22,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -33,15 +35,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.BillWithPerson
 import com.example.billease.util.LocalCurrencyCode
+import com.example.billease.util.formatDate
 import com.example.billease.util.formatMoney
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @Suppress("FunctionNaming", "MagicNumber", "LongMethod", "LongParameterList")
 @Composable
@@ -140,35 +142,12 @@ fun HomeScreen(
             }
 
             // Hero Section
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    text = "Total Sales - This Month",
-                    color = Color(0xFF94A3B8),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 1.sp,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = formatMoney(revenueThisMonth, LocalCurrencyCode.current),
-                    color = Color.White,
-                    fontSize = 44.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = (-1).sp,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "$totalBills sales • $customerCount customers",
-                    color = Color(0xFF64748B),
-                    fontSize = 13.sp,
-                )
-            }
+            HeroCard(
+                revenueThisMonth = revenueThisMonth,
+                totalBills = totalBills,
+                customerCount = customerCount,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -255,24 +234,11 @@ private fun QuickAddButton(
     label: String,
     onClick: () -> Unit,
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable(onClick = onClick),
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .size(56.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF1E293B))
-                    .border(1.dp, Color(0xFF334155), CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        FloatingActionButton(onClick = onClick) {
             Icon(
                 imageVector = Icons.Default.Add,
                 contentDescription = label,
-                tint = Color(0xFF3B82F6),
-                modifier = Modifier.size(26.dp),
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
@@ -285,11 +251,93 @@ private fun QuickAddButton(
     }
 }
 
+@Suppress("FunctionNaming", "MagicNumber")
+@Composable
+private fun HeroCard(
+    revenueThisMonth: Double,
+    totalBills: Int,
+    customerCount: Int,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(20.dp))
+                .background(
+                    Brush.verticalGradient(
+                        listOf(Color(0xFF1E293B), Color(0xFF0F172A)),
+                    ),
+                )
+                .border(1.dp, Color(0xFF334155), RoundedCornerShape(20.dp))
+                .padding(20.dp),
+    ) {
+        Text(
+            text = "TOTAL SALES · THIS MONTH",
+            color = Color(0xFF94A3B8),
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 1.5.sp,
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = formatMoney(revenueThisMonth, LocalCurrencyCode.current),
+            color = Color.White,
+            fontSize = 34.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = (-1).sp,
+            fontFamily = FontFamily.Monospace,
+            maxLines = 1,
+            softWrap = false,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+        ) {
+            HeroStat(label = "SALES", value = totalBills.toString())
+            Box(
+                modifier =
+                    Modifier
+                        .width(1.dp)
+                        .height(28.dp)
+                        .background(Color.White.copy(alpha = 0.15f)),
+            )
+            HeroStat(label = "CUSTOMERS", value = customerCount.toString())
+        }
+    }
+}
+
+@Suppress("FunctionNaming", "MagicNumber")
+@Composable
+private fun HeroStat(
+    label: String,
+    value: String,
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = label,
+            color = Color(0xFF64748B),
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 1.sp,
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = value,
+            color = Color.White,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
 @Suppress("FunctionNaming", "MagicNumber", "LongMethod")
 @Composable
 private fun RecentBillCard(billWithPerson: BillWithPerson) {
-    val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-    val dateString = dateFormat.format(java.util.Date(billWithPerson.bill.createdAt))
+    val dateString = formatDate(billWithPerson.bill.createdAt)
 
     val statusText = billWithPerson.bill.paymentStatus
     val (statusColor, statusBg) =

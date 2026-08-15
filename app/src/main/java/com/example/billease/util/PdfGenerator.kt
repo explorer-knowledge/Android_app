@@ -14,8 +14,6 @@ import com.example.billease.data.AppSettings
 import com.example.billease.data.BillWithItemsAndPerson
 import java.io.File
 import java.io.FileOutputStream
-import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 object PdfGenerator {
@@ -92,7 +90,7 @@ object PdfGenerator {
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         canvas.drawText("Bill No: ${data.bill.billNumber}", MARGIN_LEFT, yPos, paint)
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-        val dateStr = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(data.bill.billDate))
+        val dateStr = formatDate(data.bill.billDate)
         canvas.drawText("Date: $dateStr", MARGIN_LEFT, yPos + 15f, paint)
 
         yPos += 45f

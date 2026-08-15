@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.billease.data.BillWithPerson
 import com.example.billease.data.BillingRepository
 import com.example.billease.data.SettingsRepository
+import com.example.billease.util.monthBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +14,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import java.util.Calendar
 import javax.inject.Inject
 
 @Suppress("MagicNumber")
@@ -24,7 +24,7 @@ class HomeViewModel
         private val repository: BillingRepository,
         settingsRepository: SettingsRepository,
     ) : ViewModel() {
-        private val monthBounds = getMonthBounds()
+        private val thisMonth = monthBounds()
 
         private val _homeSearchQuery = MutableStateFlow("")
         val homeSearchQuery: StateFlow<String> = _homeSearchQuery
@@ -50,7 +50,7 @@ class HomeViewModel
                 )
 
         val revenueThisMonth: StateFlow<Double> =
-            repository.getRevenueBetween(monthBounds.first, monthBounds.second)
+            repository.getRevenueBetween(thisMonth.first, thisMonth.second)
                 // Room returns null for SUM() on empty sets, so map it to 0.0
                 .map { it ?: 0.0 }
                 .stateIn(
@@ -86,28 +86,4 @@ class HomeViewModel
                     started = SharingStarted.WhileSubscribed(5000),
                     initialValue = "B",
                 )
-
-        private fun getMonthBounds(): Pair<Long, Long> {
-            val start =
-                Calendar.getInstance().apply {
-                    set(Calendar.DAY_OF_MONTH, 1)
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }.timeInMillis
-
-            val end =
-                Calendar.getInstance().apply {
-                    set(Calendar.DAY_OF_MONTH, 1)
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                    add(Calendar.MONTH, 1)
-                    add(Calendar.MILLISECOND, -1)
-                }.timeInMillis
-
-            return Pair(start, end)
-        }
     }

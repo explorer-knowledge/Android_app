@@ -32,10 +32,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.Bill
 import com.example.billease.ui.components.ProfileIconButton
 import com.example.billease.util.LocalCurrencyCode
+import com.example.billease.util.formatDate
 import com.example.billease.util.formatMoney
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -124,8 +122,7 @@ fun BillHistoryItem(
     bill: Bill,
     onClick: () -> Unit,
 ) {
-    val formatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-    val dateString = formatter.format(Date(bill.billDate))
+    val dateString = formatDate(bill.billDate)
 
     Card(
         modifier =

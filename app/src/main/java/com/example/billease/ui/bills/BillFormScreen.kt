@@ -53,10 +53,8 @@ import com.example.billease.data.Person
 import com.example.billease.data.Product
 import com.example.billease.ui.components.ProfileIconButton
 import com.example.billease.util.LocalCurrencyCode
+import com.example.billease.util.formatDate
 import com.example.billease.util.formatMoney
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -256,7 +254,7 @@ private fun BillDateField(
     var showPicker by remember { mutableStateOf(false) }
     val dateStr =
         remember(currentMillis) {
-            SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(currentMillis))
+            formatDate(currentMillis)
         }
 
     OutlinedTextField(

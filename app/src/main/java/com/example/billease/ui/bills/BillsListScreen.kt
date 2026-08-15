@@ -53,10 +53,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.BillWithPerson
 import com.example.billease.ui.components.ProfileIconButton
 import com.example.billease.util.LocalCurrencyCode
+import com.example.billease.util.formatDate
 import com.example.billease.util.formatMoney
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -184,7 +182,7 @@ private fun BillListItem(
     val person = billWithPerson.person
     val dateStr =
         remember(bill.billDate) {
-            SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(bill.billDate))
+            formatDate(bill.billDate)
         }
 
     Card(
@@ -297,8 +295,7 @@ private fun FilterDateField(
 ) {
     var showPicker by remember { mutableStateOf(false) }
     val label = if (isStart) "From" else "To"
-    val dateFormat = remember { SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()) }
-    val text = millis?.let { dateFormat.format(Date(it)) } ?: label
+    val text = millis?.let { formatDate(it) } ?: label
 
     OutlinedButton(onClick = { showPicker = true }, modifier = modifier) {
         Text(text, maxLines = 1)

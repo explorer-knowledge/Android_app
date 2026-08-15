@@ -21,8 +21,6 @@
     <ID>FunctionNaming:ProductsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ProductsListScreen( onNavigateToProductForm: (Long?) -&gt; Unit, onNavigateToSettings: () -&gt; Unit, viewModel: ProductsViewModel = hiltViewModel(), )</ID>
     <ID>FunctionNaming:ProfileIconButton.kt$@Composable fun ProfileIconButton(onClick: () -&gt; Unit)</ID>
     <ID>FunctionNaming:Theme.kt$@Composable fun BillEaseTheme( darkTheme: Boolean = isSystemInDarkTheme(), // Dynamic color is available on Android 12+ dynamicColor: Boolean = true, content: @Composable () -&gt; Unit, )</ID>
-    <ID>ImplicitDefaultLocale:PersonDetailScreen.kt$String.format("$%.2f", bill.grandTotal)</ID>
-    <ID>ImplicitDefaultLocale:ProductsListScreen.kt$String.format("$%.2f", product.unitPrice)</ID>
     <ID>LongMethod:BillDetailScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BillDetailScreen( onNavigateBack: () -&gt; Unit, onNavigateToEdit: (Long) -&gt; Unit, onNavigateToSettings: () -&gt; Unit, viewModel: BillDetailViewModel = hiltViewModel(), )</ID>
     <ID>LongMethod:BillFormScreen.kt$@Composable private fun LineItemRow( row: LineItemFormState, allProducts: List&lt;Product&gt;, onProductSelected: (Product) -&gt; Unit, onQuantityChange: (String) -&gt; Unit, onRemove: () -&gt; Unit, canRemove: Boolean, )</ID>
     <ID>LongMethod:BillFormScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BillFormScreen( onNavigateBack: () -&gt; Unit, onNavigateToSettings: () -&gt; Unit, viewModel: BillFormViewModel = hiltViewModel(), )</ID>
@@ -71,9 +69,7 @@
     <ID>MaxLineLength:DatabaseModule.kt$&lt;no name provided&gt;$db.execSQL("CREATE TABLE IF NOT EXISTS bill_sequences (prefix TEXT NOT NULL, lastNumber INTEGER NOT NULL, PRIMARY KEY(prefix))")</ID>
     <ID>MaxLineLength:PdfGenerator.kt$PdfGenerator$Rect(MARGIN_LEFT.toInt(), yPos.toInt(), (MARGIN_LEFT + targetWidth).toInt(), (yPos + targetHeight).toInt())</ID>
     <ID>MaxLineLength:PdfGenerator.kt$PdfGenerator$canvas.drawText(String.format(Locale.getDefault(), "%.1f%%", item.taxPercentSnapshot), MARGIN_LEFT + 390f, yPos, paint)</ID>
-    <ID>MaxLineLength:PdfGenerator.kt$PdfGenerator$canvas.drawText(String.format(Locale.getDefault(), "%.2f", item.unitPriceSnapshot), MARGIN_LEFT + 320f, yPos, paint)</ID>
     <ID>MaxLineLength:PersonDao.kt$PersonDao$@Query("SELECT * FROM persons WHERE name LIKE '%' || :query || '%' OR phone LIKE '%' || :query || '%' ORDER BY name ASC")</ID>
-    <ID>MaxLineLength:ProductsListScreen.kt$Text(text = "${String.format("$%.2f", product.unitPrice)} / ${product.unit}", style = MaterialTheme.typography.bodyMedium)</ID>
     <ID>MaxLineLength:SettingsScreen.kt$onClick = { pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }</ID>
     <ID>PrintStackTrace:PdfGenerator.kt$PdfGenerator$e</ID>
     <ID>PrintStackTrace:SettingsScreen.kt$e</ID>
