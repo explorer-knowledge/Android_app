@@ -92,7 +92,8 @@ data class Bill(
     val taxTotal: Double,
     val grandTotal: Double,
     val createdAt: Long,
-    val updatedAt: Long
+    val updatedAt: Long,
+    val paymentStatus: String = "PENDING"   // added in DB v3 (PENDING / PAID / OVERDUE)
 )
 
 @Entity(tableName = "bill_items")
@@ -170,14 +171,21 @@ data class BillItem(
 
 ## 10. Acceptance Criteria Checklist
 
-- [ ] Can add/edit/delete a Person
-- [ ] Can add/edit/delete a Product
-- [ ] Can create a Bill selecting an existing Person and multiple Products with quantities
-- [ ] Totals (subtotal, tax, grand total) calculate correctly and update live as items change
-- [ ] Can view a generated Bill in a clean invoice layout
-- [ ] Can edit an existing Bill and totals recalculate
-- [ ] Can delete a Bill with confirmation
-- [ ] Can share a Bill as a PDF via Android share sheet
-- [ ] All lists support basic search
-- [ ] App survives rotation without data loss
-- [ ] No crashes on empty states (zero persons/products/bills)
+> Status last updated alongside `improvements.md`. Two known partial gaps are flagged inline: bill-number scheme (timestamps, not `INV-0001`) and quick-add inline person (not built).
+
+- [x] Can add/edit/delete a Person
+- [x] Can add/edit/delete a Product
+- [x] Can create a Bill selecting an existing Person and multiple Products with quantities
+- [x] Totals (subtotal, tax, grand total) calculate correctly and update live as items change
+- [x] Can view a generated Bill in a clean invoice layout
+- [x] Can edit an existing Bill and totals recalculate
+- [x] Can delete a Bill with confirmation
+- [x] Can share a Bill as a PDF via Android share sheet
+- [x] All lists support basic search
+- [x] App survives rotation without data loss
+- [x] No crashes on empty states (zero persons/products/bills)
+
+### Known deviations from spec (tracked in `improvements.md`)
+- Bill number auto-generation uses `PREFIX + yyyyMMdd-HHmmss` timestamps, not the incrementing `INV-0001` scheme in §3.3 (collisions possible in the same second) — improvements #2.
+- "Quick-add inline" person in the Bill form (§3.3) was never built — only picking from existing persons — improvements #7.
+- `paymentStatus` field (§4, added DB v3) is a free-text `String`, not an enum — improvements #15.

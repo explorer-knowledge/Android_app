@@ -6,9 +6,9 @@ Read this before starting any major change. It maps every piece of functionality
 
 ## 1. Project Snapshot
 
-**BillEase** — offline Kotlin Android billing app. MVVM + Repository, Room v2 (destructive-migration fallback), Hilt, Compose M3, Navigation Compose, DataStore for settings, native `PdfDocument` + FileProvider for PDF share. CI = GitHub Actions (ktlint + detekt + unit tests + assembleDebug, APK artifact).
+**BillEase** — offline Kotlin Android billing app. MVVM + Repository, Room v3 (`MIGRATION_2_3` in `DatabaseModule.kt`; destructive-migration fallback still present at `DatabaseModule.kt:34`), Hilt, Compose M3, Navigation Compose, DataStore for settings, native `PdfDocument` + FileProvider for PDF share. CI = GitHub Actions (ktlint + detekt + unit tests + assembleDebug, APK artifact).
 
-- App DB version: `2` (see `AppDatabase.kt`)
+- App DB version: `3` (see `AppDatabase.kt`)
 - Min SDK 24 / target 34, Kotlin JVM 17
 - All code under `app/src/main/java/com/example/billease/`
 
@@ -55,12 +55,12 @@ com.example.billease/
 | `PersonDao` — getAll/search/getById/insert/update/delete | `PersonDao.kt:13`–`29` |
 | `ProductDao` — same CRUD | `ProductDao.kt:13`–`29` |
 | `BillDao` relations: `BillWithPerson`, `BillWithItemsAndPerson` | `BillDao.kt:14`, `:23` |
-| `BillDao` stats: `MonthlyRevenue`, counts, revenue, date-range sums | `BillDao.kt:37`, `:46`–`:90` |
+| `BillDao` stats: counts, revenue, date-range sums; `getFilteredBills` (search + date range) | `BillDao.kt:46`–`:90` |
 | `BillDao` transactional ops: `insertBillWithItems`, `updateBillWithItems`, `deleteBill` | `BillDao.kt:114`, `:125`, `:108` |
 | `BillingRepository` — single facade over all 3 DAOs (god-object, ~26 edges) | `BillingRepository.kt:8` |
 | `AppSettings` data class | `SettingsRepository.kt:17` |
 | `SettingsRepository` — DataStore prefs (`settings`) | `SettingsRepository.kt:26` |
-| Room database (v2, `exportSchema=false`, no real migrations) | `AppDatabase.kt:6` |
+| Room database (v3, `exportSchema=false`, `MIGRATION_2_3` in DatabaseModule) | `AppDatabase.kt:6`, `DatabaseModule.kt:49` |
 
 ### 3.3 DI (`di/`)
 
@@ -155,17 +155,18 @@ Invariants:
 ## 5. Known Gaps & Improvement Candidates
 
 > Each item: **[FIX]** = correctness/acceptance gap (should fix), **[IMPROVE]** = quality/refactor (optional), **[RISK]** = will bite before production.
+> **The full 1–24 triaged list lives in `improvements.md`.** This section is the short status view.
 
 ### A. Correctness / acceptance gaps
 
-1. **[FIX]** Bills list has **no date-range filter** — PROJECT.md §3.3 requires "filter by date range". Only search exists (`BillsListScreen.kt:83`). Needs UI + a DAO query (`getBillsBetween(start,end)`).
-2. **[FIX]** Bill number is `PREFIX + yyyyMMdd-HHmmss` timestamp (`BillFormViewModel.kt:136`), not the specced incrementing `INV-0001` pattern. Collisions possible if two bills created in the same second.
-3. **[FIX]** Hardcoded mock logic: `RecentBillCard` always shows `statusText = "Paid"` (`HomeScreen.kt:235`) — either implement real status or remove the badge.
-4. **[FIX]** Currency is inconsistent: hardcoded `₹` strings in `BillsListScreen.kt:187`, `BillDetailScreen.kt:206/217`, `PersonDetailScreen.kt:146`, `ProductsListScreen.kt:186` vs `NumberFormat.getCurrencyInstance` on Home/Reports. Unify via one formatter util.
-5. **[RISK]** `fallbackToDestructiveMigration()` (`DatabaseModule.kt:31`) wipes user data on any schema bump. DB is already at **v2 with no real Migration defined**. Must be replaced with proper `Migration`s before any shipped release.
-6. **[RISK]** `BillItem.unit` unit field is dropped at bill time — edit-mode line items reconstruct `Product(unit = "")` (`BillFormViewModel.kt:99`) and snapshots don't store unit. Cosmetic today but means unit info is lost from historical bills.
+1. ~~[FIX] Bills list has no date-range filter — PROJECT.md §3.3 requires "filter by date range". Only search exists.~~ **DONE (commit 7143b71)**: `BillDao.getFilteredBills()` combines search + optional start/end; `BillsViewModel` holds `Pair<Long?, Long?>`; From/To pickers in `BillsListScreen.kt`.
+2. **[FIX]** Bill number is `PREFIX + yyyyMMdd-HHmmss` timestamp (`BillFormViewModel.kt:138`), not the specced incrementing `INV-0001` pattern. Collisions possible if two bills created in the same second.
+3. ~~[FIX] Hardcoded mock logic: `RecentBillCard` always shows `statusText = "Paid"` (`HomeScreen.kt:235`) — either implement real status or remove the badge.~~ **DONE (commit e667d70)**: `paymentStatus` is a real `bills` column (DB v3, `MIGRATION_2_3`), picker in `BillFormScreen`, badges in `HomeScreen`/`BillsListScreen`.
+4. **[FIX]** Currency is inconsistent: hardcoded `₹`/`$%.2f` strings in `BillsListScreen.kt:221`, `BillDetailScreen.kt:206-219`, `PersonDetailScreen.kt:146`, `ProductsListScreen.kt:186`, `BillFormScreen.kt:394-424`, raw `"₹$revenueThisMonth"` interpolation at `HomeScreen.kt:163`, and `String.format(Locale.getDefault(), "%.2f", ...)` without symbol in `PdfGenerator.kt:156-175` — all vs `NumberFormat.getCurrencyInstance` on Home/Reports. Unify via one formatter util.
+5. **[RISK]** `fallbackToDestructiveMigration()` (`DatabaseModule.kt:34`) still wipes user data on any un-migrated schema bump. DB is at **v3 with `MIGRATION_2_3`**; best practice (Room ≥2.4) is `exportSchema=true` + `@Database(autoMigrations=...)` + Room Gradle plugin `schemaDirectory`. Must be replaced before any shipped release.
+6. **[RISK]** `BillItem.unit` unit field is dropped at bill time — edit-mode line items reconstruct `Product(unit = "")` (`BillFormViewModel.kt:100`) and snapshots don't store unit. Cosmetic today but means unit info is lost from historical bills.
 7. **[GAP]** Quick-add inline person in Bill form (PROJECT.md §3.3 "or quick-add inline") was never built — `PersonDropdown` only picks from existing persons.
-8. **[GAP]** `MonthlyRevenue` (`BillDao.kt:37`) is defined but **never queried/used** — dead model. Either wire it into Reports or delete it.
+8. ~~[GAP] `MonthlyRevenue` (`BillDao.kt:37`) is defined but **never queried/used** — dead model. Either wire it into Reports or delete it.~~ **DONE**: removed; the entity no longer exists.
 9. **[GAP]** Reports screen is a 4-card stats placeholder, not the fuller reporting PROJECT.md §5 implies (no per-month breakdown, no product/person breakdowns).
 
 ### B. Architecture / quality improvements
@@ -174,14 +175,14 @@ Invariants:
 11. **[IMPROVE]** `AppNavigation.kt` is a 248-line god composable — extract route constants, the bottom-bar, and tab items into separate composables/functions.
 12. **[IMPROVE]** Duplicated month-bounds `Calendar` logic in `HomeViewModel.kt:82` and `ReportsViewModel.kt:41` — extract to a shared util (e.g. `util/TimeRange.kt`).
 13. **[IMPROVE]** `ui/components/` is empty. Extract repeated patterns: search field (5 screens duplicate it), confirm-delete dialog, empty state, snackbar host, currency formatter.
-14. **[IMPROVE]** Dead code cleanup: `Greeting()` in `MainActivity.kt:33`; unused `MonthlyRevenue`; `"₹$revenueThisMonth in sales"` raw interpolation on `HomeScreen.kt:163` bypasses the formatter.
+14. **[IMPROVE]** Dead code cleanup: `"₹$revenueThisMonth in sales"` raw interpolation on `HomeScreen.kt:163` bypasses the formatter defined on line 57.
 15. **[IMPROVE]** Search is Room `LIKE '%q%'` (server-side) on every keystroke via `flatMapLatest` — fine for MVP scale, but note it as a perf lever if the DB grows (consider `FTS4/5`).
 16. **[IMPROVE]** No UI tests / ViewModel tests beyond `BillCalculatorTest`. Highest-value additions: `BillFormViewModel` validation + recalculate tests, `BillCalculator` edge cases (negative discount, NaN input).
 17. **[IMPROVE]** `ProductDao`/`PersonDao` are byte-for-byte identical in shape — could share a base interface pattern, but low priority.
 18. **[IMPROVE]** Naming/UX: person labels mix "Persons"/"Customers" (nav says Customers, screen says Persons, spec says Persons). Pick one.
 19. **[IMPROVE]** `product.unit` (pcs/kg/box) is a free-text field — no suggestion list/validation. Could add a dropdown of common units.
-20. **[IMPROVE]** `HomeScreen`/theme use hand-rolled dark color values (`0xFF0F172A` etc.) that ignore the Material theme — makes dark/light theming inconsistent (see `HomeScreen.kt:59` gradient hardcodes).
-21. **[IMPROVE]** detekt baseline (`detekt-baseline.xml`) may be masking issues that newer code would still trip — periodically prune it.
+20. **[IMPROVE]** `HomeScreen`/theme use hand-rolled dark color values (`0xFF0F172A` etc. at `HomeScreen.kt:60-132`) that ignore the Material theme — makes dark/light theming inconsistent.
+21. **[IMPROVE]** detekt baseline (`detekt-baseline.xml`) still references removed `QuickActionCard`/`StatCard`/`onNavigateToNewBill` symbols — prune it (`./gradlew detektBaseline`) to restore real signal.
 22. **[IMPROVE]** No `androidx.work`/backup strategy; `allowBackup=true` but no backup rules — device data loss risk noted as out of MVP scope.
 23. **[IMPROVE]** `copyUriToInternalStorage` (`SettingsScreen.kt:159`) always overwrites `business_logo.jpg` and doesn't clean up old files; consider a `logos/` dir + delete-on-remove.
 24. **[IMPROVE]** Import-formatting / wildcard-import rules are CI-enforced but some files carry heavy `@Suppress("LongMethod", "MagicNumber")` — these suppress ktlint/detekt, reducing real signal.

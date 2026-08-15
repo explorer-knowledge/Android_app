@@ -31,7 +31,7 @@ git push
 ```
 
 ## 3. What happens next
-- On every push to `main` (or PR into `main`), GitHub spins up a free Ubuntu runner, installs JDK 17, runs your unit tests, and builds a **debug APK**.
+- On every push to `main` (or PR into `main`), GitHub spins up a free Ubuntu runner, installs JDK 17, runs **ktlint → detekt → unit tests → `assembleDebug`**, and uploads a **debug APK** artifact. CI fails if any of the four steps fails.
 - Go to your repo → **Actions** tab → click the latest run → scroll to **Artifacts** → download `app-debug-apk` → unzip → install on your phone (enable "install unknown apps" for whatever app you use to open it).
 - Free GitHub accounts get generous free Actions minutes for public repos (and a monthly allowance for private repos) — a small Compose app build typically takes 2–5 minutes, so this won't be a problem for hackathon-scale usage.
 

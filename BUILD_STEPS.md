@@ -2,6 +2,9 @@
 
 Read this alongside `PROJECT.md` (full spec) and `REFERENCE_REPOS.md` (pattern references). Execute phases **in order**. After each phase, self-verify against its checklist before moving to the next — don't wait for manual approval unless something in "Out of Scope" or the data model is ambiguous. Only pause for the human when you hit a genuine judgment call not already decided in PROJECT.md.
 
+> ## Status
+> Phases 0–8 are **complete** (core app shipped). Group A (Phase 9) and Group B (Phase 10) are **complete**. Per-phase notes live in the Obsidian vault (`phase-9-group-a-upgrades.md`, `phase-10-group-b-upgrades.md`, `phase-11-gap-fixes.md`). The project is now in **gap-fixing / polish mode** — the triaged backlog is `improvements.md` (#1–24). DO NOT re-execute a completed phase wholesale.
+
 ---
 
 ## Phase 0 — Project Bootstrap
@@ -77,6 +80,19 @@ Read this alongside `PROJECT.md` (full spec) and `REFERENCE_REPOS.md` (pattern r
 - Write `README.md`: setup steps, architecture overview, the delete-cascade decision, the PDF library choice and why
 - Confirm the project builds clean from a fresh clone (no local-only config left in)
 - Summarize to the human: what was built, any deviations from PROJECT.md and why, and the acceptance checklist with pass/fail per line
+
+## Phase 10 — Group A Upgrades (DONE — see Obsidian `phase-9-group-a-upgrades.md`)
+- A6: date picker support for bills (`BillFormScreen.kt`)
+- A1–A5: listed in the vault note; the acceptance checklist in PROJECT.md §10 is updated
+
+## Phase 11 — Group B Upgrades (DONE — see Obsidian `phase-10-group-b-upgrades.md`)
+- B1: unsaved-changes guard on bill form
+- B4: PDF/detail enhancements
+- B5: configurable invoice prefix via `SettingsRepository.invoicePrefix` (default `BILL-`)
+
+## Phase 12 — Gap Fixes (IN PROGRESS — see Obsidian `phase-11-gap-fixes.md` + `improvements.md`)
+- #1 date-range filter on bills list: **DONE** (commit 7143b71, `BillDao.getFilteredBills()`)
+- Remaining backlog: `improvements.md` #2–#24
 
 ---
 
