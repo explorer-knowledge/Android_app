@@ -11,6 +11,10 @@
     <ID>FunctionNaming:BillFormScreen.kt$@Composable private fun TotalsSummaryCard( subtotal: Double, taxTotal: Double, grandTotal: Double, )</ID>
     <ID>FunctionNaming:BillFormScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BillFormScreen( onNavigateBack: () -&gt; Unit, onNavigateToSettings: () -&gt; Unit, viewModel: BillFormViewModel = hiltViewModel(), )</ID>
     <ID>FunctionNaming:BillsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BillsListScreen( onNavigateToBillDetail: (Long) -&gt; Unit, onNavigateToBillForm: () -&gt; Unit, onNavigateToSettings: () -&gt; Unit, viewModel: BillsViewModel = hiltViewModel(), )</ID>
+    <ID>FunctionNaming:ListComponents.kt$@Composable fun ConfirmDeleteDialog( title: String, message: String, onConfirm: () -&gt; Unit, onDismiss: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:ListComponents.kt$@Composable fun DismissableSnackbar( message: String, onDismiss: () -&gt; Unit, dismissLabel: String = "Dismiss", )</ID>
+    <ID>FunctionNaming:ListComponents.kt$@Composable fun EmptyState( icon: ImageVector, title: String, subtitle: String, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:ListComponents.kt$@Composable fun SearchField( query: String, onQueryChange: (String) -&gt; Unit, placeholder: String, modifier: Modifier = Modifier, )</ID>
     <ID>FunctionNaming:PersonDetailScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BillHistoryItem( bill: Bill, onClick: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:PersonDetailScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PersonDetailScreen( onNavigateBack: () -&gt; Unit, onNavigateToEdit: (Long) -&gt; Unit, onNavigateToBillDetail: (Long) -&gt; Unit, onNavigateToSettings: () -&gt; Unit, viewModel: PersonDetailViewModel = hiltViewModel(), )</ID>
     <ID>FunctionNaming:PersonFormScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PersonFormScreen( onNavigateBack: () -&gt; Unit, onNavigateToSettings: () -&gt; Unit, viewModel: PersonFormViewModel = hiltViewModel(), )</ID>
@@ -71,8 +75,6 @@
     <ID>MaxLineLength:PdfGenerator.kt$PdfGenerator$canvas.drawText(String.format(Locale.getDefault(), "%.1f%%", item.taxPercentSnapshot), MARGIN_LEFT + 390f, yPos, paint)</ID>
     <ID>MaxLineLength:PersonDao.kt$PersonDao$@Query("SELECT * FROM persons WHERE name LIKE '%' || :query || '%' OR phone LIKE '%' || :query || '%' ORDER BY name ASC")</ID>
     <ID>MaxLineLength:SettingsScreen.kt$onClick = { pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }</ID>
-    <ID>PrintStackTrace:PdfGenerator.kt$PdfGenerator$e</ID>
-    <ID>PrintStackTrace:SettingsScreen.kt$e</ID>
     <ID>TooGenericExceptionCaught:BillsViewModel.kt$BillsViewModel$e: Exception</ID>
     <ID>TooGenericExceptionCaught:PdfGenerator.kt$PdfGenerator$e: Exception</ID>
     <ID>TooGenericExceptionCaught:SettingsScreen.kt$e: Exception</ID>

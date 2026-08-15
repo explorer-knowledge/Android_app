@@ -100,7 +100,7 @@ fun AppNavigation() {
                             route = "persons_list",
                             currentRoute = currentRoute,
                             icon = Icons.Default.Person,
-                            label = "Customers",
+                            label = "Persons",
                             navController = navController,
                         )
                     }

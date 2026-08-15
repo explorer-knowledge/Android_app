@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
@@ -31,9 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -51,7 +47,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.BillWithPerson
+import com.example.billease.ui.components.ConfirmDeleteDialog
+import com.example.billease.ui.components.DismissableSnackbar
+import com.example.billease.ui.components.EmptyState
 import com.example.billease.ui.components.ProfileIconButton
+import com.example.billease.ui.components.SearchField
 import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatDate
 import com.example.billease.util.formatMoney
@@ -85,10 +85,7 @@ fun BillsListScreen(
         },
         snackbarHost = {
             snackbarMsg?.let { msg ->
-                Snackbar(
-                    modifier = Modifier.padding(16.dp),
-                    action = { TextButton(onClick = { snackbarMsg = null }) { Text("OK") } },
-                ) { Text(msg) }
+                DismissableSnackbar(message = msg, onDismiss = { snackbarMsg = null }, dismissLabel = "OK")
             }
         },
     ) { padding ->
@@ -98,15 +95,10 @@ fun BillsListScreen(
                     .fillMaxSize()
                     .padding(padding),
         ) {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = viewModel::onSearchQueryChange,
-                placeholder = { Text("Search bill number or person") },
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                singleLine = true,
+            SearchField(
+                query = searchQuery,
+                onQueryChange = viewModel::onSearchQueryChange,
+                placeholder = "Search bill number or person",
             )
 
             DateRangeFilterRow(
@@ -115,28 +107,11 @@ fun BillsListScreen(
             )
 
             if (bills.isEmpty()) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.List,
-                            contentDescription = "No bills",
-                            modifier = Modifier.size(64.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "No bills yet",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Tap + to create one.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        )
-                    }
-                }
+                EmptyState(
+                    icon = Icons.AutoMirrored.Outlined.List,
+                    title = "No bills yet",
+                    subtitle = "Tap + to create one.",
+                )
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(bills) { bwp ->
@@ -152,21 +127,16 @@ fun BillsListScreen(
     }
 
     pendingDelete?.let { bwp ->
-        AlertDialog(
-            onDismissRequest = { pendingDelete = null },
-            title = { Text("Delete Bill") },
-            text = { Text("Delete ${bwp.bill.billNumber}? This cannot be undone.") },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.deleteBill(bwp.bill) { msg ->
-                        snackbarMsg = msg
-                    }
-                    pendingDelete = null
-                }) { Text("Delete") }
+        ConfirmDeleteDialog(
+            title = "Delete Bill",
+            message = "Delete ${bwp.bill.billNumber}? This cannot be undone.",
+            onConfirm = {
+                viewModel.deleteBill(bwp.bill) { msg ->
+                    snackbarMsg = msg
+                }
+                pendingDelete = null
             },
-            dismissButton = {
-                TextButton(onClick = { pendingDelete = null }) { Text("Cancel") }
-            },
+            onDismiss = { pendingDelete = null },
         )
     }
 }

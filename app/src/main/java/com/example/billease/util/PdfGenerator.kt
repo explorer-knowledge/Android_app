@@ -9,6 +9,7 @@ import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.text.TextUtils
+import android.util.Log
 import androidx.core.content.FileProvider
 import com.example.billease.data.AppSettings
 import com.example.billease.data.BillWithItemsAndPerson
@@ -228,9 +229,11 @@ object PdfGenerator {
                 file,
             )
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "Failed to write PDF ${data.bill.billNumber}", e)
             pdfDocument.close()
             null
         }
     }
+
+    private const val TAG = "PdfGenerator"
 }

@@ -2,6 +2,7 @@ package com.example.billease.ui.settings
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -216,7 +217,7 @@ fun copyUriToInternalStorage(
         outputStream.close()
         file.absolutePath
     } catch (e: Exception) {
-        e.printStackTrace()
+        Log.e("SettingsScreen", "Failed to copy logo to internal storage", e)
         null
     }
 }
