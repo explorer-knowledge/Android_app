@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.BillWithPerson
 import com.example.billease.ui.components.ProfileIconButton
+import com.example.billease.util.formatMoney
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -233,7 +234,7 @@ private fun BillListItem(
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "₹%.2f".format(bill.grandTotal),
+                    text = formatMoney(bill.grandTotal),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )

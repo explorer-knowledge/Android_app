@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.BillWithPerson
-import java.text.NumberFormat
+import com.example.billease.util.formatMoney
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -53,8 +53,6 @@ fun HomeScreen(
     val recentBills by viewModel.recentBills.collectAsState()
     val businessNameInitial by viewModel.businessNameInitial.collectAsState()
     val homeSearchQuery by viewModel.homeSearchQuery.collectAsState()
-
-    val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.getDefault())
 
     // Luminous Ledger Gradient Background
     val backgroundBrush =
@@ -152,7 +150,7 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = currencyFormatter.format(revenueThisMonth),
+                    text = formatMoney(revenueThisMonth),
                     color = Color.White,
                     fontSize = 44.sp,
                     fontWeight = FontWeight.Bold,
@@ -160,7 +158,7 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "₹$revenueThisMonth in sales • $billsThisMonth total bills",
+                    text = "${formatMoney(revenueThisMonth)} in sales • $billsThisMonth total bills",
                     color = Color(0xFF64748B),
                     fontSize = 13.sp,
                 )
@@ -213,7 +211,7 @@ fun HomeScreen(
                     }
                 } else {
                     items(recentBills) { billWithPerson ->
-                        RecentBillCard(billWithPerson, currencyFormatter)
+                        RecentBillCard(billWithPerson)
                     }
                 }
             }
@@ -223,10 +221,7 @@ fun HomeScreen(
 
 @Suppress("FunctionNaming", "MagicNumber", "LongMethod")
 @Composable
-private fun RecentBillCard(
-    billWithPerson: BillWithPerson,
-    formatter: NumberFormat,
-) {
+private fun RecentBillCard(billWithPerson: BillWithPerson) {
     val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
     val dateString = dateFormat.format(java.util.Date(billWithPerson.bill.createdAt))
 
@@ -289,7 +284,7 @@ private fun RecentBillCard(
         // Amount & Status
         Column(horizontalAlignment = Alignment.End) {
             Text(
-                text = formatter.format(billWithPerson.bill.grandTotal),
+                text = formatMoney(billWithPerson.bill.grandTotal),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 15.sp,

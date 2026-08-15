@@ -11,4 +11,3 @@ app/build/
 local.properties
 graphify-out/
 opencode.json
-*.md

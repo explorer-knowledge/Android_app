@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.Product
 import com.example.billease.ui.components.ProfileIconButton
+import com.example.billease.util.formatMoney
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -186,7 +187,10 @@ fun ProductListItem(
         ) {
             Column {
                 Text(text = product.name, style = MaterialTheme.typography.titleMedium)
-                Text(text = "${String.format("$%.2f", product.unitPrice)} / ${product.unit}", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = "${formatMoney(product.unitPrice)} / ${product.unit}",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
                 if (product.taxPercent > 0) {
                     Text(text = "Tax: ${product.taxPercent}%", style = MaterialTheme.typography.bodySmall)
                 }

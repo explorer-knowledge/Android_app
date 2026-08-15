@@ -153,10 +153,10 @@ object PdfGenerator {
 
             canvas.drawText(nameText, MARGIN_LEFT, yPos, paint)
             canvas.drawText(item.quantity.toString(), MARGIN_LEFT + 250f, yPos, paint)
-            canvas.drawText(String.format(Locale.getDefault(), "%.2f", item.unitPriceSnapshot), MARGIN_LEFT + 320f, yPos, paint)
+            canvas.drawText(formatMoney(item.unitPriceSnapshot), MARGIN_LEFT + 320f, yPos, paint)
             canvas.drawText(String.format(Locale.getDefault(), "%.1f%%", item.taxPercentSnapshot), MARGIN_LEFT + 390f, yPos, paint)
 
-            val totalStr = String.format(Locale.getDefault(), "%.2f", item.lineTotal)
+            val totalStr = formatMoney(item.lineTotal)
             canvas.drawText(totalStr, MARGIN_RIGHT - paint.measureText(totalStr), yPos, paint)
             yPos += 20f
         }
@@ -169,10 +169,10 @@ object PdfGenerator {
         yPos += 20f
 
         // Totals
-        val subtotalStr = String.format(Locale.getDefault(), "%.2f", data.bill.subtotal)
-        val taxTotalStr = String.format(Locale.getDefault(), "%.2f", data.bill.taxTotal)
-        val discountStr = String.format(Locale.getDefault(), "%.2f", data.bill.discount)
-        val grandTotalStr = String.format(Locale.getDefault(), "%.2f", data.bill.grandTotal)
+        val subtotalStr = formatMoney(data.bill.subtotal)
+        val taxTotalStr = formatMoney(data.bill.taxTotal)
+        val discountStr = formatMoney(data.bill.discount)
+        val grandTotalStr = formatMoney(data.bill.grandTotal)
 
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
         canvas.drawText("Subtotal:", MARGIN_LEFT + 350f, yPos, paint)

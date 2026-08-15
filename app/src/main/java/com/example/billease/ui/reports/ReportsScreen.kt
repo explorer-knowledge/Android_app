@@ -26,8 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.ui.components.ProfileIconButton
-import java.text.NumberFormat
-import java.util.Locale
+import com.example.billease.util.formatMoney
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Suppress("FunctionNaming", "LongMethod")
@@ -40,8 +39,6 @@ fun ReportsScreen(
     val totalRevenue by viewModel.totalRevenue.collectAsState()
     val billsThisMonth by viewModel.billsThisMonth.collectAsState()
     val revenueThisMonth by viewModel.revenueThisMonth.collectAsState()
-
-    val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.getDefault())
 
     Scaffold(
         topBar = {
@@ -66,7 +63,7 @@ fun ReportsScreen(
                 StatCard(label = "Bills", value = billsThisMonth.toString(), modifier = Modifier.weight(1f))
                 StatCard(
                     label = "Revenue",
-                    value = currencyFormatter.format(revenueThisMonth),
+                    value = formatMoney(revenueThisMonth),
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -81,7 +78,7 @@ fun ReportsScreen(
                 StatCard(label = "Total Bills", value = totalBillCount.toString(), modifier = Modifier.weight(1f))
                 StatCard(
                     label = "Total Revenue",
-                    value = currencyFormatter.format(totalRevenue),
+                    value = formatMoney(totalRevenue),
                     modifier = Modifier.weight(1f),
                 )
             }

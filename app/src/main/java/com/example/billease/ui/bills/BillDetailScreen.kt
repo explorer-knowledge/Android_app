@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.BillItem
 import com.example.billease.ui.components.ProfileIconButton
+import com.example.billease.util.formatMoney
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -206,10 +207,10 @@ fun BillDetailScreen(
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                 ) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        DetailRow("Subtotal", "₹%.2f".format(bill.subtotal))
-                        DetailRow("Tax", "₹%.2f".format(bill.taxTotal))
+                        DetailRow("Subtotal", formatMoney(bill.subtotal))
+                        DetailRow("Tax", formatMoney(bill.taxTotal))
                         if (bill.discount > 0) {
-                            DetailRow("Discount", "- ₹%.2f".format(bill.discount))
+                            DetailRow("Discount", "- ${formatMoney(bill.discount)}")
                         }
                         DetailRow("Status", bill.paymentStatus)
                         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
@@ -219,7 +220,7 @@ fun BillDetailScreen(
                         ) {
                             Text("Grand Total", style = MaterialTheme.typography.titleMedium)
                             Text(
-                                "₹%.2f".format(bill.grandTotal),
+                                formatMoney(bill.grandTotal),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.primary,
                             )
@@ -252,13 +253,13 @@ private fun LineItemDetailRow(item: BillItem) {
         Column(modifier = Modifier.weight(1f)) {
             Text(item.productNameSnapshot, style = MaterialTheme.typography.bodyMedium)
             Text(
-                "${item.quantity} × ₹%.2f".format(item.unitPriceSnapshot) +
+                "${item.quantity} × ${formatMoney(item.unitPriceSnapshot)}" +
                     if (item.taxPercentSnapshot > 0) " + ${item.taxPercentSnapshot}% tax" else "",
                 style = MaterialTheme.typography.bodySmall,
             )
         }
         Text(
-            "₹%.2f".format(item.lineTotal),
+            formatMoney(item.lineTotal),
             style = MaterialTheme.typography.bodyMedium,
         )
     }

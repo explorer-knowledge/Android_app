@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.Bill
 import com.example.billease.ui.components.ProfileIconButton
+import com.example.billease.util.formatMoney
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -146,7 +147,7 @@ fun BillHistoryItem(
                 Text(text = dateString, style = MaterialTheme.typography.bodyMedium)
             }
             Text(
-                text = String.format("$%.2f", bill.grandTotal),
+                text = formatMoney(bill.grandTotal),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
