@@ -28,6 +28,7 @@ data class BillItem(
     val billId: Long,
     val productId: Long,
     val productNameSnapshot: String,
+    val unitSnapshot: String,
     val quantity: Double,
     val unitPriceSnapshot: Double,
     val taxPercentSnapshot: Double,

@@ -88,6 +88,7 @@ class BillCalculatorTest {
 
         assertEquals(7L, item.productId)
         assertEquals("Widget", item.productName)
+        assertEquals("pcs", item.unit)
         assertEquals(9.99, item.unitPrice, 0.001)
         assertEquals(12.5, item.taxPercent, 0.001)
         assertEquals(29.97, item.lineSubtotal, 0.01)

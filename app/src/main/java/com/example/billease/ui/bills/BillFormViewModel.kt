@@ -95,7 +95,7 @@ class BillFormViewModel
                                             id = item.productId,
                                             name = item.productNameSnapshot,
                                             unitPrice = item.unitPriceSnapshot,
-                                            unit = "",
+                                            unit = item.unitSnapshot,
                                             taxPercent = item.taxPercentSnapshot,
                                         ),
                                     quantityText =
@@ -294,6 +294,7 @@ class BillFormViewModel
                                 billId = 0L,
                                 productId = input.productId,
                                 productNameSnapshot = input.productName,
+                                unitSnapshot = input.unit,
                                 unitPriceSnapshot = input.unitPrice,
                                 taxPercentSnapshot = input.taxPercent,
                                 quantity = input.quantity,

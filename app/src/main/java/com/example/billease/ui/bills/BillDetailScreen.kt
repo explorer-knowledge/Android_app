@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.BillItem
 import com.example.billease.ui.components.ProfileIconButton
+import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatMoney
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -207,10 +208,10 @@ fun BillDetailScreen(
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                 ) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        DetailRow("Subtotal", formatMoney(bill.subtotal))
-                        DetailRow("Tax", formatMoney(bill.taxTotal))
+                        DetailRow("Subtotal", formatMoney(bill.subtotal, LocalCurrencyCode.current))
+                        DetailRow("Tax", formatMoney(bill.taxTotal, LocalCurrencyCode.current))
                         if (bill.discount > 0) {
-                            DetailRow("Discount", "- ${formatMoney(bill.discount)}")
+                            DetailRow("Discount", "- ${formatMoney(bill.discount, LocalCurrencyCode.current)}")
                         }
                         DetailRow("Status", bill.paymentStatus)
                         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
@@ -220,7 +221,7 @@ fun BillDetailScreen(
                         ) {
                             Text("Grand Total", style = MaterialTheme.typography.titleMedium)
                             Text(
-                                formatMoney(bill.grandTotal),
+                                formatMoney(bill.grandTotal, LocalCurrencyCode.current),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.primary,
                             )
@@ -253,13 +254,14 @@ private fun LineItemDetailRow(item: BillItem) {
         Column(modifier = Modifier.weight(1f)) {
             Text(item.productNameSnapshot, style = MaterialTheme.typography.bodyMedium)
             Text(
-                "${item.quantity} × ${formatMoney(item.unitPriceSnapshot)}" +
+                "${item.quantity} ${item.unitSnapshot} × " +
+                    formatMoney(item.unitPriceSnapshot, LocalCurrencyCode.current) +
                     if (item.taxPercentSnapshot > 0) " + ${item.taxPercentSnapshot}% tax" else "",
                 style = MaterialTheme.typography.bodySmall,
             )
         }
         Text(
-            formatMoney(item.lineTotal),
+            formatMoney(item.lineTotal, LocalCurrencyCode.current),
             style = MaterialTheme.typography.bodyMedium,
         )
     }

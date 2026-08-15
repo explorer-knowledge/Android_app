@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +26,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +39,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.util.SUPPORTED_CURRENCIES
+import com.example.billease.util.currencyLabel
 import java.io.File
 import java.io.FileOutputStream
 
@@ -52,12 +58,14 @@ fun SettingsScreen(
     var address by remember { mutableStateOf("") }
     var logoPath by remember { mutableStateOf<String?>(null) }
     var invoicePrefix by remember { mutableStateOf("BILL-") }
+    var currencyCode by remember { mutableStateOf("INR") }
 
     LaunchedEffect(settings) {
         businessName = settings.businessName
         address = settings.address
         logoPath = settings.logoUri
         invoicePrefix = settings.invoicePrefix
+        currencyCode = settings.currencyCode
     }
 
     val pickMedia =
@@ -120,6 +128,13 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(16.dp))
 
+            CurrencyDropdown(
+                currencyCode = currencyCode,
+                onCurrencySelected = { currencyCode = it },
+            )
+
+            Spacer(Modifier.height(16.dp))
+
             Text("Logo: ${if (logoPath != null) "Selected" else "Not selected"}")
 
             Spacer(Modifier.height(8.dp))
@@ -145,12 +160,44 @@ fun SettingsScreen(
 
             Button(
                 onClick = {
-                    viewModel.updateSettings(businessName, address, logoPath, invoicePrefix)
+                    viewModel.updateSettings(businessName, address, logoPath, invoicePrefix, currencyCode)
                     onNavigateBack()
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text("Save Settings")
+            }
+        }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun CurrencyDropdown(
+    currencyCode: String,
+    onCurrencySelected: (String) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        OutlinedTextField(
+            value = currencyLabel(currencyCode),
+            onValueChange = {},
+            label = { Text("Currency") },
+            modifier = Modifier.fillMaxWidth(),
+            readOnly = true,
+            trailingIcon = {
+                TextButton(onClick = { expanded = true }) { Text("Select") }
+            },
+        )
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            SUPPORTED_CURRENCIES.forEach { code ->
+                DropdownMenuItem(
+                    text = { Text(currencyLabel(code)) },
+                    onClick = {
+                        onCurrencySelected(code)
+                        expanded = false
+                    },
+                )
             }
         }
     }

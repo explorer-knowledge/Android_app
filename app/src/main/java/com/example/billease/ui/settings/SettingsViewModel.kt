@@ -30,9 +30,10 @@ class SettingsViewModel
             address: String,
             logoUri: String?,
             invoicePrefix: String = "BILL-",
+            currencyCode: String = "INR",
         ) {
             viewModelScope.launch {
-                repository.updateSettings(businessName, address, logoUri, invoicePrefix)
+                repository.updateSettings(businessName, address, logoUri, invoicePrefix, currencyCode)
             }
         }
     }

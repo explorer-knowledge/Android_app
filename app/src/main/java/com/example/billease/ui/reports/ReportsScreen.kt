@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.ui.components.ProfileIconButton
+import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatMoney
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,7 +64,7 @@ fun ReportsScreen(
                 StatCard(label = "Bills", value = billsThisMonth.toString(), modifier = Modifier.weight(1f))
                 StatCard(
                     label = "Revenue",
-                    value = formatMoney(revenueThisMonth),
+                    value = formatMoney(revenueThisMonth, LocalCurrencyCode.current),
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -78,7 +79,7 @@ fun ReportsScreen(
                 StatCard(label = "Total Bills", value = totalBillCount.toString(), modifier = Modifier.weight(1f))
                 StatCard(
                     label = "Total Revenue",
-                    value = formatMoney(totalRevenue),
+                    value = formatMoney(totalRevenue, LocalCurrencyCode.current),
                     modifier = Modifier.weight(1f),
                 )
             }

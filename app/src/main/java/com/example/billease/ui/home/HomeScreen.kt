@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.BillWithPerson
+import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatMoney
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -150,7 +151,7 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = formatMoney(revenueThisMonth),
+                    text = formatMoney(revenueThisMonth, LocalCurrencyCode.current),
                     color = Color.White,
                     fontSize = 44.sp,
                     fontWeight = FontWeight.Bold,
@@ -158,7 +159,9 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "${formatMoney(revenueThisMonth)} in sales • $billsThisMonth total bills",
+                    text =
+                        "${formatMoney(revenueThisMonth, LocalCurrencyCode.current)} in sales • " +
+                            "$billsThisMonth total bills",
                     color = Color(0xFF64748B),
                     fontSize = 13.sp,
                 )
@@ -284,7 +287,7 @@ private fun RecentBillCard(billWithPerson: BillWithPerson) {
         // Amount & Status
         Column(horizontalAlignment = Alignment.End) {
             Text(
-                text = formatMoney(billWithPerson.bill.grandTotal),
+                text = formatMoney(billWithPerson.bill.grandTotal, LocalCurrencyCode.current),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 15.sp,

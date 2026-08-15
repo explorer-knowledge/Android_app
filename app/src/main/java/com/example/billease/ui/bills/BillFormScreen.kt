@@ -52,6 +52,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.Person
 import com.example.billease.data.Product
 import com.example.billease.ui.components.ProfileIconButton
+import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatMoney
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -395,7 +396,10 @@ private fun LineItemRow(
                 // Live line total
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
                     Text("Line Total", style = MaterialTheme.typography.labelSmall)
-                    Text(formatMoney(row.lineTotal), style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        formatMoney(row.lineTotal, LocalCurrencyCode.current),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
                 }
             }
         }
@@ -415,17 +419,17 @@ private fun TotalsSummaryCard(
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("Subtotal", style = MaterialTheme.typography.bodyMedium)
-                Text(formatMoney(subtotal), style = MaterialTheme.typography.bodyMedium)
+                Text(formatMoney(subtotal, LocalCurrencyCode.current), style = MaterialTheme.typography.bodyMedium)
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("Tax", style = MaterialTheme.typography.bodyMedium)
-                Text(formatMoney(taxTotal), style = MaterialTheme.typography.bodyMedium)
+                Text(formatMoney(taxTotal, LocalCurrencyCode.current), style = MaterialTheme.typography.bodyMedium)
             }
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("Grand Total", style = MaterialTheme.typography.titleMedium)
                 Text(
-                    formatMoney(grandTotal),
+                    formatMoney(grandTotal, LocalCurrencyCode.current),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )

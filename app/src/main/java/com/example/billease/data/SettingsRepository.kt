@@ -20,6 +20,7 @@ data class AppSettings(
     // File path to internal storage copy
     val logoUri: String?,
     val invoicePrefix: String = "BILL-",
+    val currencyCode: String = "INR",
 )
 
 @Singleton
@@ -35,6 +36,7 @@ class SettingsRepository
             val ADDRESS = stringPreferencesKey("address")
             val LOGO_URI = stringPreferencesKey("logo_uri")
             val INVOICE_PREFIX = stringPreferencesKey("invoice_prefix")
+            val CURRENCY_CODE = stringPreferencesKey("currency_code")
         }
 
         val appSettingsFlow: Flow<AppSettings> =
@@ -44,6 +46,7 @@ class SettingsRepository
                     address = preferences[PreferencesKeys.ADDRESS] ?: "",
                     logoUri = preferences[PreferencesKeys.LOGO_URI],
                     invoicePrefix = preferences[PreferencesKeys.INVOICE_PREFIX] ?: "BILL-",
+                    currencyCode = preferences[PreferencesKeys.CURRENCY_CODE] ?: "INR",
                 )
             }
 
@@ -52,11 +55,13 @@ class SettingsRepository
             address: String,
             logoUri: String?,
             invoicePrefix: String = "BILL-",
+            currencyCode: String = "INR",
         ) {
             dataStore.edit { preferences ->
                 preferences[PreferencesKeys.BUSINESS_NAME] = businessName
                 preferences[PreferencesKeys.ADDRESS] = address
                 preferences[PreferencesKeys.INVOICE_PREFIX] = invoicePrefix
+                preferences[PreferencesKeys.CURRENCY_CODE] = currencyCode
                 if (logoUri != null) {
                     preferences[PreferencesKeys.LOGO_URI] = logoUri
                 } else {

@@ -11,6 +11,8 @@ data class BillItemInput(
     // snapshot
     val productName: String,
     // snapshot
+    val unit: String,
+    // snapshot
     val unitPrice: Double,
     // snapshot
     val taxPercent: Double,
@@ -23,6 +25,7 @@ data class BillItemInput(
         ) = BillItemInput(
             productId = product.id,
             productName = product.name,
+            unit = product.unit,
             unitPrice = product.unitPrice,
             taxPercent = product.taxPercent,
             quantity = quantity,
