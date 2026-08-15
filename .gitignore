@@ -11,3 +11,6 @@ app/build/
 local.properties
 graphify-out/
 opencode.json
+.agents/
+AGENTS.md
+skills-lock.json
