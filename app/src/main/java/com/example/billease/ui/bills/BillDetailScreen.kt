@@ -45,6 +45,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.BillItem
+import com.example.billease.ui.components.ProfileIconButton
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -55,6 +56,7 @@ import java.util.Locale
 fun BillDetailScreen(
     onNavigateBack: () -> Unit,
     onNavigateToEdit: (Long) -> Unit,
+    onNavigateToSettings: () -> Unit,
     viewModel: BillDetailViewModel = hiltViewModel(),
 ) {
     val billData by viewModel.bill.collectAsState()
@@ -130,6 +132,7 @@ fun BillDetailScreen(
                             Icon(Icons.Default.Edit, contentDescription = "Edit")
                         }
                     }
+                    ProfileIconButton(onClick = onNavigateToSettings)
                 },
             )
         },

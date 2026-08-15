@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.Person
 import com.example.billease.data.Product
+import com.example.billease.ui.components.ProfileIconButton
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -59,6 +60,7 @@ import java.util.Locale
 @Composable
 fun BillFormScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     viewModel: BillFormViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -112,6 +114,7 @@ fun BillFormScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
+                actions = { ProfileIconButton(onClick = onNavigateToSettings) },
             )
         },
     ) { padding ->

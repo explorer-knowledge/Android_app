@@ -102,6 +102,17 @@ interface BillDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBill(bill: Bill): Long
 
+    @Query("SELECT lastNumber FROM bill_sequences WHERE prefix = :prefix")
+    suspend fun getLastBillNumber(prefix: String): Long?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertBillSequence(sequence: BillSequence)
+
+    suspend fun peekNextBillNumber(prefix: String): String {
+        val nextNumber = (getLastBillNumber(prefix) ?: 0L) + 1L
+        return formatBillNumber(prefix, nextNumber)
+    }
+
     @Update
     suspend fun updateBill(bill: Bill)
 
@@ -124,8 +135,12 @@ interface BillDao {
     suspend fun insertBillWithItems(
         bill: Bill,
         items: List<BillItem>,
+        prefix: String,
     ): Long {
-        val billId = insertBill(bill)
+        val nextNumber = (getLastBillNumber(prefix) ?: 0L) + 1L
+        upsertBillSequence(BillSequence(prefix, nextNumber))
+        val billWithNumber = bill.copy(billNumber = formatBillNumber(prefix, nextNumber))
+        val billId = insertBill(billWithNumber)
         val itemsWithBillId = items.map { it.copy(billId = billId) }
         insertBillItems(itemsWithBillId)
         return billId

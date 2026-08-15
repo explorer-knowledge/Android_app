@@ -28,7 +28,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             "billease_database",
         )
-            .addMigrations(MIGRATION_2_3)
+            .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
             // Pre-release: destructive migration acceptable while there is no shipped user data.
             // Remove this before the first production release and replace with proper Migrations.
             .fallbackToDestructiveMigration()
@@ -50,5 +50,13 @@ val MIGRATION_2_3 =
     object : Migration(2, 3) {
         override fun migrate(db: SupportSQLiteDatabase) {
             db.execSQL("ALTER TABLE bills ADD COLUMN paymentStatus TEXT NOT NULL DEFAULT 'PENDING'")
+        }
+    }
+
+@Suppress("MagicNumber")
+val MIGRATION_3_4 =
+    object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("CREATE TABLE IF NOT EXISTS bill_sequences (prefix TEXT NOT NULL, lastNumber INTEGER NOT NULL, PRIMARY KEY(prefix))")
         }
     }

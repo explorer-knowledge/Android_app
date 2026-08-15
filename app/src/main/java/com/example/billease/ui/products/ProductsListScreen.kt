@@ -42,11 +42,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.Product
+import com.example.billease.ui.components.ProfileIconButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductsListScreen(
     onNavigateToProductForm: (Long?) -> Unit,
+    onNavigateToSettings: () -> Unit,
     viewModel: ProductsViewModel = hiltViewModel(),
 ) {
     val products by viewModel.products.collectAsState()
@@ -59,6 +61,7 @@ fun ProductsListScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Products") },
+                actions = { ProfileIconButton(onClick = onNavigateToSettings) },
             )
         },
         floatingActionButton = {

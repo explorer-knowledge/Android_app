@@ -1,14 +1,13 @@
 package com.example.billease.navigation
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -19,7 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -49,6 +50,9 @@ fun AppNavigation() {
     val bottomNavRoutes = listOf("home", "reports", "bills_list", "products_list", "persons_list")
     val showBottomNav = currentRoute in bottomNavRoutes
 
+    val onNavigateToSettings = { navController.navigate("settings") }
+    val onNavigateToBillForm = { navController.navigate("bill_form/-1") }
+
     Scaffold(
         bottomBar = {
             if (showBottomNav) {
@@ -56,98 +60,41 @@ fun AppNavigation() {
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentColor = MaterialTheme.colorScheme.onSurface,
                 ) {
-                    NavigationBarItem(
-                        icon = { Icon(Icons.Default.DateRange, contentDescription = "Reports") },
-                        label = { Text("Reports") },
-                        selected = currentRoute == "reports",
-                        onClick = {
-                            navController.navigate("reports") {
-                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        colors =
-                            NavigationBarItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.primary,
-                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            ),
+                    BottomNavItem(
+                        route = "reports",
+                        currentRoute = currentRoute,
+                        icon = Icons.Default.DateRange,
+                        label = "Reports",
+                        navController = navController,
                     )
-                    NavigationBarItem(
-                        icon = { Icon(Icons.Default.Menu, contentDescription = "Bills") },
-                        label = { Text("Bills") },
-                        selected = currentRoute == "bills_list",
-                        onClick = {
-                            navController.navigate("bills_list") {
-                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        colors =
-                            NavigationBarItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.primary,
-                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            ),
+                    BottomNavItem(
+                        route = "bills_list",
+                        currentRoute = currentRoute,
+                        icon = Icons.Default.Menu,
+                        label = "Bills",
+                        navController = navController,
                     )
-
-                    // Invisible item to make space for the FAB in the center (optional, since NavigationBar just spaces evenly)
-                    // If we want a true center FAB cutout, we would use BottomAppBar. Here we just rely on NavigationBar's spacing
-                    // or add an empty item. For simplicity in Material 3, we just let it overlap if needed, or add a blank spacer.
-                    NavigationBarItem(
-                        icon = { },
-                        label = { },
-                        selected = false,
-                        onClick = { },
-                        enabled = false,
+                    BottomNavItem(
+                        route = "home",
+                        currentRoute = currentRoute,
+                        icon = Icons.Default.Home,
+                        label = "Home",
+                        navController = navController,
                     )
-
-                    NavigationBarItem(
-                        icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Products") },
-                        label = { Text("Products") },
-                        selected = currentRoute == "products_list",
-                        onClick = {
-                            navController.navigate("products_list") {
-                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        colors =
-                            NavigationBarItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.primary,
-                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            ),
+                    BottomNavItem(
+                        route = "products_list",
+                        currentRoute = currentRoute,
+                        icon = Icons.Default.ShoppingCart,
+                        label = "Products",
+                        navController = navController,
                     )
-                    NavigationBarItem(
-                        icon = { Icon(Icons.Default.Person, contentDescription = "Customers") },
-                        label = { Text("Customers") },
-                        selected = currentRoute == "persons_list",
-                        onClick = {
-                            navController.navigate("persons_list") {
-                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        colors =
-                            NavigationBarItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.primary,
-                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            ),
+                    BottomNavItem(
+                        route = "persons_list",
+                        currentRoute = currentRoute,
+                        icon = Icons.Default.Person,
+                        label = "Customers",
+                        navController = navController,
                     )
-                }
-            }
-        },
-        floatingActionButtonPosition = FabPosition.Center,
-        floatingActionButton = {
-            if (showBottomNav) {
-                FloatingActionButton(
-                    onClick = { navController.navigate("bill_form/-1") },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "New Bill")
                 }
             }
         },
@@ -160,14 +107,14 @@ fun AppNavigation() {
             // ── Home Dashboard ────────────────────────────────────────────────────
             composable("home") {
                 HomeScreen(
-                    onNavigateToSettings = { navController.navigate("settings") },
+                    onNavigateToSettings = onNavigateToSettings,
                     onNavigateToBills = { navController.navigate("bills_list") },
                 )
             }
 
             // ── Reports Placeholder ───────────────────────────────────────────────
             composable("reports") {
-                ReportsScreen()
+                ReportsScreen(onNavigateToSettings = onNavigateToSettings)
             }
 
             // ── Settings ──────────────────────────────────────────────────────────
@@ -182,6 +129,7 @@ fun AppNavigation() {
                     onNavigateToPersonForm = { id ->
                         navController.navigate("person_form/${id ?: -1L}")
                     },
+                    onNavigateToSettings = onNavigateToSettings,
                 )
             }
 
@@ -189,7 +137,10 @@ fun AppNavigation() {
                 route = "person_form/{personId}",
                 arguments = listOf(navArgument("personId") { type = NavType.LongType }),
             ) {
-                PersonFormScreen(onNavigateBack = { navController.popBackStack() })
+                PersonFormScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToSettings = onNavigateToSettings,
+                )
             }
 
             composable(
@@ -200,6 +151,7 @@ fun AppNavigation() {
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToEdit = { navController.navigate("person_form/$it") },
                     onNavigateToBillDetail = { navController.navigate("bill_detail/$it") },
+                    onNavigateToSettings = onNavigateToSettings,
                 )
             }
 
@@ -209,6 +161,7 @@ fun AppNavigation() {
                     onNavigateToProductForm = { id ->
                         navController.navigate("product_form/${id ?: -1L}")
                     },
+                    onNavigateToSettings = onNavigateToSettings,
                 )
             }
 
@@ -216,13 +169,18 @@ fun AppNavigation() {
                 route = "product_form/{productId}",
                 arguments = listOf(navArgument("productId") { type = NavType.LongType }),
             ) {
-                ProductFormScreen(onNavigateBack = { navController.popBackStack() })
+                ProductFormScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToSettings = onNavigateToSettings,
+                )
             }
 
             // ── Bills ─────────────────────────────────────────────────────────────
             composable("bills_list") {
                 BillsListScreen(
                     onNavigateToBillDetail = { navController.navigate("bill_detail/$it") },
+                    onNavigateToBillForm = onNavigateToBillForm,
+                    onNavigateToSettings = onNavigateToSettings,
                 )
             }
 
@@ -230,7 +188,10 @@ fun AppNavigation() {
                 route = "bill_form/{billId}",
                 arguments = listOf(navArgument("billId") { type = NavType.LongType }),
             ) {
-                BillFormScreen(onNavigateBack = { navController.popBackStack() })
+                BillFormScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToSettings = onNavigateToSettings,
+                )
             }
 
             composable(
@@ -240,8 +201,36 @@ fun AppNavigation() {
                 BillDetailScreen(
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToEdit = { navController.navigate("bill_form/$it") },
+                    onNavigateToSettings = onNavigateToSettings,
                 )
             }
         }
     }
+}
+
+@Composable
+private fun RowScope.BottomNavItem(
+    route: String,
+    currentRoute: String?,
+    icon: ImageVector,
+    label: String,
+    navController: NavHostController,
+) {
+    NavigationBarItem(
+        icon = { Icon(icon, contentDescription = label) },
+        label = { Text(label) },
+        selected = currentRoute == route,
+        onClick = {
+            navController.navigate(route) {
+                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                launchSingleTop = true
+                restoreState = true
+            }
+        },
+        colors =
+            NavigationBarItemDefaults.colors(
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
+    )
 }

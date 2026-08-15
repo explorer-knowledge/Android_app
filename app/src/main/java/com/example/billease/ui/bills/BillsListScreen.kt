@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -25,6 +26,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -49,6 +51,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.BillWithPerson
+import com.example.billease.ui.components.ProfileIconButton
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -57,6 +60,8 @@ import java.util.Locale
 @Composable
 fun BillsListScreen(
     onNavigateToBillDetail: (Long) -> Unit,
+    onNavigateToBillForm: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     viewModel: BillsViewModel = hiltViewModel(),
 ) {
     val bills by viewModel.bills.collectAsState()
@@ -67,7 +72,17 @@ fun BillsListScreen(
     var snackbarMsg by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Bills") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Bills") },
+                actions = { ProfileIconButton(onClick = onNavigateToSettings) },
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onNavigateToBillForm) {
+                Icon(Icons.Default.Add, contentDescription = "New Bill")
+            }
+        },
         snackbarHost = {
             snackbarMsg?.let { msg ->
                 Snackbar(

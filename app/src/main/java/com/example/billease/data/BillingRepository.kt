@@ -74,7 +74,10 @@ class BillingRepository
         suspend fun insertBillWithItems(
             bill: Bill,
             items: List<BillItem>,
-        ): Long = billDao.insertBillWithItems(bill, items)
+            prefix: String,
+        ): Long = billDao.insertBillWithItems(bill, items, prefix)
+
+        suspend fun peekNextBillNumber(prefix: String): String = billDao.peekNextBillNumber(prefix)
 
         suspend fun updateBillWithItems(
             bill: Bill,

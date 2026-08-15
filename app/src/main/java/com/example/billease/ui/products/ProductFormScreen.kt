@@ -24,11 +24,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.ui.components.ProfileIconButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductFormScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     viewModel: ProductFormViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -42,6 +44,7 @@ fun ProductFormScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
+                actions = { ProfileIconButton(onClick = onNavigateToSettings) },
             )
         },
     ) { padding ->

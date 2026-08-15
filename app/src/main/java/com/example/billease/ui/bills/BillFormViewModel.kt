@@ -20,9 +20,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 /** One editable row in the bill form. */
@@ -70,6 +67,7 @@ class BillFormViewModel
     ) : ViewModel() {
         private val billId: Long = savedStateHandle.get<Long>("billId") ?: -1L
         private val isEditMode: Boolean = billId != -1L
+        private var invoicePrefix: String = "BILL-"
 
         private val _uiState = MutableStateFlow(BillFormUiState())
         val uiState: StateFlow<BillFormUiState> = _uiState.asStateFlow()
@@ -130,14 +128,11 @@ class BillFormViewModel
                     }
                 } else {
                     val settings = settingsRepository.appSettingsFlow.first()
-                    _uiState.update { it.copy(billNumber = generateBillNumber(settings.invoicePrefix)) }
+                    invoicePrefix = settings.invoicePrefix
+                    val nextNumber = repository.peekNextBillNumber(invoicePrefix)
+                    _uiState.update { it.copy(billNumber = nextNumber) }
                 }
             }
-        }
-
-        private fun generateBillNumber(prefix: String): String {
-            val sdf = SimpleDateFormat("yyyyMMdd-HHmmss", Locale.getDefault())
-            return "${prefix}${sdf.format(Date())}"
         }
 
         fun selectPerson(person: Person) {
@@ -309,7 +304,7 @@ class BillFormViewModel
                     if (isEditMode) {
                         repository.updateBillWithItems(bill, billItems)
                     } else {
-                        repository.insertBillWithItems(bill, billItems)
+                        repository.insertBillWithItems(bill, billItems, invoicePrefix)
                     }
                     onSuccess()
                 } finally {

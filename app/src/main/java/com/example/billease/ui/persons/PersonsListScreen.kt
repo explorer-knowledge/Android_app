@@ -42,12 +42,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.Person
+import com.example.billease.ui.components.ProfileIconButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PersonsListScreen(
     onNavigateToPersonDetail: (Long) -> Unit,
     onNavigateToPersonForm: (Long?) -> Unit,
+    onNavigateToSettings: () -> Unit,
     viewModel: PersonsViewModel = hiltViewModel(),
 ) {
     val persons by viewModel.persons.collectAsState()
@@ -60,6 +62,7 @@ fun PersonsListScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Persons") },
+                actions = { ProfileIconButton(onClick = onNavigateToSettings) },
             )
         },
         floatingActionButton = {

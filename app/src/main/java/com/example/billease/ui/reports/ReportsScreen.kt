@@ -25,13 +25,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.ui.components.ProfileIconButton
 import java.text.NumberFormat
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Suppress("FunctionNaming", "LongMethod")
 @Composable
-fun ReportsScreen(viewModel: ReportsViewModel = hiltViewModel()) {
+fun ReportsScreen(
+    onNavigateToSettings: () -> Unit,
+    viewModel: ReportsViewModel = hiltViewModel(),
+) {
     val totalBillCount by viewModel.totalBillCount.collectAsState()
     val totalRevenue by viewModel.totalRevenue.collectAsState()
     val billsThisMonth by viewModel.billsThisMonth.collectAsState()
@@ -40,7 +44,12 @@ fun ReportsScreen(viewModel: ReportsViewModel = hiltViewModel()) {
     val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.getDefault())
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Reports") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Reports") },
+                actions = { ProfileIconButton(onClick = onNavigateToSettings) },
+            )
+        },
     ) { padding ->
         Column(
             modifier =

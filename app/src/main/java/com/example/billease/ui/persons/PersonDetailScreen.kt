@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.Bill
+import com.example.billease.ui.components.ProfileIconButton
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -40,6 +41,7 @@ fun PersonDetailScreen(
     onNavigateBack: () -> Unit,
     onNavigateToEdit: (Long) -> Unit,
     onNavigateToBillDetail: (Long) -> Unit,
+    onNavigateToSettings: () -> Unit,
     viewModel: PersonDetailViewModel = hiltViewModel(),
 ) {
     val person by viewModel.person.collectAsState()
@@ -60,6 +62,7 @@ fun PersonDetailScreen(
                             Icon(Icons.Default.Edit, contentDescription = "Edit Person")
                         }
                     }
+                    ProfileIconButton(onClick = onNavigateToSettings)
                 },
             )
         },
