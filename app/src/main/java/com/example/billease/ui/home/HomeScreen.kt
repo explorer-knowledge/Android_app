@@ -231,11 +231,12 @@ private fun RecentBillCard(
     val dateString = dateFormat.format(java.util.Date(billWithPerson.bill.createdAt))
 
     val statusText = billWithPerson.bill.paymentStatus
-    val (statusColor, statusBg) = when (statusText.uppercase()) {
-        "PAID" -> Color(0xFF22C55E) to Color(0xFF14532D)
-        "OVERDUE" -> Color(0xFFEF4444) to Color(0xFF7F1D1D)
-        else -> Color(0xFFF59E0B) to Color(0xFF78350F)
-    }
+    val (statusColor, statusBg) =
+        when (statusText.uppercase()) {
+            "PAID" -> Color(0xFF22C55E) to Color(0xFF14532D)
+            "OVERDUE" -> Color(0xFFEF4444) to Color(0xFF7F1D1D)
+            else -> Color(0xFFF59E0B) to Color(0xFF78350F)
+        }
 
     Row(
         modifier =

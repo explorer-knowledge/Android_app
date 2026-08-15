@@ -1,15 +1,12 @@
 package com.example.billease.ui.bills
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.Delete
@@ -42,6 +40,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.data.BillWithPerson
@@ -181,16 +181,18 @@ private fun BillListItem(
                     Text(bill.billNumber, style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.width(8.dp))
                     val statusText = bill.paymentStatus
-                    val (statusColor, statusBg) = when (statusText.uppercase()) {
-                        "PAID" -> Color(0xFF15803D) to Color(0xFFDCFCE7)
-                        "OVERDUE" -> Color(0xFFB91C1C) to Color(0xFFFEE2E2)
-                        else -> Color(0xFFB45309) to Color(0xFFFEF3C7)
-                    }
+                    val (statusColor, statusBg) =
+                        when (statusText.uppercase()) {
+                            "PAID" -> Color(0xFF15803D) to Color(0xFFDCFCE7)
+                            "OVERDUE" -> Color(0xFFB91C1C) to Color(0xFFFEE2E2)
+                            else -> Color(0xFFB45309) to Color(0xFFFEF3C7)
+                        }
                     Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(statusBg)
-                            .padding(horizontal = 6.dp, vertical = 2.dp),
+                        modifier =
+                            Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(statusBg)
+                                .padding(horizontal = 6.dp, vertical = 2.dp),
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
