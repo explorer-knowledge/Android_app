@@ -60,7 +60,10 @@ class SettingsRepository
             dataStore.edit { preferences ->
                 preferences[PreferencesKeys.BUSINESS_NAME] = businessName
                 preferences[PreferencesKeys.ADDRESS] = address
-                preferences[PreferencesKeys.INVOICE_PREFIX] = invoicePrefix
+                // A blank prefix would produce bare-number bill numbers ("0001"); the sequence
+                // table is still keyed correctly either way, but the display value should never
+                // be empty.
+                preferences[PreferencesKeys.INVOICE_PREFIX] = invoicePrefix.ifBlank { "BILL-" }
                 preferences[PreferencesKeys.CURRENCY_CODE] = currencyCode
                 if (logoUri != null) {
                     preferences[PreferencesKeys.LOGO_URI] = logoUri

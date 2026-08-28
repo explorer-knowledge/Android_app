@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.RESTRICT,
         ),
     ],
-    indices = [Index("personId")],
+    indices = [Index("personId"), Index("billNumber", unique = true)],
 )
 data class Bill(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

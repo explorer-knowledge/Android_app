@@ -15,10 +15,12 @@ Native Android (Kotlin + Jetpack Compose + Material 3) billing & invoice app for
 | 2 | `@ForeignKey` + `@Index` constraints (personId, billId, productId) with `onDelete = ForeignKey.RESTRICT` |
 | 3 | Added `bills.paymentStatus` TEXT NOT NULL DEFAULT 'PENDING' |
 | 4 | Added `bill_sequences` table (prefix PK, lastNumber) for sequential bill numbers |
-| 5 | Added `bill_items.unitSnapshot` TEXT (preserves unit in historical bills) |
+| 5 | Added `bill_items.unitSnapshot` TEXT NOT NULL DEFAULT '' (preserves unit in historical bills) |
+| 6 | Added `UNIQUE` index on `bills.billNumber` |
 
-- `MIGRATION_2_3` and `MIGRATION_3_4` live in `di/DatabaseModule.kt` alongside the DB builder. The v4→v5 change has **no migration yet** (deferred to end-of-project migration batch).
-- **Known risk:** the builder still calls `fallbackToDestructiveMigration()` (`DatabaseModule.kt:34`) — any un-migrated schema bump wipes user data. Planned to be replaced with Room `@AutoMigration` + schema export (see `docs/improvements.md` #5 in the Obsidian vault).
+- `MIGRATION_2_3` through `MIGRATION_5_6` all live in `di/DatabaseModule.kt` alongside the DB builder — every version from v2 onward now has a real migration.
+- **Destructive migration is scoped to v1 only**, via `fallbackToDestructiveMigrationFrom(1)`: v1 predates the `ForeignKey`/`RESTRICT` constraints added in v2 (would need a full table recreation, not a plain `ALTER TABLE`) and has no real-world installs to preserve. A missing migration on any future version bump now fails loudly (`IllegalStateException`) instead of silently wiping data.
+- **Not done:** Room `@AutoMigration` + `exportSchema = true` (would remove the need to hand-write future migrations) — deferred because `exportSchema` was never enabled, so there's no historical schema JSON to generate v2→v3/v3→v4/v4→v5/v5→v6 from retroactively; enabling it now would only benefit v6→v7 onward. Revisit alongside the next schema change.
 
 ## Architecture Decisions
 - **Delete behavior:** deletion is blocked (not cascaded). Enforced twice — a ViewModel count check and a DB-level `ForeignKey.RESTRICT`. Attempting to delete a person/product with existing bills fails with a confirmation warning.
@@ -30,10 +32,9 @@ Native Android (Kotlin + Jetpack Compose + Material 3) billing & invoice app for
 - **Lint/quality:** `config/detekt/detekt.yml` overrides detekt's default `FunctionNaming` pattern to allow PascalCase (the Jetpack Compose composable convention); `buildUponDefaultConfig` inherits all other defaults.
 
 ## Known Issues
-A full-codebase audit on 2026-08-29 found 19 gaps (`docs/improvements.md` §C in the vault); the data-integrity batch (`createdAt` overwritten on edit, unvalidated discount, 5 unguarded save/delete paths, 2 hardcoded `₹` sites) has since been fixed. Still open, highest-stakes first:
-- **Date picker values are UTC midnight but read back in local time** — invoice dates are off by one day for UTC-negative offsets (correct in IST, wrong in the Americas).
+A full-codebase audit on 2026-08-29 found 19 gaps (`docs/improvements.md` §C in the vault); most have since been fixed, including the destructive-migration risk (see the Database Migrations note above). Still open, highest-stakes first:
 - **PDF pages are all numbered `1`** and the output stream is never closed (`PdfGenerator.kt:34`, `:224`).
-- `fallbackToDestructiveMigration()` is still live — see the Database Migrations note above.
+- Only `BillCalculatorTest`/`DateUtilsTest` exist; there's still no test exercising the migration chain end-to-end (`MIGRATION_2_3` → `MIGRATION_5_6`) or `BillFormViewModel`'s validation/recalc logic.
 
 Full triage with file:line evidence is `docs/improvements.md` in the Obsidian vault (§C and the verification table).
 
