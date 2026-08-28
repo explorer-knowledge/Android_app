@@ -37,6 +37,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.example.billease.util.localMillisToUtcMidnight
+import com.example.billease.util.utcMidnightToLocalMillis
 
 @Composable
 fun SearchField(
@@ -176,12 +178,13 @@ fun DateSelectionDialog(
     onDateSelected: (Long) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialDateMillis)
+    val datePickerState =
+        rememberDatePickerState(initialSelectedDateMillis = localMillisToUtcMidnight(initialDateMillis))
     DatePickerDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                datePickerState.selectedDateMillis?.let(onDateSelected)
+                datePickerState.selectedDateMillis?.let { onDateSelected(utcMidnightToLocalMillis(it)) }
                 onDismiss()
             }) { Text("OK") }
         },

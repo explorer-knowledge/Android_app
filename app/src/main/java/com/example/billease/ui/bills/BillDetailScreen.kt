@@ -46,11 +46,9 @@ import com.example.billease.data.BillItem
 import com.example.billease.ui.components.DetailTopAppBar
 import com.example.billease.ui.components.ProfileIconButton
 import com.example.billease.util.LocalCurrencyCode
+import com.example.billease.util.formatDateLong
 import com.example.billease.util.formatMoney
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -145,10 +143,7 @@ fun BillDetailScreen(
         val person = data.person
         val items = data.items
 
-        val dateStr =
-            remember(bill.billDate) {
-                SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(Date(bill.billDate))
-            }
+        val dateStr = remember(bill.billDate) { formatDateLong(bill.billDate) }
 
         LazyColumn(
             modifier =
