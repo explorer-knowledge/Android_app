@@ -73,6 +73,15 @@ class BillCalculatorTest {
     }
 
     @Test
+    fun `negative discount never increases the grand total`() {
+        // 2 x 1.50 = 3.00, no tax; a negative "discount" must not inflate the total.
+        val items = listOf(input(product(price = 1.5), qty = 2.0))
+        val result = BillCalculator.calculate(items, discount = -50.0)
+        assertEquals(3.0, result.subtotal, 0.001)
+        assertEquals(3.0, result.grandTotal, 0.001)
+    }
+
+    @Test
     fun `zero quantity item contributes nothing`() {
         val items = listOf(input(product(price = 50.0, tax = 18.0), qty = 0.0))
         val result = BillCalculator.calculate(items)

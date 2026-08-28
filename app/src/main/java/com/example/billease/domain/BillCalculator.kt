@@ -62,7 +62,11 @@ object BillCalculator {
     ): BillCalculationResult {
         val subtotal = items.sumOf { it.lineSubtotal }
         val taxTotal = items.sumOf { it.lineTax }
-        val grandTotal = maxOf(0.0, subtotal + taxTotal - discount)
+        // Defense-in-depth: a negative discount must never increase the total.
+        // Callers (BillFormViewModel) reject negative input before it gets here,
+        // but this keeps the invariant even if a future caller doesn't validate.
+        val safeDiscount = maxOf(0.0, discount)
+        val grandTotal = maxOf(0.0, subtotal + taxTotal - safeDiscount)
         return BillCalculationResult(subtotal = subtotal, taxTotal = taxTotal, grandTotal = grandTotal)
     }
 }

@@ -51,9 +51,13 @@ data class BillFormUiState(
     val subtotal: Double = 0.0,
     val taxTotal: Double = 0.0,
     val grandTotal: Double = 0.0,
+    // set from the loaded bill in edit mode; preserved across edits so saving never resets it
+    val createdAt: Long = 0L,
     // validation
     val personError: String? = null,
+    val discountError: String? = null,
     val lineItemsError: String? = null,
+    val saveError: String? = null,
     val isSaving: Boolean = false,
 )
 
@@ -123,6 +127,7 @@ class BillFormViewModel
                                 billDateMillis = billData.bill.billDate,
                                 paymentStatus = billData.bill.paymentStatus,
                                 lineItems = items,
+                                createdAt = billData.bill.createdAt,
                             )
                         }
                         recalculate()
@@ -142,7 +147,7 @@ class BillFormViewModel
         }
 
         fun updateDiscount(text: String) {
-            _uiState.update { it.copy(discountText = text) }
+            _uiState.update { it.copy(discountText = text, discountError = null) }
             _isDirty.value = true
             recalculate()
         }
@@ -233,6 +238,26 @@ class BillFormViewModel
             }
         }
 
+        /** Parses and validates the discount field, setting [BillFormUiState.discountError] on failure. */
+        private fun parseValidDiscount(text: String): Double? {
+            val discount = text.toDoubleOrNull()
+            if (discount == null || discount < 0) {
+                _uiState.update { it.copy(discountError = "Enter a valid discount (0 or more)") }
+                return null
+            }
+            return discount
+        }
+
+        /** Stamps each row with a product/quantity error, if invalid; leaves valid rows untouched. */
+        private fun validateLineItems(items: List<LineItemFormState>): List<LineItemFormState> =
+            items.map { row ->
+                var r = row
+                if (r.product == null) r = r.copy(productError = "Select a product")
+                val qty = r.quantityText.toDoubleOrNull()
+                if (qty == null || qty <= 0) r = r.copy(quantityError = "Enter a valid quantity (> 0)")
+                r
+            }
+
         fun saveBill(onSuccess: () -> Unit) {
             val state = _uiState.value
             var valid = true
@@ -242,15 +267,10 @@ class BillFormViewModel
                 valid = false
             }
 
-            // Validate each line item
-            val updatedItems =
-                state.lineItems.mapIndexed { _, row ->
-                    var r = row
-                    if (r.product == null) r = r.copy(productError = "Select a product")
-                    val qty = r.quantityText.toDoubleOrNull()
-                    if (qty == null || qty <= 0) r = r.copy(quantityError = "Enter a valid quantity (> 0)")
-                    r
-                }
+            val discount = parseValidDiscount(state.discountText)
+            if (discount == null) valid = false
+
+            val updatedItems = validateLineItems(state.lineItems)
             _uiState.update { it.copy(lineItems = updatedItems) }
 
             if (updatedItems.any { it.productError != null || it.quantityError != null }) {
@@ -258,19 +278,22 @@ class BillFormViewModel
                 valid = false
             }
 
-            if (!valid) return
+            if (!valid || discount == null) return
 
-            _uiState.update { it.copy(isSaving = true) }
+            val person = state.selectedPerson ?: return
+
+            _uiState.update { it.copy(isSaving = true, saveError = null) }
             viewModelScope.launch {
                 try {
-                    val person = state.selectedPerson!!
-                    val discount = state.discountText.toDoubleOrNull() ?: 0.0
                     val billInputs =
-                        updatedItems.map { row ->
-                            BillItemInput.fromProduct(row.product!!, row.quantity)
+                        updatedItems.mapNotNull { row ->
+                            val product = row.product ?: return@mapNotNull null
+                            BillItemInput.fromProduct(product, row.quantity)
                         }
                     val result = BillCalculator.calculate(billInputs, discount)
                     val now = System.currentTimeMillis()
+                    // Preserve the original creation time on edits; only a new bill gets "now".
+                    val createdAt = if (isEditMode) state.createdAt else now
 
                     val bill =
                         Bill(
@@ -284,7 +307,7 @@ class BillFormViewModel
                             taxTotal = result.taxTotal,
                             grandTotal = result.grandTotal,
                             paymentStatus = state.paymentStatus,
-                            createdAt = now,
+                            createdAt = createdAt,
                             updatedAt = now,
                         )
 
@@ -309,6 +332,8 @@ class BillFormViewModel
                         repository.insertBillWithItems(bill, billItems, invoicePrefix)
                     }
                     onSuccess()
+                } catch (e: Exception) {
+                    _uiState.update { it.copy(saveError = "Could not save bill: ${e.message}") }
                 } finally {
                     _uiState.update { it.copy(isSaving = false) }
                 }

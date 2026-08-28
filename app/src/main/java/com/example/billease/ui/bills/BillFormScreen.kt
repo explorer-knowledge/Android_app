@@ -161,8 +161,8 @@ fun BillFormScreen(
             // Line items header
             item {
                 Text("Line Items", style = MaterialTheme.typography.titleMedium)
-                if (uiState.lineItemsError != null) {
-                    Text(uiState.lineItemsError!!, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                uiState.lineItemsError?.let { error ->
+                    Text(error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
                 }
             }
 
@@ -191,9 +191,11 @@ fun BillFormScreen(
                 OutlinedTextField(
                     value = uiState.discountText,
                     onValueChange = viewModel::updateDiscount,
-                    label = { Text("Discount (₹)") },
+                    label = { Text("Discount") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    isError = uiState.discountError != null,
+                    supportingText = uiState.discountError?.let { { Text(it) } },
                     singleLine = true,
                 )
             }
@@ -223,6 +225,12 @@ fun BillFormScreen(
                     taxTotal = uiState.taxTotal,
                     grandTotal = uiState.grandTotal,
                 )
+            }
+
+            uiState.saveError?.let { error ->
+                item {
+                    Text(error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                }
             }
 
             item {
@@ -345,8 +353,9 @@ private fun LineItemRow(
                             DropdownMenuItem(text = { Text("No products — add one first") }, onClick = { productExpanded = false })
                         }
                         allProducts.forEach { product ->
+                            val priceLabel = formatMoney(product.unitPrice, LocalCurrencyCode.current)
                             DropdownMenuItem(
-                                text = { Text("${product.name} · ₹${product.unitPrice}/${product.unit}") },
+                                text = { Text("${product.name} · $priceLabel/${product.unit}") },
                                 onClick = {
                                     onProductSelected(product)
                                     productExpanded = false

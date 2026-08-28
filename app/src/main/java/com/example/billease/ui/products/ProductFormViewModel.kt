@@ -23,6 +23,7 @@ data class ProductFormState(
     val unitPriceError: String? = null,
     val unitError: String? = null,
     val taxPercentError: String? = null,
+    val saveError: String? = null,
 )
 
 @HiltViewModel
@@ -105,23 +106,30 @@ class ProductFormViewModel
 
             if (hasError) return
 
+            _uiState.update { it.copy(saveError = null) }
             viewModelScope.launch {
                 val product =
                     Product(
                         id = if (isEditMode) productId else 0L,
                         name = currentState.name,
+                        // safe: hasError would be true (and we'd have returned above) if price were null
                         unitPrice = price!!,
                         unit = currentState.unit,
+                        // safe: hasError would be true (and we'd have returned above) if tax were null
                         taxPercent = tax!!,
                         description = currentState.description.takeIf { it.isNotBlank() },
                     )
 
-                if (isEditMode) {
-                    repository.updateProduct(product)
-                } else {
-                    repository.insertProduct(product)
+                try {
+                    if (isEditMode) {
+                        repository.updateProduct(product)
+                    } else {
+                        repository.insertProduct(product)
+                    }
+                    onSuccess()
+                } catch (e: Exception) {
+                    _uiState.update { it.copy(saveError = "Could not save product: ${e.message}") }
                 }
-                onSuccess()
             }
         }
     }

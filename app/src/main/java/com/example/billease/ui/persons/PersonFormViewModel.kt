@@ -21,6 +21,7 @@ data class PersonFormState(
     val gstNumber: String = "",
     val nameError: String? = null,
     val phoneError: String? = null,
+    val saveError: String? = null,
 )
 
 @HiltViewModel
@@ -90,6 +91,7 @@ class PersonFormViewModel
 
             if (hasError) return
 
+            _uiState.update { it.copy(saveError = null) }
             viewModelScope.launch {
                 val person =
                     Person(
@@ -101,12 +103,16 @@ class PersonFormViewModel
                         gstNumber = currentState.gstNumber.takeIf { it.isNotBlank() },
                     )
 
-                if (isEditMode) {
-                    repository.updatePerson(person)
-                } else {
-                    repository.insertPerson(person)
+                try {
+                    if (isEditMode) {
+                        repository.updatePerson(person)
+                    } else {
+                        repository.insertPerson(person)
+                    }
+                    onSuccess()
+                } catch (e: Exception) {
+                    _uiState.update { it.copy(saveError = "Could not save person: ${e.message}") }
                 }
-                onSuccess()
             }
         }
     }

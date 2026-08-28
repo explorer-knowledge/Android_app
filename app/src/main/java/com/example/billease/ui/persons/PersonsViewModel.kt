@@ -47,12 +47,16 @@ class PersonsViewModel
             onResult: (String) -> Unit,
         ) {
             viewModelScope.launch {
-                val billCount = repository.getBillCountForPerson(person.id)
-                if (billCount > 0) {
-                    onResult("Cannot delete person with existing bills.")
-                } else {
-                    repository.deletePerson(person)
-                    onResult("Person deleted successfully.")
+                try {
+                    val billCount = repository.getBillCountForPerson(person.id)
+                    if (billCount > 0) {
+                        onResult("Cannot delete person with existing bills.")
+                    } else {
+                        repository.deletePerson(person)
+                        onResult("Person deleted successfully.")
+                    }
+                } catch (e: Exception) {
+                    onResult("Could not delete person: ${e.message}")
                 }
             }
         }

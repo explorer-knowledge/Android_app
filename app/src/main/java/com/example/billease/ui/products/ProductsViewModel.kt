@@ -47,12 +47,16 @@ class ProductsViewModel
             onResult: (String) -> Unit,
         ) {
             viewModelScope.launch {
-                val count = repository.getBillItemCountForProduct(product.id)
-                if (count > 0) {
-                    onResult("Cannot delete product used in existing bills.")
-                } else {
-                    repository.deleteProduct(product)
-                    onResult("Product deleted successfully.")
+                try {
+                    val count = repository.getBillItemCountForProduct(product.id)
+                    if (count > 0) {
+                        onResult("Cannot delete product used in existing bills.")
+                    } else {
+                        repository.deleteProduct(product)
+                        onResult("Product deleted successfully.")
+                    }
+                } catch (e: Exception) {
+                    onResult("Could not delete product: ${e.message}")
                 }
             }
         }

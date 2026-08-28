@@ -29,6 +29,14 @@ Native Android (Kotlin + Jetpack Compose + Material 3) billing & invoice app for
 - **Payment status:** `Bill.paymentStatus` is a typed `BillStatus` enum (`data/BillStatus.kt`). Persists as TEXT via Room's built-in enum converter (no custom `@TypeConverter`), so the v3 `paymentStatus` column needs no schema change.
 - **Lint/quality:** `config/detekt/detekt.yml` overrides detekt's default `FunctionNaming` pattern to allow PascalCase (the Jetpack Compose composable convention); `buildUponDefaultConfig` inherits all other defaults.
 
+## Known Issues
+A full-codebase audit on 2026-08-29 found 19 gaps (`docs/improvements.md` §C in the vault); the data-integrity batch (`createdAt` overwritten on edit, unvalidated discount, 5 unguarded save/delete paths, 2 hardcoded `₹` sites) has since been fixed. Still open, highest-stakes first:
+- **Date picker values are UTC midnight but read back in local time** — invoice dates are off by one day for UTC-negative offsets (correct in IST, wrong in the Americas).
+- **PDF pages are all numbered `1`** and the output stream is never closed (`PdfGenerator.kt:34`, `:224`).
+- `fallbackToDestructiveMigration()` is still live — see the Database Migrations note above.
+
+Full triage with file:line evidence is `docs/improvements.md` in the Obsidian vault (§C and the verification table).
+
 ## Docs
 The planning/reference docs live in the Obsidian vault (`Android_app_easebill/docs/`), not in this repo. `AGENTS.md` here is the index — it maps each doc to its vault path and when to read it.
 
