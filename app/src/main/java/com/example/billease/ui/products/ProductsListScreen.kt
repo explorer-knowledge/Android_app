@@ -29,6 +29,7 @@ import com.example.billease.ui.components.ListItemCard
 import com.example.billease.ui.components.ScreenHeader
 import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatMoney
+import com.example.billease.util.formatPercent
 
 @Composable
 fun ProductsListScreen(
@@ -70,8 +71,9 @@ fun ProductsListScreen(
             if (products.isEmpty()) {
                 EmptyState(
                     icon = Icons.Outlined.ShoppingCart,
-                    title = "No products found",
-                    subtitle = "Tap + to add a new product.",
+                    title = if (searchQuery.isNotBlank()) "No products match \"$searchQuery\"" else "No products found",
+                    subtitle =
+                        if (searchQuery.isNotBlank()) "Try a different search." else "Tap + to add a new product.",
                 )
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -119,7 +121,7 @@ fun ProductListItem(
             style = MaterialTheme.typography.bodyMedium,
         )
         if (product.taxPercent > 0) {
-            Text(text = "Tax: ${product.taxPercent}%", style = MaterialTheme.typography.bodySmall)
+            Text(text = "Tax: ${formatPercent(product.taxPercent)}", style = MaterialTheme.typography.bodySmall)
         }
     }
 }

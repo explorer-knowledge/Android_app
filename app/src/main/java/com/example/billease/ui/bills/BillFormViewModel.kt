@@ -12,6 +12,7 @@ import com.example.billease.data.Product
 import com.example.billease.data.SettingsRepository
 import com.example.billease.domain.BillCalculator
 import com.example.billease.domain.BillItemInput
+import com.example.billease.util.formatQuantity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -103,14 +104,7 @@ class BillFormViewModel
                                             unit = item.unitSnapshot,
                                             taxPercent = item.taxPercentSnapshot,
                                         ),
-                                    quantityText =
-                                        item.quantity.let {
-                                            if (it == it.toLong().toDouble()) {
-                                                it.toLong().toString()
-                                            } else {
-                                                it.toString()
-                                            }
-                                        },
+                                    quantityText = formatQuantity(item.quantity),
                                 )
                             }
                         _uiState.update {
@@ -119,10 +113,7 @@ class BillFormViewModel
                                 billNumber = billData.bill.billNumber,
                                 personId = billData.bill.personId,
                                 selectedPerson = billData.person,
-                                discountText =
-                                    billData.bill.discount.let { d ->
-                                        if (d == d.toLong().toDouble()) d.toLong().toString() else d.toString()
-                                    },
+                                discountText = formatQuantity(billData.bill.discount),
                                 notes = billData.bill.notes ?: "",
                                 billDateMillis = billData.bill.billDate,
                                 paymentStatus = billData.bill.paymentStatus,

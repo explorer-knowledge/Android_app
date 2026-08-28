@@ -69,8 +69,9 @@ fun PersonsListScreen(
             if (persons.isEmpty()) {
                 EmptyState(
                     icon = Icons.Outlined.Person,
-                    title = "No persons found",
-                    subtitle = "Tap + to add a new person.",
+                    title = if (searchQuery.isNotBlank()) "No persons match \"$searchQuery\"" else "No persons found",
+                    subtitle =
+                        if (searchQuery.isNotBlank()) "Try a different search." else "Tap + to add a new person.",
                 )
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {

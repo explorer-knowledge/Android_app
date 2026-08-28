@@ -54,6 +54,7 @@ fun HomeScreen(
     onNavigateToProductForm: () -> Unit,
     onNavigateToBillForm: () -> Unit,
     onNavigateToPersonForm: () -> Unit,
+    onNavigateToBillDetail: (Long) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val customerCount by viewModel.customerCount.collectAsState()
@@ -221,7 +222,10 @@ fun HomeScreen(
                     }
                 } else {
                     items(recentBills) { billWithPerson ->
-                        RecentBillCard(billWithPerson)
+                        RecentBillCard(
+                            billWithPerson = billWithPerson,
+                            onClick = { onNavigateToBillDetail(billWithPerson.bill.id) },
+                        )
                     }
                 }
             }
@@ -337,8 +341,11 @@ private fun HeroStat(
 
 @Suppress("MagicNumber")
 @Composable
-private fun RecentBillCard(billWithPerson: BillWithPerson) {
-    val dateString = formatDate(billWithPerson.bill.createdAt)
+private fun RecentBillCard(
+    billWithPerson: BillWithPerson,
+    onClick: () -> Unit,
+) {
+    val dateString = formatDate(billWithPerson.bill.billDate)
 
     Row(
         modifier =
@@ -348,6 +355,7 @@ private fun RecentBillCard(billWithPerson: BillWithPerson) {
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color(0xFF1E293B).copy(alpha = 0.6f))
                 .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(16.dp))
+                .clickable(onClick = onClick)
                 .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

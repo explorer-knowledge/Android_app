@@ -98,11 +98,12 @@ fun BillsListScreen(
                 onRangeChange = viewModel::onDateRangeChange,
             )
 
+            val isFiltered = searchQuery.isNotBlank() || dateRange.first != null || dateRange.second != null
             if (bills.isEmpty()) {
                 EmptyState(
                     icon = Icons.AutoMirrored.Outlined.List,
-                    title = "No bills yet",
-                    subtitle = "Tap + to create one.",
+                    title = if (isFiltered) "No bills match this filter" else "No bills yet",
+                    subtitle = if (isFiltered) "Try clearing the search or date range." else "Tap + to create one.",
                 )
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {

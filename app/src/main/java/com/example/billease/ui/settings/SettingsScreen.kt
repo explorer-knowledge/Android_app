@@ -22,6 +22,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -30,6 +32,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -38,6 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.ui.components.DetailTopAppBar
 import com.example.billease.util.SUPPORTED_CURRENCIES
 import com.example.billease.util.currencyLabel
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 
@@ -50,6 +54,8 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
     val settings by viewModel.appSettings.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     var businessName by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
@@ -71,6 +77,10 @@ fun SettingsScreen(
                 val newPath = copyUriToInternalStorage(context, uri)
                 if (newPath != null) {
                     logoPath = newPath
+                } else {
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar("Could not load that image. Please try another.")
+                    }
                 }
             }
         }
@@ -82,6 +92,7 @@ fun SettingsScreen(
                 onNavigateBack = onNavigateBack,
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValues ->
         Column(
             modifier =

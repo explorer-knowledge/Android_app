@@ -15,7 +15,6 @@ import com.example.billease.data.AppSettings
 import com.example.billease.data.BillWithItemsAndPerson
 import java.io.File
 import java.io.FileOutputStream
-import java.util.Locale
 
 object PdfGenerator {
     private const val PAGE_WIDTH = 595
@@ -150,15 +149,16 @@ object PdfGenerator {
                     TextUtils.TruncateAt.END,
                 ).toString()
 
+            val quantityText =
+                if (item.unitSnapshot.isBlank()) {
+                    formatQuantity(item.quantity)
+                } else {
+                    "${formatQuantity(item.quantity)} ${item.unitSnapshot}"
+                }
             canvas.drawText(nameText, MARGIN_LEFT, yPos, paint)
-            canvas.drawText(
-                if (item.unitSnapshot.isBlank()) item.quantity.toString() else "${item.quantity} ${item.unitSnapshot}",
-                MARGIN_LEFT + 250f,
-                yPos,
-                paint,
-            )
+            canvas.drawText(quantityText, MARGIN_LEFT + 250f, yPos, paint)
             canvas.drawText(formatMoney(item.unitPriceSnapshot, settings.currencyCode), MARGIN_LEFT + 320f, yPos, paint)
-            canvas.drawText(String.format(Locale.getDefault(), "%.1f%%", item.taxPercentSnapshot), MARGIN_LEFT + 390f, yPos, paint)
+            canvas.drawText(formatPercent(item.taxPercentSnapshot), MARGIN_LEFT + 390f, yPos, paint)
 
             val totalStr = formatMoney(item.lineTotal, settings.currencyCode)
             canvas.drawText(totalStr, MARGIN_RIGHT - paint.measureText(totalStr), yPos, paint)

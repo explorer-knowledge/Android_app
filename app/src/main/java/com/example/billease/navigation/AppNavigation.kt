@@ -120,6 +120,7 @@ fun AppNavigation() {
                         onNavigateToProductForm = { navController.navigate("product_form/-1") },
                         onNavigateToBillForm = onNavigateToBillForm,
                         onNavigateToPersonForm = { navController.navigate("person_form/-1") },
+                        onNavigateToBillDetail = { navController.navigate("bill_detail/$it") },
                     )
                 }
 

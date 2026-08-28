@@ -48,6 +48,8 @@ import com.example.billease.ui.components.ProfileIconButton
 import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatDateLong
 import com.example.billease.util.formatMoney
+import com.example.billease.util.formatPercent
+import com.example.billease.util.formatQuantity
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,9 +74,13 @@ fun BillDetailScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
+                        showDeleteDialog = false
                         viewModel.deleteBill { success ->
                             if (success) {
                                 onNavigateBack()
+                            } else {
+                                val message = "Could not delete bill. It may be referenced elsewhere."
+                                coroutineScope.launch { snackbarHostState.showSnackbar(message) }
                             }
                         }
                     },
@@ -242,10 +248,13 @@ private fun LineItemDetailRow(item: BillItem) {
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(item.productNameSnapshot, style = MaterialTheme.typography.bodyMedium)
+            val formattedQuantity = formatQuantity(item.quantity)
+            val quantityText =
+                if (item.unitSnapshot.isBlank()) formattedQuantity else "$formattedQuantity ${item.unitSnapshot}"
             Text(
-                "${item.quantity} ${item.unitSnapshot} × " +
+                "$quantityText × " +
                     formatMoney(item.unitPriceSnapshot, LocalCurrencyCode.current) +
-                    if (item.taxPercentSnapshot > 0) " + ${item.taxPercentSnapshot}% tax" else "",
+                    if (item.taxPercentSnapshot > 0) " + ${formatPercent(item.taxPercentSnapshot)} tax" else "",
                 style = MaterialTheme.typography.bodySmall,
             )
         }

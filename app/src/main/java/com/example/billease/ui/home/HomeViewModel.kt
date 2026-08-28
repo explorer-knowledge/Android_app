@@ -66,11 +66,12 @@ class HomeViewModel
             _homeSearchQuery
                 .flatMapLatest { query ->
                     if (query.isBlank()) {
-                        repository.getAllBills().map { it.take(RECENT_BILL_LIMIT) }
+                        repository.getAllBills()
                     } else {
                         repository.searchBills(query)
                     }
                 }
+                .map { it.take(RECENT_BILL_LIMIT) }
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
