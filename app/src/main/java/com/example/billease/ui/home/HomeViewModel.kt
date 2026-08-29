@@ -4,9 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.billease.data.BillDao
 import com.example.billease.data.BillWithPerson
+import com.example.billease.data.DashboardTimeline
 import com.example.billease.data.PersonDao
 import com.example.billease.data.SettingsRepository
-import com.example.billease.util.currentMonthBoundsFlow
+import com.example.billease.util.monthBounds
+import com.example.billease.util.thisWeekBounds
+import com.example.billease.util.thisYearBounds
+import com.example.billease.util.todayBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,13 +54,32 @@ class HomeViewModel
                     initialValue = 0,
                 )
 
+        /** Emits the active settings so the UI can drive timeline-aware queries. */
+        private val settingsFlow =
+            settingsRepository.appSettingsFlow
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                    initialValue = com.example.billease.data.AppSettings("", "", null),
+                )
+
+        /** The label shown in the Hero card — reflects the currently selected timeline. */
+        val dashboardTimelineLabel: StateFlow<DashboardTimeline> =
+            settingsFlow
+                .map { it.dashboardTimeline }
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                    initialValue = DashboardTimeline.THIS_MONTH,
+                )
+
         @OptIn(ExperimentalCoroutinesApi::class)
         val revenueThisMonth: StateFlow<Double> =
-            currentMonthBoundsFlow()
-                .flatMapLatest { bounds ->
-                    billDao.getRevenueBetween(bounds.first, bounds.second)
+            settingsFlow
+                .flatMapLatest { settings ->
+                    val (start, end) = resolveTimelineBounds(settings)
+                    billDao.getRevenueBetween(start, end)
                 }
-                // Room returns null for SUM() on empty sets, so map it to 0.0
                 .map { it ?: 0.0 }
                 .stateIn(
                     scope = viewModelScope,
@@ -83,7 +106,7 @@ class HomeViewModel
                 )
 
         val businessNameInitial: StateFlow<String> =
-            settingsRepository.appSettingsFlow
+            settingsFlow
                 .map { settings ->
                     settings.businessName.trim().firstOrNull()?.uppercaseChar()?.toString() ?: "B"
                 }
@@ -92,4 +115,17 @@ class HomeViewModel
                     started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                     initialValue = "B",
                 )
+
+        private fun resolveTimelineBounds(settings: com.example.billease.data.AppSettings): Pair<Long, Long> =
+            when (settings.dashboardTimeline) {
+                DashboardTimeline.TODAY -> todayBounds()
+                DashboardTimeline.THIS_WEEK -> thisWeekBounds()
+                DashboardTimeline.THIS_MONTH -> monthBounds()
+                DashboardTimeline.THIS_YEAR -> thisYearBounds()
+                DashboardTimeline.CUSTOM -> {
+                    val start = settings.customTimelineStart ?: monthBounds().first
+                    val end = settings.customTimelineEnd ?: monthBounds().second
+                    start to end
+                }
+            }
     }

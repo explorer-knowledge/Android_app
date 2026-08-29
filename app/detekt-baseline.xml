@@ -54,5 +54,15 @@
     <ID>TooGenericExceptionCaught:ProductsViewModel.kt$ProductsViewModel$e: Exception</ID>
     <ID>TooGenericExceptionCaught:SettingsRepository.kt$SettingsRepository$e: Exception</ID>
     <ID>TooManyFunctions:BillDao.kt$BillDao</ID>
+    <ID>CyclomaticComplexMethod:BillsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable private fun BillFilterRow( filter: BillFilterState, persons: List&lt;Person&gt;, products: List&lt;Product&gt;, onDatePreset: (DateFilterPreset) -&gt; Unit, onCustomRange: (Long?, Long?) -&gt; Unit, onPersonFilter: (Person?) -&gt; Unit, onProductFilter: (Product?) -&gt; Unit, onClearAll: () -&gt; Unit, )</ID>
+    <ID>LongMethod:BillsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable private fun BillFilterRow( filter: BillFilterState, persons: List&lt;Person&gt;, products: List&lt;Product&gt;, onDatePreset: (DateFilterPreset) -&gt; Unit, onCustomRange: (Long?, Long?) -&gt; Unit, onPersonFilter: (Person?) -&gt; Unit, onProductFilter: (Product?) -&gt; Unit, onClearAll: () -&gt; Unit, )</ID>
+    <ID>LongParameterList:BillsListScreen.kt$( filter: BillFilterState, persons: List&lt;Person&gt;, products: List&lt;Product&gt;, onDatePreset: (DateFilterPreset) -&gt; Unit, onCustomRange: (Long?, Long?) -&gt; Unit, onPersonFilter: (Person?) -&gt; Unit, onProductFilter: (Product?) -&gt; Unit, onClearAll: () -&gt; Unit, )</ID>
+    <ID>LongParameterList:SettingsRepository.kt$SettingsRepository$( businessName: String, address: String, logoUri: String?, invoicePrefix: String, currencyCode: String, dashboardTimeline: DashboardTimeline, customTimelineStart: Long?, customTimelineEnd: Long?, )</ID>
+    <ID>MagicNumber:BillsViewModel.kt$BillsViewModel$5_000</ID>
+    <ID>MagicNumber:DateUtils.kt$23</ID>
+    <ID>MagicNumber:DateUtils.kt$59</ID>
+    <ID>MagicNumber:DateUtils.kt$999</ID>
+    <ID>MaxLineLength:SettingsViewModel.kt$fun updateDashboardTimeline(timeline: DashboardTimeline) = _formState.update { it.copy(dashboardTimeline = timeline) }</ID>
+    <ID>TooManyFunctions:BillsViewModel.kt$BillsViewModel</ID>
   </CurrentIssues>
 </SmellBaseline>

@@ -19,6 +19,20 @@ import javax.inject.Singleton
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
+/** Persisted string values that map to each timeline preset. */
+enum class DashboardTimeline(val key: String) {
+    TODAY("TODAY"),
+    THIS_WEEK("THIS_WEEK"),
+    THIS_MONTH("THIS_MONTH"),
+    THIS_YEAR("THIS_YEAR"),
+    CUSTOM("CUSTOM"),
+    ;
+
+    companion object {
+        fun fromKey(key: String): DashboardTimeline = entries.firstOrNull { it.key == key } ?: THIS_MONTH
+    }
+}
+
 data class AppSettings(
     val businessName: String,
     val address: String,
@@ -26,6 +40,10 @@ data class AppSettings(
     val logoUri: String?,
     val invoicePrefix: String = "BILL-",
     val currencyCode: String = "INR",
+    val dashboardTimeline: DashboardTimeline = DashboardTimeline.THIS_MONTH,
+    /** Only non-null when dashboardTimeline == CUSTOM */
+    val customTimelineStart: Long? = null,
+    val customTimelineEnd: Long? = null,
 )
 
 @Singleton
@@ -42,6 +60,9 @@ class SettingsRepository
             val LOGO_URI = stringPreferencesKey("logo_uri")
             val INVOICE_PREFIX = stringPreferencesKey("invoice_prefix")
             val CURRENCY_CODE = stringPreferencesKey("currency_code")
+            val DASHBOARD_TIMELINE = stringPreferencesKey("dashboard_timeline")
+            val CUSTOM_TIMELINE_START = stringPreferencesKey("custom_timeline_start")
+            val CUSTOM_TIMELINE_END = stringPreferencesKey("custom_timeline_end")
         }
 
         val appSettingsFlow: Flow<AppSettings> =
@@ -52,6 +73,12 @@ class SettingsRepository
                     logoUri = preferences[PreferencesKeys.LOGO_URI],
                     invoicePrefix = preferences[PreferencesKeys.INVOICE_PREFIX] ?: "BILL-",
                     currencyCode = preferences[PreferencesKeys.CURRENCY_CODE] ?: "INR",
+                    dashboardTimeline =
+                        DashboardTimeline.fromKey(
+                            preferences[PreferencesKeys.DASHBOARD_TIMELINE] ?: DashboardTimeline.THIS_MONTH.key,
+                        ),
+                    customTimelineStart = preferences[PreferencesKeys.CUSTOM_TIMELINE_START]?.toLongOrNull(),
+                    customTimelineEnd = preferences[PreferencesKeys.CUSTOM_TIMELINE_END]?.toLongOrNull(),
                 )
             }
 
@@ -74,12 +101,16 @@ class SettingsRepository
                 }
             }
 
+        @Suppress("LongParameterList")
         suspend fun updateSettings(
             businessName: String,
             address: String,
             logoUri: String?,
             invoicePrefix: String = "BILL-",
             currencyCode: String = "INR",
+            dashboardTimeline: DashboardTimeline = DashboardTimeline.THIS_MONTH,
+            customTimelineStart: Long? = null,
+            customTimelineEnd: Long? = null,
         ) {
             dataStore.edit { preferences ->
                 preferences[PreferencesKeys.BUSINESS_NAME] = businessName
@@ -89,10 +120,21 @@ class SettingsRepository
                 // be empty.
                 preferences[PreferencesKeys.INVOICE_PREFIX] = invoicePrefix.ifBlank { "BILL-" }
                 preferences[PreferencesKeys.CURRENCY_CODE] = currencyCode
+                preferences[PreferencesKeys.DASHBOARD_TIMELINE] = dashboardTimeline.key
                 if (logoUri != null) {
                     preferences[PreferencesKeys.LOGO_URI] = logoUri
                 } else {
                     preferences.remove(PreferencesKeys.LOGO_URI)
+                }
+                if (customTimelineStart != null) {
+                    preferences[PreferencesKeys.CUSTOM_TIMELINE_START] = customTimelineStart.toString()
+                } else {
+                    preferences.remove(PreferencesKeys.CUSTOM_TIMELINE_START)
+                }
+                if (customTimelineEnd != null) {
+                    preferences[PreferencesKeys.CUSTOM_TIMELINE_END] = customTimelineEnd.toString()
+                } else {
+                    preferences.remove(PreferencesKeys.CUSTOM_TIMELINE_END)
                 }
             }
         }

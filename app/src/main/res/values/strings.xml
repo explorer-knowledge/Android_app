@@ -3,6 +3,14 @@
     <string name="app_name">BillEase</string>
 
     <string name="add_line_item">+ Add Line Item</string>
+
+    <!-- Bills filter chips -->
+    <string name="filter_date">Date</string>
+    <string name="filter_date_recent">Recent (7 days)</string>
+    <string name="filter_date_custom">Custom range…</string>
+    <string name="filter_person">Person</string>
+    <string name="filter_product">Product</string>
+    <string name="filter_all">All</string>
     <string name="add_person">Add Person</string>
     <string name="add_product">Add Product</string>
     <string name="address_label">Address: %1$s</string>
@@ -78,6 +86,18 @@
     <string name="home_recent_bill_meta">%1$s • %2$s</string>
     <string name="home_search_hint">Search by name or invoice no.</string>
     <string name="home_total_sales_this_month">TOTAL SALES · THIS MONTH</string>
+    <string name="home_total_sales_label">TOTAL SALES ·</string>
+
+    <!-- Timeline labels -->
+    <string name="timeline_today">Today</string>
+    <string name="timeline_this_week">This Week</string>
+    <string name="timeline_this_year">This Year</string>
+    <string name="timeline_custom">Custom Range</string>
+
+    <!-- Settings — dashboard preferences section -->
+    <string name="settings_dashboard_prefs">Dashboard Preferences</string>
+    <string name="settings_dashboard_prefs_subtitle">Controls what period "Total Sales" shows on the home screen.</string>
+    <string name="settings_home_timeline">Home Sales Timeline</string>
 
     <string name="invoice_prefix">Invoice Prefix</string>
     <string name="item">Item</string>

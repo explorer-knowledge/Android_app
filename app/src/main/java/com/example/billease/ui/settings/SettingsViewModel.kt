@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.billease.data.AppSettings
+import com.example.billease.data.DashboardTimeline
 import com.example.billease.data.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,9 @@ data class SettingsFormState(
     val logoPath: String? = null,
     val invoicePrefix: String = "BILL-",
     val currencyCode: String = "INR",
+    val dashboardTimeline: DashboardTimeline = DashboardTimeline.THIS_MONTH,
+    val customTimelineStart: Long? = null,
+    val customTimelineEnd: Long? = null,
 )
 
 @HiltViewModel
@@ -52,6 +56,9 @@ class SettingsViewModel
                                 logoPath = settings.logoUri,
                                 invoicePrefix = settings.invoicePrefix,
                                 currencyCode = settings.currencyCode,
+                                dashboardTimeline = settings.dashboardTimeline,
+                                customTimelineStart = settings.customTimelineStart,
+                                customTimelineEnd = settings.customTimelineEnd,
                             )
                         }
                         seeded = true
@@ -70,6 +77,13 @@ class SettingsViewModel
 
         fun updateLogoPath(value: String?) = _formState.update { it.copy(logoPath = value) }
 
+        fun updateDashboardTimeline(timeline: DashboardTimeline) =
+            _formState.update { it.copy(dashboardTimeline = timeline) }
+
+        fun updateCustomTimelineStart(millis: Long?) = _formState.update { it.copy(customTimelineStart = millis) }
+
+        fun updateCustomTimelineEnd(millis: Long?) = _formState.update { it.copy(customTimelineEnd = millis) }
+
         suspend fun copyLogoUri(uri: Uri): String? = repository.copyLogoToInternalStorage(uri)
 
         fun save() {
@@ -81,6 +95,9 @@ class SettingsViewModel
                     logoUri = state.logoPath,
                     invoicePrefix = state.invoicePrefix,
                     currencyCode = state.currencyCode,
+                    dashboardTimeline = state.dashboardTimeline,
+                    customTimelineStart = state.customTimelineStart,
+                    customTimelineEnd = state.customTimelineEnd,
                 )
             }
         }

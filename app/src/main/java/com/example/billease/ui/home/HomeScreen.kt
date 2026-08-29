@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.R
 import com.example.billease.data.BillWithPerson
+import com.example.billease.data.DashboardTimeline
 import com.example.billease.ui.components.StatusBadge
 import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatDate
@@ -65,6 +66,7 @@ fun HomeScreen(
     val recentBills by viewModel.recentBills.collectAsState()
     val businessNameInitial by viewModel.businessNameInitial.collectAsState()
     val homeSearchQuery by viewModel.homeSearchQuery.collectAsState()
+    val dashboardTimeline by viewModel.dashboardTimelineLabel.collectAsState()
     val colorScheme = MaterialTheme.colorScheme
 
     val backgroundBrush =
@@ -150,6 +152,7 @@ fun HomeScreen(
                 revenueThisMonth = revenueThisMonth,
                 totalBills = totalBills,
                 customerCount = customerCount,
+                timeline = dashboardTimeline,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
             )
 
@@ -263,9 +266,18 @@ private fun HeroCard(
     revenueThisMonth: Double,
     totalBills: Int,
     customerCount: Int,
+    timeline: DashboardTimeline,
     modifier: Modifier = Modifier,
 ) {
     val colorScheme = MaterialTheme.colorScheme
+    val timelineSuffix =
+        when (timeline) {
+            DashboardTimeline.TODAY -> stringResource(R.string.timeline_today).uppercase()
+            DashboardTimeline.THIS_WEEK -> stringResource(R.string.timeline_this_week).uppercase()
+            DashboardTimeline.THIS_MONTH -> stringResource(R.string.this_month).uppercase()
+            DashboardTimeline.THIS_YEAR -> stringResource(R.string.timeline_this_year).uppercase()
+            DashboardTimeline.CUSTOM -> stringResource(R.string.timeline_custom).uppercase()
+        }
     Column(
         modifier =
             modifier
@@ -276,7 +288,7 @@ private fun HeroCard(
                 .padding(20.dp),
     ) {
         Text(
-            text = stringResource(R.string.home_total_sales_this_month),
+            text = "${stringResource(R.string.home_total_sales_label)} $timelineSuffix",
             color = colorScheme.onSurfaceVariant,
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,

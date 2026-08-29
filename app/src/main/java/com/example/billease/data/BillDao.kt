@@ -79,14 +79,29 @@ interface BillDao {
     )
     fun searchBillsWithPerson(query: String): Flow<List<BillWithPerson>>
 
+    /**
+     * Unified filter query for the Bills list screen.
+     * All parameters are optional (pass null / empty string to skip that filter).
+     * productId filter uses EXISTS so a bill matches if ANY of its line items
+     * contain that product.
+     */
     @Transaction
     @Query(
         """
-        SELECT bills.* FROM bills 
+        SELECT DISTINCT bills.* FROM bills 
         INNER JOIN persons ON bills.personId = persons.id 
         WHERE (:query = '' OR bills.billNumber LIKE '%' || :query || '%' OR persons.name LIKE '%' || :query || '%')
           AND (:startMillis IS NULL OR bills.billDate >= :startMillis)
           AND (:endExclusiveMillis IS NULL OR bills.billDate < :endExclusiveMillis)
+          AND (:personId IS NULL OR bills.personId = :personId)
+          AND (
+              :productId IS NULL OR
+              EXISTS (
+                  SELECT 1 FROM bill_items
+                  WHERE bill_items.billId = bills.id
+                    AND bill_items.productId = :productId
+              )
+          )
         ORDER BY bills.billDate DESC
     """,
     )
@@ -94,6 +109,8 @@ interface BillDao {
         query: String,
         startMillis: Long?,
         endExclusiveMillis: Long?,
+        personId: Long?,
+        productId: Long?,
     ): Flow<List<BillWithPerson>>
 
     @Transaction
