@@ -77,8 +77,7 @@ class SettingsViewModel
 
         fun updateLogoPath(value: String?) = _formState.update { it.copy(logoPath = value) }
 
-        fun updateDashboardTimeline(timeline: DashboardTimeline) =
-            _formState.update { it.copy(dashboardTimeline = timeline) }
+        fun updateDashboardTimeline(timeline: DashboardTimeline) = _formState.update { it.copy(dashboardTimeline = timeline) }
 
         fun updateCustomTimelineStart(millis: Long?) = _formState.update { it.copy(customTimelineStart = millis) }
 
