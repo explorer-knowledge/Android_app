@@ -1,9 +1,7 @@
 package com.example.billease.ui.bills
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.Add
@@ -38,17 +35,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.billease.data.BillStatus
 import com.example.billease.data.BillWithPerson
 import com.example.billease.ui.components.ConfirmDeleteDialog
 import com.example.billease.ui.components.DateSelectionDialog
 import com.example.billease.ui.components.DismissableSnackbar
 import com.example.billease.ui.components.EmptyState
 import com.example.billease.ui.components.ScreenHeader
+import com.example.billease.ui.components.StatusBadge
 import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatDate
 import com.example.billease.util.formatMoney
@@ -184,31 +179,6 @@ private fun BillListItem(
                 }
             }
         }
-    }
-}
-
-@Suppress("MagicNumber")
-@Composable
-private fun StatusBadge(status: BillStatus) {
-    val (statusColor, statusBg) =
-        when (status) {
-            BillStatus.PAID -> Color(0xFF15803D) to Color(0xFFDCFCE7)
-            BillStatus.OVERDUE -> Color(0xFFB91C1C) to Color(0xFFFEE2E2)
-            BillStatus.PENDING -> Color(0xFFB45309) to Color(0xFFFEF3C7)
-        }
-    Box(
-        modifier =
-            Modifier
-                .clip(RoundedCornerShape(12.dp))
-                .background(statusBg)
-                .padding(horizontal = 6.dp, vertical = 2.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = status.name,
-            color = statusColor,
-            style = MaterialTheme.typography.labelSmall,
-        )
     }
 }
 

@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,19 +35,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.billease.data.BillStatus
 import com.example.billease.data.BillWithPerson
+import com.example.billease.ui.components.StatusBadge
 import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatDate
 import com.example.billease.util.formatMoney
 
-@Suppress("MagicNumber", "LongMethod", "LongParameterList")
+@Suppress("LongMethod", "LongParameterList")
 @Composable
 fun HomeScreen(
     onNavigateToSettings: () -> Unit,
@@ -63,11 +63,11 @@ fun HomeScreen(
     val recentBills by viewModel.recentBills.collectAsState()
     val businessNameInitial by viewModel.businessNameInitial.collectAsState()
     val homeSearchQuery by viewModel.homeSearchQuery.collectAsState()
+    val colorScheme = MaterialTheme.colorScheme
 
-    // Luminous Ledger Gradient Background
     val backgroundBrush =
         Brush.verticalGradient(
-            colors = listOf(Color(0xFF0F172A), Color(0xFF020617)),
+            colors = listOf(colorScheme.surfaceVariant, colorScheme.surface),
         )
 
     Box(
@@ -95,14 +95,14 @@ fun HomeScreen(
                         Modifier
                             .size(40.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFF1E293B))
-                            .border(1.dp, Color(0xFF334155), CircleShape)
+                            .background(colorScheme.surfaceVariant)
+                            .border(1.dp, colorScheme.outlineVariant, CircleShape)
                             .clickable { onNavigateToSettings() },
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         text = businessNameInitial,
-                        color = Color.White,
+                        color = colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                     )
@@ -114,7 +114,7 @@ fun HomeScreen(
                     placeholder = {
                         Text(
                             text = "Search by name or invoice no.",
-                            color = Color(0xFF64748B),
+                            color = colorScheme.onSurfaceVariant,
                             fontSize = 13.sp,
                         )
                     },
@@ -122,7 +122,7 @@ fun HomeScreen(
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "Search",
-                            tint = Color(0xFF64748B),
+                            tint = colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(18.dp),
                         )
                     },
@@ -133,11 +133,11 @@ fun HomeScreen(
                     singleLine = true,
                     colors =
                         androidx.compose.material3.OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = Color(0xFF334155),
-                            focusedBorderColor = Color(0xFF3B82F6),
-                            unfocusedContainerColor = Color(0xFF0F172A),
-                            focusedContainerColor = Color(0xFF0F172A),
-                            cursorColor = Color(0xFF3B82F6),
+                            unfocusedBorderColor = colorScheme.outlineVariant,
+                            focusedBorderColor = colorScheme.primary,
+                            unfocusedContainerColor = colorScheme.surface,
+                            focusedContainerColor = colorScheme.surface,
+                            cursorColor = colorScheme.primary,
                         ),
                     shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
                 )
@@ -188,13 +188,13 @@ fun HomeScreen(
             ) {
                 Text(
                     text = "Recent Bills",
-                    color = Color.White,
+                    color = colorScheme.onSurface,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
                     text = "See all",
-                    color = Color(0xFF3B82F6),
+                    color = colorScheme.primary,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.clickable { onNavigateToBills() },
@@ -217,7 +217,7 @@ fun HomeScreen(
                                     .padding(32.dp),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text("No recent bills", color = Color(0xFF64748B))
+                            Text("No recent bills", color = colorScheme.onSurfaceVariant)
                         }
                     }
                 } else {
@@ -233,12 +233,12 @@ fun HomeScreen(
     }
 }
 
-@Suppress("MagicNumber")
 @Composable
 private fun QuickAddButton(
     label: String,
     onClick: () -> Unit,
 ) {
+    val colorScheme = MaterialTheme.colorScheme
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         FloatingActionButton(onClick = onClick) {
             Icon(
@@ -249,14 +249,13 @@ private fun QuickAddButton(
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = label,
-            color = Color(0xFF94A3B8),
+            color = colorScheme.onSurfaceVariant,
             fontSize = 12.sp,
             fontWeight = FontWeight.Medium,
         )
     }
 }
 
-@Suppress("MagicNumber")
 @Composable
 private fun HeroCard(
     revenueThisMonth: Double,
@@ -264,22 +263,19 @@ private fun HeroCard(
     customerCount: Int,
     modifier: Modifier = Modifier,
 ) {
+    val colorScheme = MaterialTheme.colorScheme
     Column(
         modifier =
             modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(
-                    Brush.verticalGradient(
-                        listOf(Color(0xFF1E293B), Color(0xFF0F172A)),
-                    ),
-                )
-                .border(1.dp, Color(0xFF334155), RoundedCornerShape(20.dp))
+                .background(colorScheme.surface)
+                .border(1.dp, colorScheme.outlineVariant, RoundedCornerShape(20.dp))
                 .padding(20.dp),
     ) {
         Text(
             text = "TOTAL SALES · THIS MONTH",
-            color = Color(0xFF94A3B8),
+            color = colorScheme.onSurfaceVariant,
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
             letterSpacing = 1.5.sp,
@@ -287,7 +283,7 @@ private fun HeroCard(
         Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = formatMoney(revenueThisMonth, LocalCurrencyCode.current),
-            color = Color.White,
+            color = colorScheme.onSurface,
             fontSize = 34.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = (-1).sp,
@@ -296,7 +292,7 @@ private fun HeroCard(
             softWrap = false,
         )
         Spacer(modifier = Modifier.height(16.dp))
-        HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
+        HorizontalDivider(color = colorScheme.onSurface.copy(alpha = 0.1f))
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -308,23 +304,23 @@ private fun HeroCard(
                     Modifier
                         .width(1.dp)
                         .height(28.dp)
-                        .background(Color.White.copy(alpha = 0.15f)),
+                        .background(colorScheme.onSurface.copy(alpha = 0.15f)),
             )
             HeroStat(label = "CUSTOMERS", value = customerCount.toString())
         }
     }
 }
 
-@Suppress("MagicNumber")
 @Composable
 private fun HeroStat(
     label: String,
     value: String,
 ) {
+    val colorScheme = MaterialTheme.colorScheme
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = label,
-            color = Color(0xFF64748B),
+            color = colorScheme.onSurfaceVariant,
             fontSize = 11.sp,
             fontWeight = FontWeight.Medium,
             letterSpacing = 1.sp,
@@ -332,20 +328,20 @@ private fun HeroStat(
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = value,
-            color = Color.White,
+            color = colorScheme.onSurface,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
         )
     }
 }
 
-@Suppress("MagicNumber")
 @Composable
 private fun RecentBillCard(
     billWithPerson: BillWithPerson,
     onClick: () -> Unit,
 ) {
     val dateString = formatDate(billWithPerson.bill.billDate)
+    val colorScheme = MaterialTheme.colorScheme
 
     Row(
         modifier =
@@ -353,8 +349,8 @@ private fun RecentBillCard(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 6.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF1E293B).copy(alpha = 0.6f))
-                .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(16.dp))
+                .background(colorScheme.surfaceVariant.copy(alpha = 0.6f))
+                .border(1.dp, colorScheme.outline.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
                 .clickable(onClick = onClick)
                 .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -366,14 +362,14 @@ private fun RecentBillCard(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = billWithPerson.person.name,
-                color = Color.White,
+                color = colorScheme.onSurface,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 15.sp,
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = "${billWithPerson.bill.billNumber} • $dateString",
-                color = Color(0xFF94A3B8),
+                color = colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,
             )
         }
@@ -383,58 +379,33 @@ private fun RecentBillCard(
         Column(horizontalAlignment = Alignment.End) {
             Text(
                 text = formatMoney(billWithPerson.bill.grandTotal, LocalCurrencyCode.current),
-                color = Color.White,
+                color = colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
                 fontSize = 15.sp,
             )
             Spacer(modifier = Modifier.height(4.dp))
-            RecentBillStatusBadge(billWithPerson.bill.paymentStatus)
+            StatusBadge(billWithPerson.bill.paymentStatus)
         }
     }
 }
 
-@Suppress("MagicNumber")
 @Composable
 private fun RecentBillIcon() {
+    val colorScheme = MaterialTheme.colorScheme
     Box(
         modifier =
             Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(Color(0xFF0F172A)),
+                .background(colorScheme.surface)
+                .border(1.dp, colorScheme.outlineVariant, CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.List,
             contentDescription = null,
-            tint = Color(0xFF94A3B8),
+            tint = colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp),
-        )
-    }
-}
-
-@Suppress("MagicNumber")
-@Composable
-private fun RecentBillStatusBadge(status: BillStatus) {
-    val (statusColor, statusBg) =
-        when (status) {
-            BillStatus.PAID -> Color(0xFF22C55E) to Color(0xFF14532D)
-            BillStatus.OVERDUE -> Color(0xFFEF4444) to Color(0xFF7F1D1D)
-            BillStatus.PENDING -> Color(0xFFF59E0B) to Color(0xFF78350F)
-        }
-    Box(
-        modifier =
-            Modifier
-                .clip(RoundedCornerShape(12.dp))
-                .background(statusBg)
-                .padding(horizontal = 8.dp, vertical = 2.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = status.name,
-            color = statusColor,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Bold,
         )
     }
 }
