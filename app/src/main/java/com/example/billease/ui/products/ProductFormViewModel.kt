@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -42,17 +43,15 @@ class ProductFormViewModel
         init {
             if (isEditMode) {
                 viewModelScope.launch {
-                    repository.getProductById(productId).collect { product ->
-                        product?.let {
-                            _uiState.value =
-                                ProductFormState(
-                                    name = it.name,
-                                    unitPrice = it.unitPrice.toString(),
-                                    unit = it.unit,
-                                    taxPercent = it.taxPercent.toString(),
-                                    description = it.description ?: "",
-                                )
-                        }
+                    repository.getProductById(productId).first()?.let {
+                        _uiState.value =
+                            ProductFormState(
+                                name = it.name,
+                                unitPrice = it.unitPrice.toString(),
+                                unit = it.unit,
+                                taxPercent = it.taxPercent.toString(),
+                                description = it.description ?: "",
+                            )
                     }
                 }
             }

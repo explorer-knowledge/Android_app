@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -57,11 +58,11 @@ fun SettingsScreen(
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    var businessName by remember { mutableStateOf("") }
-    var address by remember { mutableStateOf("") }
-    var logoPath by remember { mutableStateOf<String?>(null) }
-    var invoicePrefix by remember { mutableStateOf("BILL-") }
-    var currencyCode by remember { mutableStateOf("INR") }
+    var businessName by rememberSaveable { mutableStateOf("") }
+    var address by rememberSaveable { mutableStateOf("") }
+    var logoPath by rememberSaveable { mutableStateOf<String?>(null) }
+    var invoicePrefix by rememberSaveable { mutableStateOf("BILL-") }
+    var currencyCode by rememberSaveable { mutableStateOf("INR") }
 
     LaunchedEffect(settings) {
         businessName = settings.businessName
