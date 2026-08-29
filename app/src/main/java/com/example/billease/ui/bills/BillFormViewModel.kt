@@ -4,11 +4,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.billease.data.Bill
+import com.example.billease.data.BillDao
 import com.example.billease.data.BillItem
 import com.example.billease.data.BillStatus
-import com.example.billease.data.BillingRepository
 import com.example.billease.data.Person
+import com.example.billease.data.PersonDao
 import com.example.billease.data.Product
+import com.example.billease.data.ProductDao
 import com.example.billease.data.SettingsRepository
 import com.example.billease.domain.BillCalculator
 import com.example.billease.domain.BillItemInput
@@ -67,7 +69,9 @@ data class BillFormUiState(
 class BillFormViewModel
     @Inject
     constructor(
-        private val repository: BillingRepository,
+        private val personDao: PersonDao,
+        private val productDao: ProductDao,
+        private val billDao: BillDao,
         private val settingsRepository: SettingsRepository,
         savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
@@ -82,17 +86,17 @@ class BillFormViewModel
         val isDirty: StateFlow<Boolean> = _isDirty.asStateFlow()
 
         val allPersons: StateFlow<List<Person>> =
-            repository.getAllPersons()
+            personDao.getAll()
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000), emptyList())
 
         val allProducts: StateFlow<List<Product>> =
-            repository.getAllProducts()
+            productDao.getAll()
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000), emptyList())
 
         init {
             viewModelScope.launch {
                 if (isEditMode) {
-                    repository.getBillWithItemsById(billId).first()?.let { billData ->
+                    billDao.getBillWithItemsAndPersonById(billId).first()?.let { billData ->
                         val items =
                             billData.items.map { item ->
                                 LineItemFormState(
@@ -126,7 +130,7 @@ class BillFormViewModel
                 } else {
                     val settings = settingsRepository.appSettingsFlow.first()
                     invoicePrefix = settings.invoicePrefix
-                    val nextNumber = repository.peekNextBillNumber(invoicePrefix)
+                    val nextNumber = billDao.peekNextBillNumber(invoicePrefix)
                     _uiState.update { it.copy(billNumber = nextNumber) }
                 }
             }
@@ -146,7 +150,7 @@ class BillFormViewModel
             viewModelScope.launch {
                 try {
                     val person = Person(name = name.trim(), phone = phone.trim())
-                    val id = repository.insertPerson(person)
+                    val id = personDao.insert(person)
                     selectPerson(person.copy(id = id))
                     onResult(true)
                 } catch (e: Exception) {
@@ -337,9 +341,9 @@ class BillFormViewModel
                         }
 
                     if (isEditMode) {
-                        repository.updateBillWithItems(bill, billItems)
+                        billDao.updateBillWithItems(bill, billItems)
                     } else {
-                        repository.insertBillWithItems(bill, billItems, invoicePrefix)
+                        billDao.insertBillWithItems(bill, billItems, invoicePrefix)
                     }
                     onSuccess()
                 } catch (e: Exception) {

@@ -68,41 +68,7 @@ fun AppNavigation() {
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.onSurface,
                     ) {
-                        BottomNavItem(
-                            route = "reports",
-                            currentRoute = currentRoute,
-                            icon = Icons.Default.DateRange,
-                            label = "Reports",
-                            navController = navController,
-                        )
-                        BottomNavItem(
-                            route = "bills_list",
-                            currentRoute = currentRoute,
-                            icon = Icons.Default.Menu,
-                            label = "Bills",
-                            navController = navController,
-                        )
-                        BottomNavItem(
-                            route = "home",
-                            currentRoute = currentRoute,
-                            icon = Icons.Default.Home,
-                            label = "Home",
-                            navController = navController,
-                        )
-                        BottomNavItem(
-                            route = "products_list",
-                            currentRoute = currentRoute,
-                            icon = Icons.Default.ShoppingCart,
-                            label = "Products",
-                            navController = navController,
-                        )
-                        BottomNavItem(
-                            route = "persons_list",
-                            currentRoute = currentRoute,
-                            icon = Icons.Default.Person,
-                            label = "Persons",
-                            navController = navController,
-                        )
+                        BottomNavBar(currentRoute = currentRoute, navController = navController)
                     }
                 }
             },
@@ -219,6 +185,48 @@ fun AppNavigation() {
             }
         }
     }
+}
+
+@Composable
+private fun RowScope.BottomNavBar(
+    currentRoute: String?,
+    navController: NavHostController,
+) {
+    BottomNavItem(
+        route = "reports",
+        currentRoute = currentRoute,
+        icon = Icons.Default.DateRange,
+        label = "Reports",
+        navController = navController,
+    )
+    BottomNavItem(
+        route = "bills_list",
+        currentRoute = currentRoute,
+        icon = Icons.Default.Menu,
+        label = "Bills",
+        navController = navController,
+    )
+    BottomNavItem(
+        route = "home",
+        currentRoute = currentRoute,
+        icon = Icons.Default.Home,
+        label = "Home",
+        navController = navController,
+    )
+    BottomNavItem(
+        route = "products_list",
+        currentRoute = currentRoute,
+        icon = Icons.Default.ShoppingCart,
+        label = "Products",
+        navController = navController,
+    )
+    BottomNavItem(
+        route = "persons_list",
+        currentRoute = currentRoute,
+        icon = Icons.Default.Person,
+        label = "Persons",
+        navController = navController,
+    )
 }
 
 @Composable

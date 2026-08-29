@@ -2,8 +2,9 @@ package com.example.billease.ui.products
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.billease.data.BillingRepository
+import com.example.billease.data.BillDao
 import com.example.billease.data.Product
+import com.example.billease.data.ProductDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +19,8 @@ import javax.inject.Inject
 class ProductsViewModel
     @Inject
     constructor(
-        private val repository: BillingRepository,
+        private val productDao: ProductDao,
+        private val billDao: BillDao,
     ) : ViewModel() {
         private val _searchQuery = MutableStateFlow("")
         val searchQuery: StateFlow<String> = _searchQuery
@@ -27,9 +29,9 @@ class ProductsViewModel
         val products =
             _searchQuery.flatMapLatest { query ->
                 if (query.isBlank()) {
-                    repository.getAllProducts()
+                    productDao.getAll()
                 } else {
-                    repository.searchProducts(query)
+                    productDao.search(query)
                 }
             }.stateIn(
                 scope = viewModelScope,
@@ -48,11 +50,11 @@ class ProductsViewModel
         ) {
             viewModelScope.launch {
                 try {
-                    val count = repository.getBillItemCountForProduct(product.id)
+                    val count = billDao.getBillItemCountForProduct(product.id)
                     if (count > 0) {
                         onResult("Cannot delete product used in existing bills.")
                     } else {
-                        repository.deleteProduct(product)
+                        productDao.delete(product)
                         onResult("Product deleted successfully.")
                     }
                 } catch (e: Exception) {

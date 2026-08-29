@@ -54,6 +54,5 @@
     <ID>TooGenericExceptionCaught:ProductsViewModel.kt$ProductsViewModel$e: Exception</ID>
     <ID>TooGenericExceptionCaught:SettingsRepository.kt$SettingsRepository$e: Exception</ID>
     <ID>TooManyFunctions:BillDao.kt$BillDao</ID>
-    <ID>TooManyFunctions:BillingRepository.kt$BillingRepository</ID>
   </CurrentIssues>
 </SmellBaseline>

@@ -3,8 +3,8 @@ package com.example.billease.ui.products
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.billease.data.BillingRepository
 import com.example.billease.data.Product
+import com.example.billease.data.ProductDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +31,7 @@ data class ProductFormState(
 class ProductFormViewModel
     @Inject
     constructor(
-        private val repository: BillingRepository,
+        private val productDao: ProductDao,
         savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
         private val productId: Long = savedStateHandle.get<Long>("productId") ?: -1L
@@ -43,7 +43,7 @@ class ProductFormViewModel
         init {
             if (isEditMode) {
                 viewModelScope.launch {
-                    repository.getProductById(productId).first()?.let {
+                    productDao.getById(productId).first()?.let {
                         _uiState.value =
                             ProductFormState(
                                 name = it.name,
@@ -121,9 +121,9 @@ class ProductFormViewModel
 
                 try {
                     if (isEditMode) {
-                        repository.updateProduct(product)
+                        productDao.update(product)
                     } else {
-                        repository.insertProduct(product)
+                        productDao.insert(product)
                     }
                     onSuccess()
                 } catch (e: Exception) {

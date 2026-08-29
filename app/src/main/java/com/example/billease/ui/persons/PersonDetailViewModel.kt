@@ -4,8 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.billease.data.Bill
-import com.example.billease.data.BillingRepository
+import com.example.billease.data.BillDao
 import com.example.billease.data.Person
+import com.example.billease.data.PersonDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -16,13 +17,14 @@ import javax.inject.Inject
 class PersonDetailViewModel
     @Inject
     constructor(
-        repository: BillingRepository,
+        personDao: PersonDao,
+        billDao: BillDao,
         savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
         private val personId: Long = checkNotNull(savedStateHandle.get<Long>("personId"))
 
         val person: StateFlow<Person?> =
-            repository.getPersonById(personId)
+            personDao.getById(personId)
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
@@ -30,7 +32,7 @@ class PersonDetailViewModel
                 )
 
         val bills: StateFlow<List<Bill>> =
-            repository.getBillsByPersonId(personId)
+            billDao.getBillsByPersonId(personId)
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),

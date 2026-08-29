@@ -2,8 +2,9 @@ package com.example.billease.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.billease.data.BillDao
 import com.example.billease.data.BillWithPerson
-import com.example.billease.data.BillingRepository
+import com.example.billease.data.PersonDao
 import com.example.billease.data.SettingsRepository
 import com.example.billease.util.currentMonthBoundsFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +23,8 @@ private const val RECENT_BILL_LIMIT = 5
 class HomeViewModel
     @Inject
     constructor(
-        private val repository: BillingRepository,
+        private val personDao: PersonDao,
+        private val billDao: BillDao,
         settingsRepository: SettingsRepository,
     ) : ViewModel() {
         private val _homeSearchQuery = MutableStateFlow("")
@@ -33,7 +35,7 @@ class HomeViewModel
         }
 
         val customerCount: StateFlow<Int> =
-            repository.getPersonCount()
+            personDao.getCount()
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
@@ -41,7 +43,7 @@ class HomeViewModel
                 )
 
         val totalBills: StateFlow<Int> =
-            repository.getTotalBillCount()
+            billDao.getTotalBillCount()
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
@@ -52,7 +54,7 @@ class HomeViewModel
         val revenueThisMonth: StateFlow<Double> =
             currentMonthBoundsFlow()
                 .flatMapLatest { bounds ->
-                    repository.getRevenueBetween(bounds.first, bounds.second)
+                    billDao.getRevenueBetween(bounds.first, bounds.second)
                 }
                 // Room returns null for SUM() on empty sets, so map it to 0.0
                 .map { it ?: 0.0 }
@@ -68,9 +70,9 @@ class HomeViewModel
             _homeSearchQuery
                 .flatMapLatest { query ->
                     if (query.isBlank()) {
-                        repository.getRecentBills(RECENT_BILL_LIMIT)
+                        billDao.getRecentBillsWithPerson(RECENT_BILL_LIMIT)
                     } else {
-                        repository.searchBills(query)
+                        billDao.searchBillsWithPerson(query)
                     }
                 }
                 .map { it.take(RECENT_BILL_LIMIT) }

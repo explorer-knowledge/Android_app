@@ -3,8 +3,8 @@ package com.example.billease.ui.bills
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.billease.data.Bill
+import com.example.billease.data.BillDao
 import com.example.billease.data.BillWithPerson
-import com.example.billease.data.BillingRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class BillsViewModel
     @Inject
     constructor(
-        private val repository: BillingRepository,
+        private val billDao: BillDao,
     ) : ViewModel() {
         private val _searchQuery = MutableStateFlow("")
         val searchQuery: StateFlow<String> = _searchQuery
@@ -36,7 +36,7 @@ class BillsViewModel
                     // DatePicker returns UTC-midnight; normalize to local-day boundaries
                     val start = range.first?.let { startOfDayMillis(it) }
                     val endExclusive = range.second?.let { endOfDayMillis(it) }
-                    repository.getFilteredBills(query, start, endExclusive)
+                    billDao.getFilteredBills(query, start, endExclusive)
                 }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000), emptyList())
 
@@ -74,7 +74,7 @@ class BillsViewModel
         ) {
             viewModelScope.launch {
                 try {
-                    repository.deleteBill(bill)
+                    billDao.deleteBill(bill)
                     onResult("Bill deleted.")
                 } catch (e: Exception) {
                     onResult("Could not delete bill: ${e.message}")

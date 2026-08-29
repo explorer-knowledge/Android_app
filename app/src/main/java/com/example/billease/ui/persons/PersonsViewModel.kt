@@ -2,8 +2,9 @@ package com.example.billease.ui.persons
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.billease.data.BillingRepository
+import com.example.billease.data.BillDao
 import com.example.billease.data.Person
+import com.example.billease.data.PersonDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +19,8 @@ import javax.inject.Inject
 class PersonsViewModel
     @Inject
     constructor(
-        private val repository: BillingRepository,
+        private val personDao: PersonDao,
+        private val billDao: BillDao,
     ) : ViewModel() {
         private val _searchQuery = MutableStateFlow("")
         val searchQuery: StateFlow<String> = _searchQuery
@@ -27,9 +29,9 @@ class PersonsViewModel
         val persons =
             _searchQuery.flatMapLatest { query ->
                 if (query.isBlank()) {
-                    repository.getAllPersons()
+                    personDao.getAll()
                 } else {
-                    repository.searchPersons(query)
+                    personDao.search(query)
                 }
             }.stateIn(
                 scope = viewModelScope,
@@ -48,11 +50,11 @@ class PersonsViewModel
         ) {
             viewModelScope.launch {
                 try {
-                    val billCount = repository.getBillCountForPerson(person.id)
+                    val billCount = billDao.getBillCountForPerson(person.id)
                     if (billCount > 0) {
                         onResult("Cannot delete person with existing bills.")
                     } else {
-                        repository.deletePerson(person)
+                        personDao.delete(person)
                         onResult("Person deleted successfully.")
                     }
                 } catch (e: Exception) {

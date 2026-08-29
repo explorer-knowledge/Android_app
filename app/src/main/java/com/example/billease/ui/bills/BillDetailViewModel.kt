@@ -5,8 +5,8 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.billease.data.BillDao
 import com.example.billease.data.BillWithItemsAndPerson
-import com.example.billease.data.BillingRepository
 import com.example.billease.data.SettingsRepository
 import com.example.billease.util.PdfGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,14 +23,14 @@ import javax.inject.Inject
 class BillDetailViewModel
     @Inject
     constructor(
-        private val repository: BillingRepository,
+        private val billDao: BillDao,
         private val settingsRepository: SettingsRepository,
         savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
         private val billId: Long = checkNotNull(savedStateHandle.get<Long>("billId"))
 
         val bill: StateFlow<BillWithItemsAndPerson?> =
-            repository.getBillWithItemsById(billId)
+            billDao.getBillWithItemsAndPersonById(billId)
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000), null)
 
         suspend fun generatePdf(context: Context): Uri? {
@@ -46,7 +46,7 @@ class BillDetailViewModel
             val currentBill = bill.value?.bill ?: return
             viewModelScope.launch {
                 try {
-                    repository.deleteBill(currentBill)
+                    billDao.deleteBill(currentBill)
                     onResult(true)
                 } catch (e: Exception) {
                     onResult(false)

@@ -3,8 +3,8 @@ package com.example.billease.ui.persons
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.billease.data.BillingRepository
 import com.example.billease.data.Person
+import com.example.billease.data.PersonDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +29,7 @@ data class PersonFormState(
 class PersonFormViewModel
     @Inject
     constructor(
-        private val repository: BillingRepository,
+        private val personDao: PersonDao,
         savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
         private val personId: Long = savedStateHandle.get<Long>("personId") ?: -1L
@@ -41,7 +41,7 @@ class PersonFormViewModel
         init {
             if (isEditMode) {
                 viewModelScope.launch {
-                    repository.getPersonById(personId).first()?.let {
+                    personDao.getById(personId).first()?.let {
                         _uiState.value =
                             PersonFormState(
                                 name = it.name,
@@ -104,9 +104,9 @@ class PersonFormViewModel
 
                 try {
                     if (isEditMode) {
-                        repository.updatePerson(person)
+                        personDao.update(person)
                     } else {
-                        repository.insertPerson(person)
+                        personDao.insert(person)
                     }
                     onSuccess()
                 } catch (e: Exception) {
