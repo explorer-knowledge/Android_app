@@ -30,9 +30,15 @@ object PdfGenerator {
         settings: AppSettings,
     ): Uri? {
         val pdfDocument = PdfDocument()
-        val pageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, 1).create()
+        var pageNumber = 1
 
-        var page = pdfDocument.startPage(pageInfo)
+        fun openPage(): PdfDocument.Page {
+            val pageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, pageNumber).create()
+            pageNumber++
+            return pdfDocument.startPage(pageInfo)
+        }
+
+        var page = openPage()
         var canvas = page.canvas
         var yPos = 50f
 
@@ -46,7 +52,7 @@ object PdfGenerator {
         fun checkPageBreak(requiredSpace: Float) {
             if (yPos + requiredSpace > MAX_Y) {
                 pdfDocument.finishPage(page)
-                page = pdfDocument.startPage(pageInfo)
+                page = openPage()
                 canvas = page.canvas
                 yPos = 50f
             }
@@ -79,7 +85,9 @@ object PdfGenerator {
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
         paint.textSize = 12f
         if (settings.address.isNotBlank()) {
-            settings.address.split("\n").forEach {
+            val addressLines = settings.address.split("\n")
+            checkPageBreak(addressLines.size * 15f)
+            addressLines.forEach {
                 canvas.drawText(it, MARGIN_LEFT, yPos, paint)
                 yPos += 15f
             }
@@ -96,6 +104,12 @@ object PdfGenerator {
         yPos += 45f
 
         // Bill To
+        checkPageBreak(
+            45f +
+                (if (data.person.email.isNullOrBlank()) 0f else 15f) +
+                data.person.address.orEmpty().split("\n").size * 15f +
+                (if (data.person.gstNumber.isNullOrBlank()) 0f else 15f),
+        )
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         canvas.drawText("Bill To:", MARGIN_LEFT, yPos, paint)
         yPos += 15f
@@ -221,7 +235,7 @@ object PdfGenerator {
         val file = File(pdfsDir, "Bill_${data.bill.billNumber}.pdf")
 
         return try {
-            pdfDocument.writeTo(FileOutputStream(file))
+            FileOutputStream(file).use { pdfDocument.writeTo(it) }
             pdfDocument.close()
             FileProvider.getUriForFile(
                 context,
