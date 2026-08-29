@@ -2,12 +2,14 @@
 <SmellBaseline>
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
+    <ID>CyclomaticComplexMethod:BillsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable private fun BillFilterRow( filter: BillFilterState, persons: List&lt;Person&gt;, products: List&lt;Product&gt;, onDatePreset: (DateFilterPreset) -&gt; Unit, onCustomRange: (Long?, Long?) -&gt; Unit, onPersonFilter: (Person?) -&gt; Unit, onProductFilter: (Product?) -&gt; Unit, onClearAll: () -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:PdfGenerator.kt$PdfGenerator$fun generatePdf( context: Context, data: BillWithItemsAndPerson, settings: AppSettings, ): Uri?</ID>
     <ID>LongMethod:BillDetailScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BillDetailScreen( onNavigateBack: () -&gt; Unit, onNavigateToEdit: (Long) -&gt; Unit, onNavigateToSettings: () -&gt; Unit, viewModel: BillDetailViewModel = hiltViewModel(), )</ID>
     <ID>LongMethod:BillFormScreen.kt$@Composable private fun LineItemRow( row: LineItemFormState, allProducts: List&lt;Product&gt;, onProductSelected: (Product) -&gt; Unit, onQuantityChange: (String) -&gt; Unit, onRemove: () -&gt; Unit, canRemove: Boolean, )</ID>
     <ID>LongMethod:BillFormScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BillFormScreen( onNavigateBack: () -&gt; Unit, onNavigateToSettings: () -&gt; Unit, viewModel: BillFormViewModel = hiltViewModel(), )</ID>
     <ID>LongMethod:BillFormViewModel.kt$BillFormViewModel$fun saveBill(onSuccess: () -&gt; Unit)</ID>
     <ID>LongMethod:BillsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BillsListScreen( onNavigateToBillDetail: (Long) -&gt; Unit, onNavigateToBillForm: () -&gt; Unit, onNavigateToSettings: () -&gt; Unit, viewModel: BillsViewModel = hiltViewModel(), )</ID>
+    <ID>LongMethod:BillsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable private fun BillFilterRow( filter: BillFilterState, persons: List&lt;Person&gt;, products: List&lt;Product&gt;, onDatePreset: (DateFilterPreset) -&gt; Unit, onCustomRange: (Long?, Long?) -&gt; Unit, onPersonFilter: (Person?) -&gt; Unit, onProductFilter: (Product?) -&gt; Unit, onClearAll: () -&gt; Unit, )</ID>
     <ID>LongMethod:PdfGenerator.kt$PdfGenerator$fun generatePdf( context: Context, data: BillWithItemsAndPerson, settings: AppSettings, ): Uri?</ID>
     <ID>LongMethod:PersonDetailScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PersonDetailScreen( onNavigateBack: () -&gt; Unit, onNavigateToEdit: (Long) -&gt; Unit, onNavigateToBillDetail: (Long) -&gt; Unit, onNavigateToSettings: () -&gt; Unit, viewModel: PersonDetailViewModel = hiltViewModel(), )</ID>
     <ID>LongMethod:PersonFormScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PersonFormScreen( onNavigateBack: () -&gt; Unit, onNavigateToSettings: () -&gt; Unit, viewModel: PersonFormViewModel = hiltViewModel(), )</ID>
@@ -15,8 +17,10 @@
     <ID>LongMethod:ProductFormScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ProductFormScreen( onNavigateBack: () -&gt; Unit, onNavigateToSettings: () -&gt; Unit, viewModel: ProductFormViewModel = hiltViewModel(), )</ID>
     <ID>LongMethod:ProductsListScreen.kt$@Composable fun ProductsListScreen( onNavigateToProductForm: (Long?) -&gt; Unit, onNavigateToSettings: () -&gt; Unit, viewModel: ProductsViewModel = hiltViewModel(), )</ID>
     <ID>LongParameterList:BillFormScreen.kt$( row: LineItemFormState, allProducts: List&lt;Product&gt;, onProductSelected: (Product) -&gt; Unit, onQuantityChange: (String) -&gt; Unit, onRemove: () -&gt; Unit, canRemove: Boolean, )</ID>
+    <ID>LongParameterList:BillsListScreen.kt$( filter: BillFilterState, persons: List&lt;Person&gt;, products: List&lt;Product&gt;, onDatePreset: (DateFilterPreset) -&gt; Unit, onCustomRange: (Long?, Long?) -&gt; Unit, onPersonFilter: (Person?) -&gt; Unit, onProductFilter: (Product?) -&gt; Unit, onClearAll: () -&gt; Unit, )</ID>
     <ID>MagicNumber:BillCalculator.kt$BillItemInput$100.0</ID>
     <ID>MagicNumber:BillSequence.kt$4</ID>
+    <ID>MagicNumber:BillsViewModel.kt$BillsViewModel$5_000</ID>
     <ID>MagicNumber:PdfGenerator.kt$PdfGenerator$10f</ID>
     <ID>MagicNumber:PdfGenerator.kt$PdfGenerator$120f</ID>
     <ID>MagicNumber:PdfGenerator.kt$PdfGenerator$12f</ID>
@@ -39,11 +43,11 @@
     <ID>MagicNumber:Theme.kt$0xFFCCC2DC</ID>
     <ID>MagicNumber:Theme.kt$0xFFD0BCFF</ID>
     <ID>MagicNumber:Theme.kt$0xFFEFB8C8</ID>
-    <ID>MaxLineLength:BillFormScreen.kt$DropdownMenuItem(text = { Text("No products — add one first") }, onClick = { productExpanded = false })</ID>
     <ID>MaxLineLength:DatabaseModule.kt$&lt;no name provided&gt;$db.execSQL("CREATE TABLE IF NOT EXISTS bill_sequences (prefix TEXT NOT NULL, lastNumber INTEGER NOT NULL, PRIMARY KEY(prefix))")</ID>
     <ID>MaxLineLength:PdfGenerator.kt$PdfGenerator$Rect(MARGIN_LEFT.toInt(), yPos.toInt(), (MARGIN_LEFT + targetWidth).toInt(), (yPos + targetHeight).toInt())</ID>
     <ID>MaxLineLength:PersonDao.kt$PersonDao$@Query("SELECT * FROM persons WHERE name LIKE '%' || :query || '%' OR phone LIKE '%' || :query || '%' ORDER BY name ASC")</ID>
     <ID>MaxLineLength:SettingsScreen.kt$onClick = { pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }</ID>
+    <ID>MaxLineLength:SettingsViewModel.kt$SettingsViewModel$fun updateDashboardTimeline(timeline: DashboardTimeline)</ID>
     <ID>SwallowedException:SettingsRepository.kt$SettingsRepository$e: Exception</ID>
     <ID>TooGenericExceptionCaught:BillFormViewModel.kt$BillFormViewModel$e: Exception</ID>
     <ID>TooGenericExceptionCaught:BillsViewModel.kt$BillsViewModel$e: Exception</ID>
@@ -54,15 +58,5 @@
     <ID>TooGenericExceptionCaught:ProductsViewModel.kt$ProductsViewModel$e: Exception</ID>
     <ID>TooGenericExceptionCaught:SettingsRepository.kt$SettingsRepository$e: Exception</ID>
     <ID>TooManyFunctions:BillDao.kt$BillDao</ID>
-    <ID>CyclomaticComplexMethod:BillsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable private fun BillFilterRow( filter: BillFilterState, persons: List&lt;Person&gt;, products: List&lt;Product&gt;, onDatePreset: (DateFilterPreset) -&gt; Unit, onCustomRange: (Long?, Long?) -&gt; Unit, onPersonFilter: (Person?) -&gt; Unit, onProductFilter: (Product?) -&gt; Unit, onClearAll: () -&gt; Unit, )</ID>
-    <ID>LongMethod:BillsListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable private fun BillFilterRow( filter: BillFilterState, persons: List&lt;Person&gt;, products: List&lt;Product&gt;, onDatePreset: (DateFilterPreset) -&gt; Unit, onCustomRange: (Long?, Long?) -&gt; Unit, onPersonFilter: (Person?) -&gt; Unit, onProductFilter: (Product?) -&gt; Unit, onClearAll: () -&gt; Unit, )</ID>
-    <ID>LongParameterList:BillsListScreen.kt$( filter: BillFilterState, persons: List&lt;Person&gt;, products: List&lt;Product&gt;, onDatePreset: (DateFilterPreset) -&gt; Unit, onCustomRange: (Long?, Long?) -&gt; Unit, onPersonFilter: (Person?) -&gt; Unit, onProductFilter: (Product?) -&gt; Unit, onClearAll: () -&gt; Unit, )</ID>
-    <ID>LongParameterList:SettingsRepository.kt$SettingsRepository$( businessName: String, address: String, logoUri: String?, invoicePrefix: String, currencyCode: String, dashboardTimeline: DashboardTimeline, customTimelineStart: Long?, customTimelineEnd: Long?, )</ID>
-    <ID>MagicNumber:BillsViewModel.kt$BillsViewModel$5_000</ID>
-    <ID>MagicNumber:DateUtils.kt$23</ID>
-    <ID>MagicNumber:DateUtils.kt$59</ID>
-    <ID>MagicNumber:DateUtils.kt$999</ID>
-    <ID>MaxLineLength:SettingsViewModel.kt$fun updateDashboardTimeline(timeline: DashboardTimeline) = _formState.update { it.copy(dashboardTimeline = timeline) }</ID>
-    <ID>TooManyFunctions:BillsViewModel.kt$BillsViewModel</ID>
   </CurrentIssues>
 </SmellBaseline>
