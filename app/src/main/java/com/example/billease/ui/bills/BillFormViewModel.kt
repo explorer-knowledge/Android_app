@@ -1,8 +1,10 @@
 package com.example.billease.ui.bills
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.billease.R
 import com.example.billease.data.Bill
 import com.example.billease.data.BillDao
 import com.example.billease.data.BillItem
@@ -16,6 +18,7 @@ import com.example.billease.domain.BillCalculator
 import com.example.billease.domain.BillItemInput
 import com.example.billease.util.formatQuantity
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -73,6 +76,7 @@ class BillFormViewModel
         private val productDao: ProductDao,
         private val billDao: BillDao,
         private val settingsRepository: SettingsRepository,
+        @ApplicationContext private val context: Context,
         savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
         private val billId: Long = savedStateHandle.get<Long>("billId") ?: -1L
@@ -154,7 +158,9 @@ class BillFormViewModel
                     selectPerson(person.copy(id = id))
                     onResult(true)
                 } catch (e: Exception) {
-                    _uiState.update { it.copy(saveError = "Could not add person: ${e.message}") }
+                    _uiState.update {
+                        it.copy(saveError = context.getString(R.string.error_could_not_add_person, e.message))
+                    }
                     onResult(false)
                 }
             }
@@ -256,7 +262,7 @@ class BillFormViewModel
         private fun parseValidDiscount(text: String): Double? {
             val discount = text.toDoubleOrNull()
             if (discount == null || discount < 0) {
-                _uiState.update { it.copy(discountError = "Enter a valid discount (0 or more)") }
+                _uiState.update { it.copy(discountError = context.getString(R.string.error_valid_discount)) }
                 return null
             }
             return discount
@@ -266,9 +272,11 @@ class BillFormViewModel
         private fun validateLineItems(items: List<LineItemFormState>): List<LineItemFormState> =
             items.map { row ->
                 var r = row
-                if (r.product == null) r = r.copy(productError = "Select a product")
+                if (r.product == null) r = r.copy(productError = context.getString(R.string.error_select_product))
                 val qty = r.quantityText.toDoubleOrNull()
-                if (qty == null || qty <= 0) r = r.copy(quantityError = "Enter a valid quantity (> 0)")
+                if (qty == null || qty <= 0) {
+                    r = r.copy(quantityError = context.getString(R.string.error_valid_quantity))
+                }
                 r
             }
 
@@ -277,7 +285,7 @@ class BillFormViewModel
             var valid = true
 
             if (state.selectedPerson == null) {
-                _uiState.update { it.copy(personError = "Select a person") }
+                _uiState.update { it.copy(personError = context.getString(R.string.error_select_person)) }
                 valid = false
             }
 
@@ -288,7 +296,7 @@ class BillFormViewModel
             _uiState.update { it.copy(lineItems = updatedItems) }
 
             if (updatedItems.any { it.productError != null || it.quantityError != null }) {
-                _uiState.update { it.copy(lineItemsError = "Fix errors above") }
+                _uiState.update { it.copy(lineItemsError = context.getString(R.string.error_fix_above)) }
                 valid = false
             }
 
@@ -347,7 +355,9 @@ class BillFormViewModel
                     }
                     onSuccess()
                 } catch (e: Exception) {
-                    _uiState.update { it.copy(saveError = "Could not save bill: ${e.message}") }
+                    _uiState.update {
+                        it.copy(saveError = context.getString(R.string.error_could_not_save_bill, e.message))
+                    }
                 } finally {
                     _uiState.update { it.copy(isSaving = false) }
                 }

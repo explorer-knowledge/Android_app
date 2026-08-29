@@ -17,8 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.R
 import com.example.billease.ui.components.DetailTopAppBar
 import com.example.billease.ui.components.ProfileIconButton
 
@@ -34,7 +36,12 @@ fun PersonFormScreen(
     Scaffold(
         topBar = {
             DetailTopAppBar(
-                title = if (uiState.name.isBlank()) "Add Person" else "Edit Person",
+                title =
+                    if (uiState.name.isBlank()) {
+                        stringResource(R.string.add_person)
+                    } else {
+                        stringResource(R.string.edit_person)
+                    },
                 onNavigateBack = onNavigateBack,
             ) {
                 ProfileIconButton(onClick = onNavigateToSettings)
@@ -53,7 +60,7 @@ fun PersonFormScreen(
             OutlinedTextField(
                 value = uiState.name,
                 onValueChange = viewModel::updateName,
-                label = { Text("Name") },
+                label = { Text(stringResource(R.string.name)) },
                 modifier = Modifier.fillMaxWidth(),
                 isError = uiState.nameError != null,
                 supportingText = uiState.nameError?.let { { Text(it) } },
@@ -63,7 +70,7 @@ fun PersonFormScreen(
             OutlinedTextField(
                 value = uiState.phone,
                 onValueChange = viewModel::updatePhone,
-                label = { Text("Phone") },
+                label = { Text(stringResource(R.string.phone)) },
                 modifier = Modifier.fillMaxWidth(),
                 isError = uiState.phoneError != null,
                 supportingText = uiState.phoneError?.let { { Text(it) } },
@@ -73,7 +80,7 @@ fun PersonFormScreen(
             OutlinedTextField(
                 value = uiState.email,
                 onValueChange = viewModel::updateEmail,
-                label = { Text("Email (Optional)") },
+                label = { Text(stringResource(R.string.email_optional)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
             )
@@ -81,14 +88,14 @@ fun PersonFormScreen(
             OutlinedTextField(
                 value = uiState.address,
                 onValueChange = viewModel::updateAddress,
-                label = { Text("Address (Optional)") },
+                label = { Text(stringResource(R.string.address_optional)) },
                 modifier = Modifier.fillMaxWidth(),
             )
 
             OutlinedTextField(
                 value = uiState.gstNumber,
                 onValueChange = viewModel::updateGstNumber,
-                label = { Text("GST Number (Optional)") },
+                label = { Text(stringResource(R.string.gst_number_optional)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
             )
@@ -101,7 +108,7 @@ fun PersonFormScreen(
                 onClick = { viewModel.savePerson(onSuccess = onNavigateBack) },
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Save")
+                Text(stringResource(R.string.save))
             }
         }
     }

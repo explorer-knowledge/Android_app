@@ -35,11 +35,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.R
 import com.example.billease.data.BillWithPerson
 import com.example.billease.ui.components.StatusBadge
 import com.example.billease.util.LocalCurrencyCode
@@ -113,7 +115,7 @@ fun HomeScreen(
                     onValueChange = viewModel::onHomeSearchChange,
                     placeholder = {
                         Text(
-                            text = "Search by name or invoice no.",
+                            text = stringResource(R.string.home_search_hint),
                             color = colorScheme.onSurfaceVariant,
                             fontSize = 13.sp,
                         )
@@ -162,15 +164,15 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
                 QuickAddButton(
-                    label = "Add Product",
+                    label = stringResource(R.string.quick_add_product),
                     onClick = onNavigateToProductForm,
                 )
                 QuickAddButton(
-                    label = "Add Bill",
+                    label = stringResource(R.string.quick_add_bill),
                     onClick = onNavigateToBillForm,
                 )
                 QuickAddButton(
-                    label = "Add Customer",
+                    label = stringResource(R.string.quick_add_customer),
                     onClick = onNavigateToPersonForm,
                 )
             }
@@ -187,13 +189,13 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "Recent Bills",
+                    text = stringResource(R.string.recent_bills),
                     color = colorScheme.onSurface,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
-                    text = "See all",
+                    text = stringResource(R.string.see_all),
                     color = colorScheme.primary,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
@@ -217,7 +219,7 @@ fun HomeScreen(
                                     .padding(32.dp),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text("No recent bills", color = colorScheme.onSurfaceVariant)
+                            Text(stringResource(R.string.no_recent_bills), color = colorScheme.onSurfaceVariant)
                         }
                     }
                 } else {
@@ -274,7 +276,7 @@ private fun HeroCard(
                 .padding(20.dp),
     ) {
         Text(
-            text = "TOTAL SALES · THIS MONTH",
+            text = stringResource(R.string.home_total_sales_this_month),
             color = colorScheme.onSurfaceVariant,
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
@@ -298,7 +300,7 @@ private fun HeroCard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            HeroStat(label = "SALES", value = totalBills.toString())
+            HeroStat(label = stringResource(R.string.hero_sales), value = totalBills.toString())
             Box(
                 modifier =
                     Modifier
@@ -306,7 +308,7 @@ private fun HeroCard(
                         .height(28.dp)
                         .background(colorScheme.onSurface.copy(alpha = 0.15f)),
             )
-            HeroStat(label = "CUSTOMERS", value = customerCount.toString())
+            HeroStat(label = stringResource(R.string.hero_customers), value = customerCount.toString())
         }
     }
 }
@@ -368,7 +370,7 @@ private fun RecentBillCard(
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = "${billWithPerson.bill.billNumber} • $dateString",
+                text = stringResource(R.string.home_recent_bill_meta, billWithPerson.bill.billNumber, dateString),
                 color = colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,
             )

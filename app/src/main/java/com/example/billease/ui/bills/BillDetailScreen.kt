@@ -40,8 +40,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.R
 import com.example.billease.data.BillItem
 import com.example.billease.ui.components.DetailTopAppBar
 import com.example.billease.ui.components.ProfileIconButton
@@ -65,12 +67,15 @@ fun BillDetailScreen(
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    val deleteFailedMsg = stringResource(R.string.snackbar_delete_failed)
+    val pdfFailedMsg = stringResource(R.string.snackbar_pdf_failed)
+    val shareBillLabel = stringResource(R.string.share_bill)
 
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete Bill") },
-            text = { Text("Are you sure you want to delete this bill? This action cannot be undone.") },
+            title = { Text(stringResource(R.string.delete_bill_title)) },
+            text = { Text(stringResource(R.string.delete_bill_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -79,18 +84,17 @@ fun BillDetailScreen(
                             if (success) {
                                 onNavigateBack()
                             } else {
-                                val message = "Could not delete bill. It may be referenced elsewhere."
-                                coroutineScope.launch { snackbarHostState.showSnackbar(message) }
+                                coroutineScope.launch { snackbarHostState.showSnackbar(deleteFailedMsg) }
                             }
                         }
                     },
                 ) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             },
         )
@@ -100,7 +104,7 @@ fun BillDetailScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             DetailTopAppBar(
-                title = billData?.bill?.billNumber ?: "Bill Detail",
+                title = billData?.bill?.billNumber ?: stringResource(R.string.bill_detail_title),
                 onNavigateBack = onNavigateBack,
             ) {
                 billData?.let { data ->
@@ -121,9 +125,9 @@ fun BillDetailScreen(
                                         putExtra(Intent.EXTRA_STREAM, uri)
                                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                     }
-                                context.startActivity(Intent.createChooser(intent, "Share Bill"))
+                                context.startActivity(Intent.createChooser(intent, shareBillLabel))
                             } else {
-                                snackbarHostState.showSnackbar("Failed to generate PDF")
+                                snackbarHostState.showSnackbar(pdfFailedMsg)
                             }
                         }
                     }) {
@@ -169,7 +173,7 @@ fun BillDetailScreen(
                         Text(bill.billNumber, style = MaterialTheme.typography.headlineSmall)
                         Text(dateStr, style = MaterialTheme.typography.bodySmall)
                         Spacer(Modifier.height(4.dp))
-                        Text("Bill To", style = MaterialTheme.typography.labelMedium)
+                        Text(stringResource(R.string.bill_to), style = MaterialTheme.typography.labelMedium)
                         Text(person.name, style = MaterialTheme.typography.bodyLarge)
                         Text(person.phone, style = MaterialTheme.typography.bodyMedium)
                         if (!person.email.isNullOrBlank()) {
@@ -178,14 +182,16 @@ fun BillDetailScreen(
                         if (!person.address.isNullOrBlank()) {
                             Text(person.address, style = MaterialTheme.typography.bodyMedium)
                         }
-                        person.gstNumber?.let { Text("GST: $it", style = MaterialTheme.typography.bodySmall) }
+                        person.gstNumber?.let {
+                            Text(stringResource(R.string.gst_label, it), style = MaterialTheme.typography.bodySmall)
+                        }
                     }
                 }
             }
 
             // Line items
             item {
-                Text("Items", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.items), style = MaterialTheme.typography.titleMedium)
             }
 
             items(items) { item ->
@@ -203,18 +209,24 @@ fun BillDetailScreen(
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                 ) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        DetailRow("Subtotal", formatMoney(bill.subtotal, LocalCurrencyCode.current))
-                        DetailRow("Tax", formatMoney(bill.taxTotal, LocalCurrencyCode.current))
+                        DetailRow(
+                            stringResource(R.string.subtotal),
+                            formatMoney(bill.subtotal, LocalCurrencyCode.current),
+                        )
+                        DetailRow(stringResource(R.string.tax), formatMoney(bill.taxTotal, LocalCurrencyCode.current))
                         if (bill.discount > 0) {
-                            DetailRow("Discount", "- ${formatMoney(bill.discount, LocalCurrencyCode.current)}")
+                            DetailRow(
+                                stringResource(R.string.discount),
+                                "- ${formatMoney(bill.discount, LocalCurrencyCode.current)}",
+                            )
                         }
-                        DetailRow("Status", bill.paymentStatus.name)
+                        DetailRow(stringResource(R.string.status), bill.paymentStatus.name)
                         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
-                            Text("Grand Total", style = MaterialTheme.typography.titleMedium)
+                            Text(stringResource(R.string.grand_total), style = MaterialTheme.typography.titleMedium)
                             Text(
                                 formatMoney(bill.grandTotal, LocalCurrencyCode.current),
                                 style = MaterialTheme.typography.titleMedium,
@@ -228,7 +240,7 @@ fun BillDetailScreen(
             // Notes
             bill.notes?.let { notes ->
                 item {
-                    Text("Notes", style = MaterialTheme.typography.labelMedium)
+                    Text(stringResource(R.string.notes), style = MaterialTheme.typography.labelMedium)
                     Text(notes, style = MaterialTheme.typography.bodyMedium)
                 }
             }

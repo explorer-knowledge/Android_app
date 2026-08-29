@@ -1,11 +1,14 @@
 package com.example.billease.ui.persons
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.billease.R
 import com.example.billease.data.Person
 import com.example.billease.data.PersonDao
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,6 +33,7 @@ class PersonFormViewModel
     @Inject
     constructor(
         private val personDao: PersonDao,
+        @ApplicationContext private val context: Context,
         savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
         private val personId: Long = savedStateHandle.get<Long>("personId") ?: -1L
@@ -80,11 +84,11 @@ class PersonFormViewModel
             var hasError = false
 
             if (currentState.name.isBlank()) {
-                _uiState.update { it.copy(nameError = "Name cannot be empty") }
+                _uiState.update { it.copy(nameError = context.getString(R.string.error_name_required)) }
                 hasError = true
             }
             if (currentState.phone.isBlank()) {
-                _uiState.update { it.copy(phoneError = "Phone cannot be empty") }
+                _uiState.update { it.copy(phoneError = context.getString(R.string.error_phone_required)) }
                 hasError = true
             }
 
@@ -110,7 +114,9 @@ class PersonFormViewModel
                     }
                     onSuccess()
                 } catch (e: Exception) {
-                    _uiState.update { it.copy(saveError = "Could not save person: ${e.message}") }
+                    _uiState.update {
+                        it.copy(saveError = context.getString(R.string.error_could_not_save_person, e.message))
+                    }
                 }
             }
         }

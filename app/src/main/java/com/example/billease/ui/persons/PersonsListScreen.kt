@@ -20,7 +20,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.R
 import com.example.billease.data.Person
 import com.example.billease.ui.components.ConfirmDeleteDialog
 import com.example.billease.ui.components.DismissableSnackbar
@@ -60,7 +62,7 @@ fun PersonsListScreen(
                     .padding(padding),
         ) {
             ScreenHeader(
-                heading = "Persons",
+                heading = stringResource(R.string.persons_heading),
                 query = searchQuery,
                 onQueryChange = viewModel::onSearchQueryChange,
                 onNavigateToSettings = onNavigateToSettings,
@@ -69,9 +71,18 @@ fun PersonsListScreen(
             if (persons.isEmpty()) {
                 EmptyState(
                     icon = Icons.Outlined.Person,
-                    title = if (searchQuery.isNotBlank()) "No persons match \"$searchQuery\"" else "No persons found",
+                    title =
+                        if (searchQuery.isNotBlank()) {
+                            stringResource(R.string.no_persons_match, searchQuery)
+                        } else {
+                            stringResource(R.string.no_persons_found)
+                        },
                     subtitle =
-                        if (searchQuery.isNotBlank()) "Try a different search." else "Tap + to add a new person.",
+                        if (searchQuery.isNotBlank()) {
+                            stringResource(R.string.try_different_search)
+                        } else {
+                            stringResource(R.string.tap_to_add_person)
+                        },
                 )
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -89,8 +100,8 @@ fun PersonsListScreen(
 
     showDeleteDialog?.let { person ->
         ConfirmDeleteDialog(
-            title = "Delete Person",
-            message = "Are you sure you want to delete ${person.name}?",
+            title = stringResource(R.string.delete_person_title),
+            message = stringResource(R.string.confirm_delete_person, person.name),
             onConfirm = {
                 viewModel.deletePerson(person) { message ->
                     snackbarMessage = message

@@ -21,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -30,6 +31,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.billease.R
 import com.example.billease.ui.bills.BillDetailScreen
 import com.example.billease.ui.bills.BillFormScreen
 import com.example.billease.ui.bills.BillsListScreen
@@ -196,35 +198,35 @@ private fun RowScope.BottomNavBar(
         route = "reports",
         currentRoute = currentRoute,
         icon = Icons.Default.DateRange,
-        label = "Reports",
+        label = stringResource(R.string.nav_reports),
         navController = navController,
     )
     BottomNavItem(
         route = "bills_list",
         currentRoute = currentRoute,
         icon = Icons.Default.Menu,
-        label = "Bills",
+        label = stringResource(R.string.nav_bills),
         navController = navController,
     )
     BottomNavItem(
         route = "home",
         currentRoute = currentRoute,
         icon = Icons.Default.Home,
-        label = "Home",
+        label = stringResource(R.string.nav_home),
         navController = navController,
     )
     BottomNavItem(
         route = "products_list",
         currentRoute = currentRoute,
         icon = Icons.Default.ShoppingCart,
-        label = "Products",
+        label = stringResource(R.string.nav_products),
         navController = navController,
     )
     BottomNavItem(
         route = "persons_list",
         currentRoute = currentRoute,
         icon = Icons.Default.Person,
-        label = "Persons",
+        label = stringResource(R.string.nav_persons),
         navController = navController,
     )
 }

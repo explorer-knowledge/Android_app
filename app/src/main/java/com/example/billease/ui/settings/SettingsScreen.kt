@@ -31,8 +31,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.R
 import com.example.billease.ui.components.DetailTopAppBar
 import com.example.billease.util.SUPPORTED_CURRENCIES
 import com.example.billease.util.currencyLabel
@@ -48,6 +50,7 @@ fun SettingsScreen(
     val formState by viewModel.formState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val logoLoadFailedMessage = stringResource(R.string.snackbar_logo_load_failed)
 
     val pickMedia =
         rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -57,7 +60,7 @@ fun SettingsScreen(
                     if (newPath != null) {
                         viewModel.updateLogoPath(newPath)
                     } else {
-                        snackbarHostState.showSnackbar("Could not load that image. Please try another.")
+                        snackbarHostState.showSnackbar(logoLoadFailedMessage)
                     }
                 }
             }
@@ -66,7 +69,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             DetailTopAppBar(
-                title = "Settings",
+                title = stringResource(R.string.settings_title),
                 onNavigateBack = onNavigateBack,
             )
         },
@@ -80,7 +83,7 @@ fun SettingsScreen(
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
         ) {
-            Text("Business Identity", modifier = Modifier.padding(bottom = 16.dp))
+            Text(stringResource(R.string.business_identity), modifier = Modifier.padding(bottom = 16.dp))
 
             val businessName = formState.businessName
             val address = formState.address
@@ -91,7 +94,7 @@ fun SettingsScreen(
             OutlinedTextField(
                 value = businessName,
                 onValueChange = viewModel::updateBusinessName,
-                label = { Text("Business Name") },
+                label = { Text(stringResource(R.string.business_name)) },
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -100,7 +103,7 @@ fun SettingsScreen(
             OutlinedTextField(
                 value = address,
                 onValueChange = viewModel::updateAddress,
-                label = { Text("Business Address") },
+                label = { Text(stringResource(R.string.business_address)) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
             )
@@ -110,7 +113,7 @@ fun SettingsScreen(
             OutlinedTextField(
                 value = invoicePrefix,
                 onValueChange = viewModel::updateInvoicePrefix,
-                label = { Text("Invoice Prefix") },
+                label = { Text(stringResource(R.string.invoice_prefix)) },
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -123,7 +126,13 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            Text("Logo: ${if (logoPath != null) "Selected" else "Not selected"}")
+            Text(
+                if (logoPath != null) {
+                    stringResource(R.string.logo_selected)
+                } else {
+                    stringResource(R.string.logo_not_selected)
+                },
+            )
 
             Spacer(Modifier.height(8.dp))
 
@@ -131,7 +140,13 @@ fun SettingsScreen(
                 onClick = { pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(if (logoPath != null) "Change Logo" else "Select Logo")
+                Text(
+                    if (logoPath != null) {
+                        stringResource(R.string.change_logo)
+                    } else {
+                        stringResource(R.string.select_logo)
+                    },
+                )
             }
 
             if (logoPath != null) {
@@ -140,7 +155,7 @@ fun SettingsScreen(
                     onClick = { viewModel.updateLogoPath(null) },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text("Remove Logo")
+                    Text(stringResource(R.string.remove_logo))
                 }
             }
 
@@ -153,7 +168,7 @@ fun SettingsScreen(
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Save Settings")
+                Text(stringResource(R.string.save_settings))
             }
         }
     }
@@ -169,11 +184,11 @@ private fun CurrencyDropdown(
         OutlinedTextField(
             value = currencyLabel(currencyCode),
             onValueChange = {},
-            label = { Text("Currency") },
+            label = { Text(stringResource(R.string.currency)) },
             modifier = Modifier.fillMaxWidth(),
             readOnly = true,
             trailingIcon = {
-                TextButton(onClick = { expanded = true }) { Text("Select") }
+                TextButton(onClick = { expanded = true }) { Text(stringResource(R.string.select)) }
             },
         )
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {

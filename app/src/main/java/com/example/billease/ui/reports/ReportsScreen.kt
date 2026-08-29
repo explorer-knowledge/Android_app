@@ -23,9 +23,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.R
 import com.example.billease.data.MonthlyRevenueRow
 import com.example.billease.data.ProductTotalRow
 import com.example.billease.ui.components.ProfileIconButton
@@ -51,7 +53,7 @@ fun ReportsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Reports") },
+                title = { Text(stringResource(R.string.reports_title)) },
                 actions = { ProfileIconButton(onClick = onNavigateToSettings) },
             )
         },
@@ -65,29 +67,20 @@ fun ReportsScreen(
                     .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text("This Month", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-
-            StatsRow(
-                cards =
+            StatsGroups(
+                thisMonthCards =
                     listOf(
-                        "Bills" to billsThisMonth.toString(),
-                        "Collected" to formatMoney(revenueThisMonth, LocalCurrencyCode.current),
-                        "Outstanding" to formatMoney(outstandingThisMonth, LocalCurrencyCode.current),
+                        stringResource(R.string.bills_heading) to billsThisMonth.toString(),
+                        stringResource(R.string.collected) to formatMoney(revenueThisMonth, LocalCurrencyCode.current),
+                        stringResource(R.string.outstanding) to
+                            formatMoney(outstandingThisMonth, LocalCurrencyCode.current),
                     ),
-            )
-
-            Spacer(Modifier.height(8.dp))
-            HorizontalDivider()
-            Spacer(Modifier.height(8.dp))
-
-            Text("All Time", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-
-            StatsRow(
-                cards =
+                allTimeCards =
                     listOf(
-                        "Total Bills" to totalBillCount.toString(),
-                        "Collected" to formatMoney(totalRevenue, LocalCurrencyCode.current),
-                        "Outstanding" to formatMoney(totalOutstanding, LocalCurrencyCode.current),
+                        stringResource(R.string.total_bills) to totalBillCount.toString(),
+                        stringResource(R.string.collected) to formatMoney(totalRevenue, LocalCurrencyCode.current),
+                        stringResource(R.string.outstanding) to
+                            formatMoney(totalOutstanding, LocalCurrencyCode.current),
                     ),
             )
 
@@ -104,9 +97,35 @@ fun ReportsScreen(
 }
 
 @Composable
+private fun StatsGroups(
+    thisMonthCards: List<Pair<String, String>>,
+    allTimeCards: List<Pair<String, String>>,
+) {
+    Text(
+        stringResource(R.string.this_month),
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+    )
+    StatsRow(cards = thisMonthCards)
+    Spacer(Modifier.height(8.dp))
+    HorizontalDivider()
+    Spacer(Modifier.height(8.dp))
+    Text(
+        stringResource(R.string.all_time),
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+    )
+    StatsRow(cards = allTimeCards)
+}
+
+@Composable
 private fun MonthlyBreakdownSection(rows: List<MonthlyRevenueRow>) {
     if (rows.isEmpty()) return
-    Text("Monthly Collected", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+    Text(
+        stringResource(R.string.monthly_collected),
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+    )
     rows.forEach { row ->
         Row(modifier = Modifier.fillMaxWidth()) {
             Text(monthLabel(row.month), modifier = Modifier.weight(1f))
@@ -118,7 +137,11 @@ private fun MonthlyBreakdownSection(rows: List<MonthlyRevenueRow>) {
 @Composable
 private fun ProductTotalsSection(rows: List<ProductTotalRow>) {
     if (rows.isEmpty()) return
-    Text("Per-Product Totals", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+    Text(
+        stringResource(R.string.per_product_totals),
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+    )
     rows.forEach { row ->
         Row(modifier = Modifier.fillMaxWidth()) {
             Text(row.productName, modifier = Modifier.weight(1f))

@@ -11,6 +11,7 @@ import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
 import androidx.core.content.FileProvider
+import com.example.billease.R
 import com.example.billease.data.AppSettings
 import com.example.billease.data.BillWithItemsAndPerson
 import java.io.File
@@ -78,7 +79,7 @@ object PdfGenerator {
         // Business Info / Title
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         paint.textSize = 20f
-        val bName = settings.businessName.ifBlank { "INVOICE" }
+        val bName = settings.businessName.ifBlank { context.getString(R.string.pdf_invoice_title) }
         canvas.drawText(bName, MARGIN_LEFT, yPos, paint)
         yPos += 20f
 
@@ -96,10 +97,10 @@ object PdfGenerator {
 
         // Bill Info
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        canvas.drawText("Bill No: ${data.bill.billNumber}", MARGIN_LEFT, yPos, paint)
+        canvas.drawText(context.getString(R.string.pdf_bill_no, data.bill.billNumber), MARGIN_LEFT, yPos, paint)
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
         val dateStr = formatDate(data.bill.billDate)
-        canvas.drawText("Date: $dateStr", MARGIN_LEFT, yPos + 15f, paint)
+        canvas.drawText(context.getString(R.string.pdf_date, dateStr), MARGIN_LEFT, yPos + 15f, paint)
 
         yPos += 45f
 
@@ -111,7 +112,7 @@ object PdfGenerator {
                 (if (data.person.gstNumber.isNullOrBlank()) 0f else 15f),
         )
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        canvas.drawText("Bill To:", MARGIN_LEFT, yPos, paint)
+        canvas.drawText(context.getString(R.string.pdf_bill_to), MARGIN_LEFT, yPos, paint)
         yPos += 15f
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
         canvas.drawText(data.person.name, MARGIN_LEFT, yPos, paint)
@@ -129,7 +130,7 @@ object PdfGenerator {
             }
         }
         if (!data.person.gstNumber.isNullOrBlank()) {
-            canvas.drawText("GST: ${data.person.gstNumber}", MARGIN_LEFT, yPos, paint)
+            canvas.drawText(context.getString(R.string.gst_label, data.person.gstNumber), MARGIN_LEFT, yPos, paint)
             yPos += 15f
         }
 
@@ -138,11 +139,12 @@ object PdfGenerator {
         // Table Header
         checkPageBreak(30f)
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        canvas.drawText("Item", MARGIN_LEFT, yPos, paint)
-        canvas.drawText("Qty", MARGIN_LEFT + 250f, yPos, paint)
-        canvas.drawText("Price", MARGIN_LEFT + 320f, yPos, paint)
-        canvas.drawText("Tax", MARGIN_LEFT + 390f, yPos, paint)
-        canvas.drawText("Total", MARGIN_RIGHT - paint.measureText("Total"), yPos, paint)
+        canvas.drawText(context.getString(R.string.item), MARGIN_LEFT, yPos, paint)
+        canvas.drawText(context.getString(R.string.qty), MARGIN_LEFT + 250f, yPos, paint)
+        canvas.drawText(context.getString(R.string.price), MARGIN_LEFT + 320f, yPos, paint)
+        canvas.drawText(context.getString(R.string.tax), MARGIN_LEFT + 390f, yPos, paint)
+        val totalLabel = context.getString(R.string.total)
+        canvas.drawText(totalLabel, MARGIN_RIGHT - paint.measureText(totalLabel), yPos, paint)
 
         yPos += 10f
         canvas.drawLine(MARGIN_LEFT, yPos, MARGIN_RIGHT, yPos, paint)
@@ -193,22 +195,23 @@ object PdfGenerator {
         val grandTotalStr = formatMoney(data.bill.grandTotal, settings.currencyCode)
 
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-        canvas.drawText("Subtotal:", MARGIN_LEFT + 350f, yPos, paint)
+        canvas.drawText(context.getString(R.string.pdf_subtotal), MARGIN_LEFT + 350f, yPos, paint)
         canvas.drawText(subtotalStr, MARGIN_RIGHT - paint.measureText(subtotalStr), yPos, paint)
         yPos += 20f
 
-        canvas.drawText("Tax:", MARGIN_LEFT + 350f, yPos, paint)
+        canvas.drawText(context.getString(R.string.pdf_tax), MARGIN_LEFT + 350f, yPos, paint)
         canvas.drawText(taxTotalStr, MARGIN_RIGHT - paint.measureText(taxTotalStr), yPos, paint)
         yPos += 20f
 
         if (data.bill.discount > 0) {
-            canvas.drawText("Discount:", MARGIN_LEFT + 350f, yPos, paint)
-            canvas.drawText("-$discountStr", MARGIN_RIGHT - paint.measureText("-$discountStr"), yPos, paint)
+            canvas.drawText(context.getString(R.string.pdf_discount), MARGIN_LEFT + 350f, yPos, paint)
+            val minusDiscount = context.getString(R.string.pdf_minus_amount, discountStr)
+            canvas.drawText(minusDiscount, MARGIN_RIGHT - paint.measureText(minusDiscount), yPos, paint)
             yPos += 20f
         }
 
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        canvas.drawText("Grand Total:", MARGIN_LEFT + 350f, yPos, paint)
+        canvas.drawText(context.getString(R.string.pdf_grand_total), MARGIN_LEFT + 350f, yPos, paint)
         canvas.drawText(grandTotalStr, MARGIN_RIGHT - paint.measureText(grandTotalStr), yPos, paint)
 
         yPos += 40f
@@ -218,7 +221,7 @@ object PdfGenerator {
             val noteLines = data.bill.notes.split("\n")
             checkPageBreak(noteLines.size * 15f + 20f)
             paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-            canvas.drawText("Notes:", MARGIN_LEFT, yPos, paint)
+            canvas.drawText(context.getString(R.string.pdf_notes), MARGIN_LEFT, yPos, paint)
             yPos += 15f
             noteLines.forEach { line ->
                 canvas.drawText(line, MARGIN_LEFT, yPos, paint)

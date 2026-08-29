@@ -1,11 +1,14 @@
 package com.example.billease.ui.bills
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.billease.R
 import com.example.billease.data.Bill
 import com.example.billease.data.BillDao
 import com.example.billease.data.BillWithPerson
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,6 +25,7 @@ class BillsViewModel
     @Inject
     constructor(
         private val billDao: BillDao,
+        @ApplicationContext private val context: Context,
     ) : ViewModel() {
         private val _searchQuery = MutableStateFlow("")
         val searchQuery: StateFlow<String> = _searchQuery
@@ -75,9 +79,9 @@ class BillsViewModel
             viewModelScope.launch {
                 try {
                     billDao.deleteBill(bill)
-                    onResult("Bill deleted.")
+                    onResult(context.getString(R.string.msg_bill_deleted))
                 } catch (e: Exception) {
-                    onResult("Could not delete bill: ${e.message}")
+                    onResult(context.getString(R.string.error_could_not_delete_bill, e.message))
                 }
             }
         }

@@ -1,11 +1,14 @@
 package com.example.billease.ui.products
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.billease.R
 import com.example.billease.data.Product
 import com.example.billease.data.ProductDao
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,6 +35,7 @@ class ProductFormViewModel
     @Inject
     constructor(
         private val productDao: ProductDao,
+        @ApplicationContext private val context: Context,
         savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
         private val productId: Long = savedStateHandle.get<Long>("productId") ?: -1L
@@ -82,24 +86,24 @@ class ProductFormViewModel
             var hasError = false
 
             if (currentState.name.isBlank()) {
-                _uiState.update { it.copy(nameError = "Name cannot be empty") }
+                _uiState.update { it.copy(nameError = context.getString(R.string.error_name_required)) }
                 hasError = true
             }
 
             val price = currentState.unitPrice.toDoubleOrNull()
             if (price == null || price <= 0) {
-                _uiState.update { it.copy(unitPriceError = "Enter a valid positive price") }
+                _uiState.update { it.copy(unitPriceError = context.getString(R.string.error_valid_price)) }
                 hasError = true
             }
 
             if (currentState.unit.isBlank()) {
-                _uiState.update { it.copy(unitError = "Unit cannot be empty") }
+                _uiState.update { it.copy(unitError = context.getString(R.string.error_unit_required)) }
                 hasError = true
             }
 
             val tax = if (currentState.taxPercent.isBlank()) 0.0 else currentState.taxPercent.toDoubleOrNull()
             if (tax == null || tax < 0) {
-                _uiState.update { it.copy(taxPercentError = "Enter a valid tax percentage") }
+                _uiState.update { it.copy(taxPercentError = context.getString(R.string.error_valid_tax)) }
                 hasError = true
             }
 
@@ -127,7 +131,9 @@ class ProductFormViewModel
                     }
                     onSuccess()
                 } catch (e: Exception) {
-                    _uiState.update { it.copy(saveError = "Could not save product: ${e.message}") }
+                    _uiState.update {
+                        it.copy(saveError = context.getString(R.string.error_could_not_save_product, e.message))
+                    }
                 }
             }
         }

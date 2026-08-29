@@ -36,7 +36,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.billease.R
 import com.example.billease.util.localMillisToUtcMidnight
 import com.example.billease.util.utcMidnightToLocalMillis
 
@@ -124,12 +126,12 @@ fun ConfirmDeleteDialog(
         text = { Text(message) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("Delete")
+                Text(stringResource(R.string.delete))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         },
     )
@@ -139,13 +141,13 @@ fun ConfirmDeleteDialog(
 fun DismissableSnackbar(
     message: String,
     onDismiss: () -> Unit,
-    dismissLabel: String = "Dismiss",
+    dismissLabel: String? = null,
 ) {
     Snackbar(
         modifier = Modifier.padding(16.dp),
         action = {
             TextButton(onClick = onDismiss) {
-                Text(dismissLabel)
+                Text(dismissLabel ?: stringResource(R.string.dismiss))
             }
         },
     ) {
@@ -186,10 +188,10 @@ fun DateSelectionDialog(
             TextButton(onClick = {
                 datePickerState.selectedDateMillis?.let { onDateSelected(utcMidnightToLocalMillis(it)) }
                 onDismiss()
-            }) { Text("OK") }
+            }) { Text(stringResource(R.string.ok)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
         },
     ) {
         DatePicker(state = datePickerState)

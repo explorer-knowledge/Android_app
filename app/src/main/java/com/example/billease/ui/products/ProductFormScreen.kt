@@ -18,8 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.R
 import com.example.billease.ui.components.DetailTopAppBar
 import com.example.billease.ui.components.ProfileIconButton
 
@@ -35,7 +37,12 @@ fun ProductFormScreen(
     Scaffold(
         topBar = {
             DetailTopAppBar(
-                title = if (uiState.name.isBlank()) "Add Product" else "Edit Product",
+                title =
+                    if (uiState.name.isBlank()) {
+                        stringResource(R.string.add_product)
+                    } else {
+                        stringResource(R.string.edit_product)
+                    },
                 onNavigateBack = onNavigateBack,
             ) {
                 ProfileIconButton(onClick = onNavigateToSettings)
@@ -54,7 +61,7 @@ fun ProductFormScreen(
             OutlinedTextField(
                 value = uiState.name,
                 onValueChange = viewModel::updateName,
-                label = { Text("Product Name") },
+                label = { Text(stringResource(R.string.product_name)) },
                 modifier = Modifier.fillMaxWidth(),
                 isError = uiState.nameError != null,
                 supportingText = uiState.nameError?.let { { Text(it) } },
@@ -65,7 +72,7 @@ fun ProductFormScreen(
                 OutlinedTextField(
                     value = uiState.unitPrice,
                     onValueChange = viewModel::updateUnitPrice,
-                    label = { Text("Unit Price") },
+                    label = { Text(stringResource(R.string.unit_price)) },
                     modifier = Modifier.weight(1f),
                     isError = uiState.unitPriceError != null,
                     supportingText = uiState.unitPriceError?.let { { Text(it) } },
@@ -75,7 +82,7 @@ fun ProductFormScreen(
                 OutlinedTextField(
                     value = uiState.unit,
                     onValueChange = viewModel::updateUnit,
-                    label = { Text("Unit (e.g. kg, pcs)") },
+                    label = { Text(stringResource(R.string.unit_hint)) },
                     modifier = Modifier.weight(1f),
                     isError = uiState.unitError != null,
                     supportingText = uiState.unitError?.let { { Text(it) } },
@@ -86,7 +93,7 @@ fun ProductFormScreen(
             OutlinedTextField(
                 value = uiState.taxPercent,
                 onValueChange = viewModel::updateTaxPercent,
-                label = { Text("Tax Percentage (%)") },
+                label = { Text(stringResource(R.string.tax_percentage)) },
                 modifier = Modifier.fillMaxWidth(),
                 isError = uiState.taxPercentError != null,
                 supportingText = uiState.taxPercentError?.let { { Text(it) } },
@@ -96,7 +103,7 @@ fun ProductFormScreen(
             OutlinedTextField(
                 value = uiState.description,
                 onValueChange = viewModel::updateDescription,
-                label = { Text("Description (Optional)") },
+                label = { Text(stringResource(R.string.description_optional)) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
             )
@@ -109,7 +116,7 @@ fun ProductFormScreen(
                 onClick = { viewModel.saveProduct(onSuccess = onNavigateBack) },
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Save")
+                Text(stringResource(R.string.save))
             }
         }
     }

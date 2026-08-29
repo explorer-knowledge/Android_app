@@ -42,9 +42,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.R
 import com.example.billease.data.BillStatus
 import com.example.billease.data.Person
 import com.example.billease.data.Product
@@ -76,8 +78,8 @@ fun BillFormScreen(
     if (showDiscardDialog) {
         AlertDialog(
             onDismissRequest = { showDiscardDialog = false },
-            title = { Text("Discard changes?") },
-            text = { Text("You have unsaved changes. Go back and lose them?") },
+            title = { Text(stringResource(R.string.discard_changes_title)) },
+            text = { Text(stringResource(R.string.discard_changes_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -85,12 +87,12 @@ fun BillFormScreen(
                         onNavigateBack()
                     },
                 ) {
-                    Text("Discard", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.discard), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDiscardDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             },
         )
@@ -107,7 +109,7 @@ fun BillFormScreen(
     Scaffold(
         topBar = {
             DetailTopAppBar(
-                title = if (uiState.billId == 0L) "New Bill" else "Edit Bill",
+                title = stringResource(if (uiState.billId == 0L) R.string.new_bill else R.string.edit_bill),
                 onNavigateBack = handleBackNavigation,
             ) {
                 ProfileIconButton(onClick = onNavigateToSettings)
@@ -135,7 +137,7 @@ fun BillFormScreen(
                 OutlinedTextField(
                     value = uiState.billNumber,
                     onValueChange = {},
-                    label = { Text("Bill Number") },
+                    label = { Text(stringResource(R.string.bill_number)) },
                     modifier = Modifier.fillMaxWidth(),
                     readOnly = true,
                     singleLine = true,
@@ -162,7 +164,7 @@ fun BillFormScreen(
 
             // Line items header
             item {
-                Text("Line Items", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.line_items), style = MaterialTheme.typography.titleMedium)
                 uiState.lineItemsError?.let { error ->
                     Text(error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
                 }
@@ -183,7 +185,7 @@ fun BillFormScreen(
                 OutlinedButton(
                     onClick = viewModel::addLineItem,
                     modifier = Modifier.fillMaxWidth(),
-                ) { Text("+ Add Line Item") }
+                ) { Text(stringResource(R.string.add_line_item)) }
             }
 
             item { HorizontalDivider() }
@@ -193,7 +195,7 @@ fun BillFormScreen(
                 OutlinedTextField(
                     value = uiState.discountText,
                     onValueChange = viewModel::updateDiscount,
-                    label = { Text("Discount") },
+                    label = { Text(stringResource(R.string.discount)) },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     isError = uiState.discountError != null,
@@ -207,7 +209,7 @@ fun BillFormScreen(
                 OutlinedTextField(
                     value = uiState.notes,
                     onValueChange = viewModel::updateNotes,
-                    label = { Text("Notes (optional)") },
+                    label = { Text(stringResource(R.string.notes_optional)) },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 2,
                 )
@@ -243,7 +245,7 @@ fun BillFormScreen(
                             .fillMaxWidth()
                             .padding(bottom = 24.dp),
                     enabled = !uiState.isSaving,
-                ) { Text("Save Bill") }
+                ) { Text(stringResource(R.string.save_bill)) }
             }
         }
     }
@@ -264,11 +266,11 @@ private fun BillDateField(
     OutlinedTextField(
         value = dateStr,
         onValueChange = {},
-        label = { Text("Bill Date") },
+        label = { Text(stringResource(R.string.bill_date)) },
         modifier = Modifier.fillMaxWidth(),
         readOnly = true,
         trailingIcon = {
-            TextButton(onClick = { showPicker = true }) { Text("Change") }
+            TextButton(onClick = { showPicker = true }) { Text(stringResource(R.string.change)) }
         },
     )
 
@@ -294,13 +296,13 @@ private fun PersonDropdown(
         OutlinedTextField(
             value = selectedPerson?.name ?: "",
             onValueChange = {},
-            label = { Text("Bill To (Person)") },
+            label = { Text(stringResource(R.string.bill_to_person)) },
             modifier = Modifier.fillMaxWidth(),
             readOnly = true,
             isError = error != null,
             supportingText = error?.let { { Text(it) } },
             trailingIcon = {
-                TextButton(onClick = { expanded = true }) { Text("Select") }
+                TextButton(onClick = { expanded = true }) { Text(stringResource(R.string.select)) }
             },
         )
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
@@ -388,14 +390,14 @@ private fun PersonQuickAddForm(
     OutlinedTextField(
         value = name,
         onValueChange = onNameChange,
-        label = { Text("Name") },
+        label = { Text(stringResource(R.string.name)) },
         isError = nameError,
         singleLine = true,
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
     )
     if (nameError) {
         Text(
-            "Name cannot be empty",
+            stringResource(R.string.error_name_required),
             color = MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodySmall,
         )
@@ -403,14 +405,14 @@ private fun PersonQuickAddForm(
     OutlinedTextField(
         value = phone,
         onValueChange = onPhoneChange,
-        label = { Text("Phone") },
+        label = { Text(stringResource(R.string.phone)) },
         isError = phoneError,
         singleLine = true,
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
     )
     if (phoneError) {
         Text(
-            "Phone cannot be empty",
+            stringResource(R.string.error_phone_required),
             color = MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodySmall,
         )
@@ -427,14 +429,14 @@ private fun PersonQuickAddForm(
             enabled = !isSaving,
             modifier = Modifier.weight(1f),
         ) {
-            Text("Cancel")
+            Text(stringResource(R.string.cancel))
         }
         Button(
             onClick = onSave,
             enabled = !isSaving,
             modifier = Modifier.weight(1f),
         ) {
-            Text(if (isSaving) "Saving…" else "Save")
+            Text(if (isSaving) stringResource(R.string.saving) else stringResource(R.string.save))
         }
     }
 }
@@ -446,15 +448,15 @@ private fun PersonQuickAddList(
     onStartNew: () -> Unit,
 ) {
     DropdownMenuItem(
-        text = { Text("+ New person") },
+        text = { Text(stringResource(R.string.new_person)) },
         onClick = onStartNew,
     )
     if (allPersons.isEmpty()) {
-        DropdownMenuItem(text = { Text("No persons yet") }, onClick = {})
+        DropdownMenuItem(text = { Text(stringResource(R.string.no_persons_yet)) }, onClick = {})
     }
     allPersons.forEach { person ->
         DropdownMenuItem(
-            text = { Text("${person.name} · ${person.phone}") },
+            text = { Text(stringResource(R.string.person_name_phone, person.name, person.phone)) },
             onClick = {
                 onPersonSelected(person)
             },
@@ -484,23 +486,35 @@ private fun LineItemRow(
                     OutlinedTextField(
                         value = row.product?.name ?: "",
                         onValueChange = {},
-                        label = { Text("Product") },
+                        label = { Text(stringResource(R.string.product)) },
                         modifier = Modifier.fillMaxWidth(),
                         readOnly = true,
                         isError = row.productError != null,
                         supportingText = row.productError?.let { { Text(it) } },
                         trailingIcon = {
-                            TextButton(onClick = { productExpanded = true }) { Text("Pick") }
+                            TextButton(onClick = { productExpanded = true }) { Text(stringResource(R.string.pick)) }
                         },
                     )
                     DropdownMenu(expanded = productExpanded, onDismissRequest = { productExpanded = false }) {
                         if (allProducts.isEmpty()) {
-                            DropdownMenuItem(text = { Text("No products — add one first") }, onClick = { productExpanded = false })
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.no_products_yet)) },
+                                onClick = { productExpanded = false },
+                            )
                         }
                         allProducts.forEach { product ->
                             val priceLabel = formatMoney(product.unitPrice, LocalCurrencyCode.current)
                             DropdownMenuItem(
-                                text = { Text("${product.name} · $priceLabel/${product.unit}") },
+                                text = {
+                                    Text(
+                                        stringResource(
+                                            R.string.product_with_price,
+                                            product.name,
+                                            priceLabel,
+                                            product.unit,
+                                        ),
+                                    )
+                                },
                                 onClick = {
                                     onProductSelected(product)
                                     productExpanded = false
@@ -521,7 +535,7 @@ private fun LineItemRow(
                 OutlinedTextField(
                     value = row.quantityText,
                     onValueChange = onQuantityChange,
-                    label = { Text("Qty") },
+                    label = { Text(stringResource(R.string.qty)) },
                     modifier = Modifier.weight(1f),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     isError = row.quantityError != null,
@@ -530,7 +544,7 @@ private fun LineItemRow(
                 )
                 // Live line total
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
-                    Text("Line Total", style = MaterialTheme.typography.labelSmall)
+                    Text(stringResource(R.string.line_total), style = MaterialTheme.typography.labelSmall)
                     Text(
                         formatMoney(row.lineTotal, LocalCurrencyCode.current),
                         style = MaterialTheme.typography.bodyMedium,
@@ -553,16 +567,16 @@ private fun TotalsSummaryCard(
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Subtotal", style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.subtotal), style = MaterialTheme.typography.bodyMedium)
                 Text(formatMoney(subtotal, LocalCurrencyCode.current), style = MaterialTheme.typography.bodyMedium)
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Tax", style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.tax), style = MaterialTheme.typography.bodyMedium)
                 Text(formatMoney(taxTotal, LocalCurrencyCode.current), style = MaterialTheme.typography.bodyMedium)
             }
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Grand Total", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.grand_total), style = MaterialTheme.typography.titleMedium)
                 Text(
                     formatMoney(grandTotal, LocalCurrencyCode.current),
                     style = MaterialTheme.typography.titleMedium,
@@ -585,11 +599,11 @@ private fun PaymentStatusPicker(
         OutlinedTextField(
             value = currentStatus.name,
             onValueChange = {},
-            label = { Text("Payment Status") },
+            label = { Text(stringResource(R.string.payment_status)) },
             modifier = Modifier.fillMaxWidth(),
             readOnly = true,
             trailingIcon = {
-                TextButton(onClick = { expanded = true }) { Text("Change") }
+                TextButton(onClick = { expanded = true }) { Text(stringResource(R.string.change)) }
             },
         )
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {

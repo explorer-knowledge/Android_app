@@ -1,4 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">BillEase</string>
+
+    <string name="add_line_item">+ Add Line Item</string>
+    <string name="add_person">Add Person</string>
+    <string name="add_product">Add Product</string>
+    <string name="address_label">Address: %1$s</string>
+    <string name="address_optional">Address (Optional)</string>
+    <string name="all_time">All Time</string>
+
+    <string name="bill_date">Bill Date</string>
+    <string name="bill_detail_title">Bill Detail</string>
+    <string name="bill_history">Bill History</string>
+    <string name="bill_number">Bill Number</string>
+    <string name="bill_to">Bill To</string>
+    <string name="bill_to_person">Bill To (Person)</string>
+    <string name="bills_heading">Bills</string>
+    <string name="business_address">Business Address</string>
+    <string name="business_identity">Business Identity</string>
+    <string name="business_name">Business Name</string>
+
+    <string name="cancel">Cancel</string>
+    <string name="change">Change</string>
+    <string name="change_logo">Change Logo</string>
+    <string name="clear">Clear</string>
+    <string name="collected">Collected</string>
+    <string name="confirm_delete_bill">Delete %1$s? This cannot be undone.</string>
+    <string name="confirm_delete_person">Are you sure you want to delete %1$s?</string>
+    <string name="confirm_delete_product">Are you sure you want to delete %1$s?</string>
+    <string name="currency">Currency</string>
+
+    <string name="delete">Delete</string>
+    <string name="delete_bill_message">Are you sure you want to delete this bill? This action cannot be undone.</string>
+    <string name="delete_bill_title">Delete Bill</string>
+    <string name="delete_person_title">Delete Person</string>
+    <string name="delete_product_title">Delete Product</string>
+    <string name="description_optional">Description (Optional)</string>
+    <string name="discard">Discard</string>
+    <string name="discard_changes_message">You have unsaved changes. Go back and lose them?</string>
+    <string name="discard_changes_title">Discard changes?</string>
+    <string name="discount">Discount</string>
+    <string name="dismiss">Dismiss</string>
+
+    <string name="edit_bill">Edit Bill</string>
+    <string name="edit_person">Edit Person</string>
+    <string name="edit_product">Edit Product</string>
+    <string name="email_label">Email: %1$s</string>
+    <string name="email_optional">Email (Optional)</string>
+    <string name="error_cannot_delete_person_used">Cannot delete person with existing bills.</string>
+    <string name="error_cannot_delete_product_used">Cannot delete product used in existing bills.</string>
+    <string name="error_could_not_add_person">Could not add person: %1$s</string>
+    <string name="error_could_not_delete_bill">Could not delete bill: %1$s</string>
+    <string name="error_could_not_delete_person">Could not delete person: %1$s</string>
+    <string name="error_could_not_delete_product">Could not delete product: %1$s</string>
+    <string name="error_could_not_save_bill">Could not save bill: %1$s</string>
+    <string name="error_could_not_save_person">Could not save person: %1$s</string>
+    <string name="error_could_not_save_product">Could not save product: %1$s</string>
+    <string name="error_fix_above">Fix errors above</string>
+    <string name="error_name_required">Name cannot be empty</string>
+    <string name="error_phone_required">Phone cannot be empty</string>
+    <string name="error_select_person">Select a person</string>
+    <string name="error_select_product">Select a product</string>
+    <string name="error_unit_required">Unit cannot be empty</string>
+    <string name="error_valid_discount">Enter a valid discount (0 or more)</string>
+    <string name="error_valid_price">Enter a valid positive price</string>
+    <string name="error_valid_quantity">Enter a valid quantity (&gt; 0)</string>
+    <string name="error_valid_tax">Enter a valid tax percentage</string>
+
+    <string name="from">From</string>
+
+    <string name="grand_total">Grand Total</string>
+    <string name="gst_label">GST: %1$s</string>
+    <string name="gst_number_optional">GST Number (Optional)</string>
+
+    <string name="hero_customers">CUSTOMERS</string>
+    <string name="hero_sales">SALES</string>
+    <string name="home_recent_bill_meta">%1$s • %2$s</string>
+    <string name="home_search_hint">Search by name or invoice no.</string>
+    <string name="home_total_sales_this_month">TOTAL SALES · THIS MONTH</string>
+
+    <string name="invoice_prefix">Invoice Prefix</string>
+    <string name="item">Item</string>
+    <string name="items">Items</string>
+
+    <string name="line_items">Line Items</string>
+    <string name="line_total">Line Total</string>
+    <string name="logo_not_selected">Logo: Not selected</string>
+    <string name="logo_selected">Logo: Selected</string>
+
+    <string name="monthly_collected">Monthly Collected</string>
+    <string name="msg_bill_deleted">Bill deleted.</string>
+    <string name="msg_person_deleted">Person deleted successfully.</string>
+    <string name="msg_product_deleted">Product deleted successfully.</string>
+
+    <string name="name">Name</string>
+    <string name="nav_bills">Bills</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_persons">Persons</string>
+    <string name="nav_products">Products</string>
+    <string name="nav_reports">Reports</string>
+    <string name="new_bill">New Bill</string>
+    <string name="new_person">+ New person</string>
+    <string name="no_bills_for_person">No bills for this person.</string>
+    <string name="no_bills_match">No bills match this filter</string>
+    <string name="no_bills_yet">No bills yet</string>
+    <string name="no_persons_found">No persons found</string>
+    <string name="no_persons_match">No persons match "%1$s"</string>
+    <string name="no_persons_yet">No persons yet</string>
+    <string name="no_products_found">No products found</string>
+    <string name="no_products_match">No products match "%1$s"</string>
+    <string name="no_products_yet">No products — add one first</string>
+    <string name="no_recent_bills">No recent bills</string>
+    <string name="notes">Notes</string>
+    <string name="notes_optional">Notes (optional)</string>
+
+    <string name="ok">OK</string>
+    <string name="outstanding">Outstanding</string>
+
+    <string name="payment_status">Payment Status</string>
+    <string name="pdf_bill_no">Bill No: %1$s</string>
+    <string name="pdf_bill_to">Bill To:</string>
+    <string name="pdf_date">Date: %1$s</string>
+    <string name="pdf_discount">Discount:</string>
+    <string name="pdf_grand_total">Grand Total:</string>
+    <string name="pdf_invoice_title">INVOICE</string>
+    <string name="pdf_minus_amount">-%1$s</string>
+    <string name="pdf_notes">Notes:</string>
+    <string name="pdf_subtotal">Subtotal:</string>
+    <string name="pdf_tax">Tax:</string>
+    <string name="per_product_totals">Per-Product Totals</string>
+    <string name="person_details_title">Person Details</string>
+    <string name="person_name_phone">%1$s · %2$s</string>
+    <string name="persons_heading">Persons</string>
+    <string name="phone">Phone</string>
+    <string name="phone_label">Phone: %1$s</string>
+    <string name="pick">Pick</string>
+    <string name="price">Price</string>
+    <string name="product">Product</string>
+    <string name="product_name">Product Name</string>
+    <string name="product_price_per_unit">%1$s / %2$s</string>
+    <string name="product_with_price">%1$s · %2$s/%3$s</string>
+    <string name="products_heading">Products</string>
+
+    <string name="qty">Qty</string>
+    <string name="quick_add_bill">Add Bill</string>
+    <string name="quick_add_customer">Add Customer</string>
+    <string name="quick_add_product">Add Product</string>
+
+    <string name="recent_bills">Recent Bills</string>
+    <string name="remove_logo">Remove Logo</string>
+    <string name="reports_title">Reports</string>
+
+    <string name="save">Save</string>
+    <string name="save_bill">Save Bill</string>
+    <string name="save_settings">Save Settings</string>
+    <string name="saving">Saving…</string>
+    <string name="see_all">See all</string>
+    <string name="select">Select</string>
+    <string name="select_logo">Select Logo</string>
+    <string name="settings_title">Settings</string>
+    <string name="share_bill">Share Bill</string>
+    <string name="snackbar_delete_failed">Could not delete bill. It may be referenced elsewhere.</string>
+    <string name="snackbar_logo_load_failed">Could not load that image. Please try another.</string>
+    <string name="snackbar_pdf_failed">Failed to generate PDF</string>
+    <string name="status">Status</string>
+    <string name="subtotal">Subtotal</string>
+
+    <string name="tap_to_add_person">Tap + to add a new person.</string>
+    <string name="tap_to_add_product">Tap + to add a new product.</string>
+    <string name="tap_to_create_bill">Tap + to create one.</string>
+    <string name="tax">Tax</string>
+    <string name="tax_label_value">Tax: %1$s</string>
+    <string name="tax_percentage">Tax Percentage (%)</string>
+    <string name="this_month">This Month</string>
+    <string name="to">To</string>
+    <string name="total">Total</string>
+    <string name="total_bills">Total Bills</string>
+    <string name="try_clearing_filters">Try clearing the search or date range.</string>
+    <string name="try_different_search">Try a different search.</string>
+
+    <string name="unit_hint">Unit (e.g. kg, pcs)</string>
+    <string name="unit_price">Unit Price</string>
 </resources>

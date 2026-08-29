@@ -35,8 +35,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.R
 import com.example.billease.data.BillWithPerson
 import com.example.billease.ui.components.ConfirmDeleteDialog
 import com.example.billease.ui.components.DateSelectionDialog
@@ -71,7 +73,11 @@ fun BillsListScreen(
         },
         snackbarHost = {
             snackbarMsg?.let { msg ->
-                DismissableSnackbar(message = msg, onDismiss = { snackbarMsg = null }, dismissLabel = "OK")
+                DismissableSnackbar(
+                    message = msg,
+                    onDismiss = { snackbarMsg = null },
+                    dismissLabel = stringResource(R.string.ok),
+                )
             }
         },
     ) { padding ->
@@ -82,7 +88,7 @@ fun BillsListScreen(
                     .padding(padding),
         ) {
             ScreenHeader(
-                heading = "Bills",
+                heading = stringResource(R.string.bills_heading),
                 query = searchQuery,
                 onQueryChange = viewModel::onSearchQueryChange,
                 onNavigateToSettings = onNavigateToSettings,
@@ -94,11 +100,15 @@ fun BillsListScreen(
             )
 
             val isFiltered = searchQuery.isNotBlank() || dateRange.first != null || dateRange.second != null
+            val emptyTitle =
+                stringResource(if (isFiltered) R.string.no_bills_match else R.string.no_bills_yet)
+            val emptySubtitle =
+                stringResource(if (isFiltered) R.string.try_clearing_filters else R.string.tap_to_create_bill)
             if (bills.isEmpty()) {
                 EmptyState(
                     icon = Icons.AutoMirrored.Outlined.List,
-                    title = if (isFiltered) "No bills match this filter" else "No bills yet",
-                    subtitle = if (isFiltered) "Try clearing the search or date range." else "Tap + to create one.",
+                    title = emptyTitle,
+                    subtitle = emptySubtitle,
                 )
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -116,8 +126,8 @@ fun BillsListScreen(
 
     pendingDelete?.let { bwp ->
         ConfirmDeleteDialog(
-            title = "Delete Bill",
-            message = "Delete ${bwp.bill.billNumber}? This cannot be undone.",
+            title = stringResource(R.string.delete_bill_title),
+            message = stringResource(R.string.confirm_delete_bill, bwp.bill.billNumber),
             onConfirm = {
                 viewModel.deleteBill(bwp.bill) { msg ->
                     snackbarMsg = msg
@@ -214,7 +224,7 @@ private fun DateRangeFilterRow(
             modifier = Modifier.weight(1f),
         )
         if (start != null || end != null) {
-            TextButton(onClick = { onRangeChange(null to null) }) { Text("Clear") }
+            TextButton(onClick = { onRangeChange(null to null) }) { Text(stringResource(R.string.clear)) }
         }
     }
 }
@@ -229,7 +239,7 @@ private fun FilterDateField(
     modifier: Modifier = Modifier,
 ) {
     var showPicker by remember { mutableStateOf(false) }
-    val label = if (isStart) "From" else "To"
+    val label = if (isStart) stringResource(R.string.from) else stringResource(R.string.to)
     val text = millis?.let { formatDate(it) } ?: label
 
     OutlinedButton(onClick = { showPicker = true }, modifier = modifier) {

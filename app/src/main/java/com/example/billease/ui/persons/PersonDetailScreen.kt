@@ -25,8 +25,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.R
 import com.example.billease.data.Bill
 import com.example.billease.ui.components.DetailTopAppBar
 import com.example.billease.ui.components.ProfileIconButton
@@ -49,7 +51,7 @@ fun PersonDetailScreen(
     Scaffold(
         topBar = {
             DetailTopAppBar(
-                title = person?.name ?: "Person Details",
+                title = person?.name ?: stringResource(R.string.person_details_title),
                 onNavigateBack = onNavigateBack,
             ) {
                 person?.let { p ->
@@ -77,22 +79,28 @@ fun PersonDetailScreen(
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Phone: ${p.phone}", style = MaterialTheme.typography.bodyLarge)
-                        p.email?.let { Text("Email: $it", style = MaterialTheme.typography.bodyLarge) }
-                        p.address?.let { Text("Address: $it", style = MaterialTheme.typography.bodyLarge) }
-                        p.gstNumber?.let { Text("GST: $it", style = MaterialTheme.typography.bodyLarge) }
+                        Text(stringResource(R.string.phone_label, p.phone), style = MaterialTheme.typography.bodyLarge)
+                        p.email?.let {
+                            Text(stringResource(R.string.email_label, it), style = MaterialTheme.typography.bodyLarge)
+                        }
+                        p.address?.let {
+                            Text(stringResource(R.string.address_label, it), style = MaterialTheme.typography.bodyLarge)
+                        }
+                        p.gstNumber?.let {
+                            Text(stringResource(R.string.gst_label, it), style = MaterialTheme.typography.bodyLarge)
+                        }
                     }
                 }
 
                 Text(
-                    text = "Bill History",
+                    text = stringResource(R.string.bill_history),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 )
 
                 if (bills.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
-                        Text("No bills for this person.")
+                        Text(stringResource(R.string.no_bills_for_person))
                     }
                 } else {
                     LazyColumn {
