@@ -1,8 +1,5 @@
 package com.example.billease.ui.settings
 
-import android.content.Context
-import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,15 +31,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.billease.ui.components.DetailTopAppBar
 import com.example.billease.util.SUPPORTED_CURRENCIES
 import com.example.billease.util.currencyLabel
 import kotlinx.coroutines.launch
-import java.io.File
-import java.io.FileOutputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Suppress("LongMethod")
@@ -51,7 +45,6 @@ fun SettingsScreen(
     onNavigateBack: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
-    val context = LocalContext.current
     val formState by viewModel.formState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -59,11 +52,11 @@ fun SettingsScreen(
     val pickMedia =
         rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             if (uri != null) {
-                val newPath = copyUriToInternalStorage(context, uri)
-                if (newPath != null) {
-                    viewModel.updateLogoPath(newPath)
-                } else {
-                    coroutineScope.launch {
+                coroutineScope.launch {
+                    val newPath = viewModel.copyLogoUri(uri)
+                    if (newPath != null) {
+                        viewModel.updateLogoPath(newPath)
+                    } else {
                         snackbarHostState.showSnackbar("Could not load that image. Please try another.")
                     }
                 }
@@ -194,23 +187,5 @@ private fun CurrencyDropdown(
                 )
             }
         }
-    }
-}
-
-fun copyUriToInternalStorage(
-    context: Context,
-    uri: Uri,
-): String? {
-    return try {
-        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
-        val file = File(context.filesDir, "business_logo.jpg")
-        val outputStream = FileOutputStream(file)
-        inputStream.copyTo(outputStream)
-        inputStream.close()
-        outputStream.close()
-        file.absolutePath
-    } catch (e: Exception) {
-        Log.e("SettingsScreen", "Failed to copy logo to internal storage", e)
-        null
     }
 }

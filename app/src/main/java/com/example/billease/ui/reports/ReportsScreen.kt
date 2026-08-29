@@ -37,8 +37,10 @@ fun ReportsScreen(
 ) {
     val totalBillCount by viewModel.totalBillCount.collectAsState()
     val totalRevenue by viewModel.totalRevenue.collectAsState()
+    val totalOutstanding by viewModel.totalOutstanding.collectAsState()
     val billsThisMonth by viewModel.billsThisMonth.collectAsState()
     val revenueThisMonth by viewModel.revenueThisMonth.collectAsState()
+    val outstandingThisMonth by viewModel.outstandingThisMonth.collectAsState()
 
     Scaffold(
         topBar = {
@@ -60,10 +62,12 @@ fun ReportsScreen(
             Text("This Month", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
 
             StatsRow(
-                firstLabel = "Bills",
-                firstValue = billsThisMonth.toString(),
-                secondLabel = "Revenue",
-                secondValue = formatMoney(revenueThisMonth, LocalCurrencyCode.current),
+                cards =
+                    listOf(
+                        "Bills" to billsThisMonth.toString(),
+                        "Collected" to formatMoney(revenueThisMonth, LocalCurrencyCode.current),
+                        "Outstanding" to formatMoney(outstandingThisMonth, LocalCurrencyCode.current),
+                    ),
             )
 
             Spacer(Modifier.height(8.dp))
@@ -73,10 +77,12 @@ fun ReportsScreen(
             Text("All Time", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
 
             StatsRow(
-                firstLabel = "Total Bills",
-                firstValue = totalBillCount.toString(),
-                secondLabel = "Total Revenue",
-                secondValue = formatMoney(totalRevenue, LocalCurrencyCode.current),
+                cards =
+                    listOf(
+                        "Total Bills" to totalBillCount.toString(),
+                        "Collected" to formatMoney(totalRevenue, LocalCurrencyCode.current),
+                        "Outstanding" to formatMoney(totalOutstanding, LocalCurrencyCode.current),
+                    ),
             )
         }
     }
@@ -84,14 +90,12 @@ fun ReportsScreen(
 
 @Composable
 private fun StatsRow(
-    firstLabel: String,
-    firstValue: String,
-    secondLabel: String,
-    secondValue: String,
+    cards: List<Pair<String, String>>,
 ) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        StatCard(label = firstLabel, value = firstValue, modifier = Modifier.weight(1f))
-        StatCard(label = secondLabel, value = secondValue, modifier = Modifier.weight(1f))
+        cards.forEach { (label, value) ->
+            StatCard(label = label, value = value, modifier = Modifier.weight(1f))
+        }
     }
 }
 

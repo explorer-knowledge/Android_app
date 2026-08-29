@@ -1,5 +1,6 @@
 package com.example.billease.ui.settings
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.billease.data.AppSettings
@@ -68,6 +69,8 @@ class SettingsViewModel
         fun updateCurrencyCode(value: String) = _formState.update { it.copy(currencyCode = value) }
 
         fun updateLogoPath(value: String?) = _formState.update { it.copy(logoPath = value) }
+
+        suspend fun copyLogoUri(uri: Uri): String? = repository.copyLogoToInternalStorage(uri)
 
         fun save() {
             val state = _formState.value

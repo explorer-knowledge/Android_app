@@ -43,6 +43,8 @@ class BillingRepository
         // Bills
         fun getAllBills(): Flow<List<BillWithPerson>> = billDao.getAllBillsWithPerson()
 
+        fun getRecentBills(limit: Int): Flow<List<BillWithPerson>> = billDao.getRecentBillsWithPerson(limit)
+
         fun searchBills(query: String): Flow<List<BillWithPerson>> = billDao.searchBillsWithPerson(query)
 
         fun getFilteredBills(
@@ -65,9 +67,16 @@ class BillingRepository
             endMillis: Long,
         ): Flow<Double?> = billDao.getRevenueBetween(startMillis, endMillis)
 
+        fun getOutstandingBetween(
+            startMillis: Long,
+            endMillis: Long,
+        ): Flow<Double?> = billDao.getOutstandingBetween(startMillis, endMillis)
+
         fun getTotalBillCount(): Flow<Int> = billDao.getTotalBillCount()
 
         fun getTotalRevenue(): Flow<Double?> = billDao.getTotalRevenue()
+
+        fun getTotalOutstanding(): Flow<Double?> = billDao.getTotalOutstanding()
 
         suspend fun getBillCountForPerson(personId: Long): Int = billDao.getBillCountForPerson(personId)
 

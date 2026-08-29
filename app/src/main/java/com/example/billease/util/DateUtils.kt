@@ -1,5 +1,8 @@
 package com.example.billease.util
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -53,3 +56,17 @@ fun monthBounds(): Pair<Long, Long> {
     calendar.add(Calendar.MILLISECOND, -1)
     return Pair(start, calendar.timeInMillis)
 }
+
+/**
+ * Emits the current calendar month bounds and re-emits periodically so a long-lived
+ * ViewModel (Home, Reports) crosses the 1st-of-month boundary without waiting for
+ * recreation. Flat-mapping the DB queries off this makes the dashboards refresh once
+ * a minute, which is far finer than a display needs.
+ */
+fun currentMonthBoundsFlow(intervalMillis: Long = 60_000L): Flow<Pair<Long, Long>> =
+    flow {
+        while (true) {
+            emit(monthBounds())
+            delay(intervalMillis)
+        }
+    }

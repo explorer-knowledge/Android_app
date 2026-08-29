@@ -42,9 +42,9 @@
     <ID>MaxLineLength:BillFormScreen.kt$DropdownMenuItem(text = { Text("No products — add one first") }, onClick = { productExpanded = false })</ID>
     <ID>MaxLineLength:DatabaseModule.kt$&lt;no name provided&gt;$db.execSQL("CREATE TABLE IF NOT EXISTS bill_sequences (prefix TEXT NOT NULL, lastNumber INTEGER NOT NULL, PRIMARY KEY(prefix))")</ID>
     <ID>MaxLineLength:PdfGenerator.kt$PdfGenerator$Rect(MARGIN_LEFT.toInt(), yPos.toInt(), (MARGIN_LEFT + targetWidth).toInt(), (yPos + targetHeight).toInt())</ID>
-    <ID>MaxLineLength:PdfGenerator.kt$PdfGenerator$canvas.drawText(String.format(Locale.getDefault(), "%.1f%%", item.taxPercentSnapshot), MARGIN_LEFT + 390f, yPos, paint)</ID>
     <ID>MaxLineLength:PersonDao.kt$PersonDao$@Query("SELECT * FROM persons WHERE name LIKE '%' || :query || '%' OR phone LIKE '%' || :query || '%' ORDER BY name ASC")</ID>
     <ID>MaxLineLength:SettingsScreen.kt$onClick = { pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }</ID>
+    <ID>SwallowedException:SettingsRepository.kt$SettingsRepository$e: Exception</ID>
     <ID>TooGenericExceptionCaught:BillFormViewModel.kt$BillFormViewModel$e: Exception</ID>
     <ID>TooGenericExceptionCaught:BillsViewModel.kt$BillsViewModel$e: Exception</ID>
     <ID>TooGenericExceptionCaught:PdfGenerator.kt$PdfGenerator$e: Exception</ID>
@@ -52,7 +52,7 @@
     <ID>TooGenericExceptionCaught:PersonsViewModel.kt$PersonsViewModel$e: Exception</ID>
     <ID>TooGenericExceptionCaught:ProductFormViewModel.kt$ProductFormViewModel$e: Exception</ID>
     <ID>TooGenericExceptionCaught:ProductsViewModel.kt$ProductsViewModel$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:SettingsScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:SettingsRepository.kt$SettingsRepository$e: Exception</ID>
     <ID>TooManyFunctions:BillDao.kt$BillDao</ID>
     <ID>TooManyFunctions:BillingRepository.kt$BillingRepository</ID>
   </CurrentIssues>

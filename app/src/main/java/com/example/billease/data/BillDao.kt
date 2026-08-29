@@ -39,8 +39,17 @@ interface BillDao {
     @Query("SELECT COUNT(*) FROM bills")
     fun getTotalBillCount(): Flow<Int>
 
-    @Query("SELECT SUM(grandTotal) FROM bills")
+    // Revenue/"collected" is money actually received: only PAID bills. Outstanding
+    // (PENDING + OVERDUE) is tracked separately and shown alongside it on Reports.
+    @Query("SELECT SUM(grandTotal) FROM bills WHERE paymentStatus = 'PAID'")
     fun getTotalRevenue(): Flow<Double?>
+
+    @Query("SELECT SUM(grandTotal) FROM bills WHERE paymentStatus != 'PAID'")
+    fun getTotalOutstanding(): Flow<Double?>
+
+    @Transaction
+    @Query("SELECT * FROM bills ORDER BY billDate DESC LIMIT :limit")
+    fun getRecentBillsWithPerson(limit: Int): Flow<List<BillWithPerson>>
 
     @Transaction
     @Query("SELECT * FROM bills ORDER BY billDate DESC")
@@ -87,8 +96,24 @@ interface BillDao {
         endMillis: Long,
     ): Flow<Int>
 
-    @Query("SELECT SUM(grandTotal) FROM bills WHERE billDate >= :startMillis AND billDate <= :endMillis")
+    @Query(
+        """
+        SELECT SUM(grandTotal) FROM bills
+        WHERE billDate >= :startMillis AND billDate <= :endMillis AND paymentStatus = 'PAID'
+    """,
+    )
     fun getRevenueBetween(
+        startMillis: Long,
+        endMillis: Long,
+    ): Flow<Double?>
+
+    @Query(
+        """
+        SELECT SUM(grandTotal) FROM bills
+        WHERE billDate >= :startMillis AND billDate <= :endMillis AND paymentStatus != 'PAID'
+    """,
+    )
+    fun getOutstandingBetween(
         startMillis: Long,
         endMillis: Long,
     ): Flow<Double?>

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.billease.data.BillWithPerson
 import com.example.billease.data.BillingRepository
 import com.example.billease.data.SettingsRepository
-import com.example.billease.util.monthBounds
+import com.example.billease.util.currentMonthBoundsFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,8 +25,6 @@ class HomeViewModel
         private val repository: BillingRepository,
         settingsRepository: SettingsRepository,
     ) : ViewModel() {
-        private val thisMonth = monthBounds()
-
         private val _homeSearchQuery = MutableStateFlow("")
         val homeSearchQuery: StateFlow<String> = _homeSearchQuery
 
@@ -50,8 +48,12 @@ class HomeViewModel
                     initialValue = 0,
                 )
 
+        @OptIn(ExperimentalCoroutinesApi::class)
         val revenueThisMonth: StateFlow<Double> =
-            repository.getRevenueBetween(thisMonth.first, thisMonth.second)
+            currentMonthBoundsFlow()
+                .flatMapLatest { bounds ->
+                    repository.getRevenueBetween(bounds.first, bounds.second)
+                }
                 // Room returns null for SUM() on empty sets, so map it to 0.0
                 .map { it ?: 0.0 }
                 .stateIn(
@@ -66,7 +68,7 @@ class HomeViewModel
             _homeSearchQuery
                 .flatMapLatest { query ->
                     if (query.isBlank()) {
-                        repository.getAllBills()
+                        repository.getRecentBills(RECENT_BILL_LIMIT)
                     } else {
                         repository.searchBills(query)
                     }

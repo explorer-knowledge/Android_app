@@ -1,14 +1,19 @@
 package com.example.billease.data
 
 import android.content.Context
+import android.net.Uri
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -48,6 +53,25 @@ class SettingsRepository
                     invoicePrefix = preferences[PreferencesKeys.INVOICE_PREFIX] ?: "BILL-",
                     currencyCode = preferences[PreferencesKeys.CURRENCY_CODE] ?: "INR",
                 )
+            }
+
+        // Copies a picked image into app-private storage and returns its absolute path,
+        // or null on failure. Runs on Dispatchers.IO; both streams are closed with .use{}
+        // so a mid-copy exception can't leak handles.
+        suspend fun copyLogoToInternalStorage(uri: Uri): String? =
+            withContext(Dispatchers.IO) {
+                try {
+                    val inputStream = context.contentResolver.openInputStream(uri) ?: return@withContext null
+                    val file = File(context.filesDir, "business_logo.jpg")
+                    inputStream.use { input ->
+                        FileOutputStream(file).use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                    file.absolutePath
+                } catch (e: Exception) {
+                    null
+                }
             }
 
         suspend fun updateSettings(
