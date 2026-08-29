@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
@@ -25,9 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.billease.data.MonthlyRevenueRow
+import com.example.billease.data.ProductTotalRow
 import com.example.billease.ui.components.ProfileIconButton
 import com.example.billease.util.LocalCurrencyCode
 import com.example.billease.util.formatMoney
+import com.example.billease.util.formatQuantity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +45,8 @@ fun ReportsScreen(
     val billsThisMonth by viewModel.billsThisMonth.collectAsState()
     val revenueThisMonth by viewModel.revenueThisMonth.collectAsState()
     val outstandingThisMonth by viewModel.outstandingThisMonth.collectAsState()
+    val monthlyRevenue by viewModel.monthlyRevenue.collectAsState()
+    val productTotals by viewModel.productTotals.collectAsState()
 
     Scaffold(
         topBar = {
@@ -84,7 +90,54 @@ fun ReportsScreen(
                         "Outstanding" to formatMoney(totalOutstanding, LocalCurrencyCode.current),
                     ),
             )
+
+            if (monthlyRevenue.isNotEmpty() || productTotals.isNotEmpty()) {
+                Spacer(Modifier.height(8.dp))
+                HorizontalDivider()
+                Spacer(Modifier.height(8.dp))
+            }
+
+            MonthlyBreakdownSection(rows = monthlyRevenue)
+            ProductTotalsSection(rows = productTotals)
         }
+    }
+}
+
+@Composable
+private fun MonthlyBreakdownSection(rows: List<MonthlyRevenueRow>) {
+    if (rows.isEmpty()) return
+    Text("Monthly Collected", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+    rows.forEach { row ->
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Text(monthLabel(row.month), modifier = Modifier.weight(1f))
+            Text(formatMoney(row.revenue, LocalCurrencyCode.current), fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+private fun ProductTotalsSection(rows: List<ProductTotalRow>) {
+    if (rows.isEmpty()) return
+    Text("Per-Product Totals", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+    rows.forEach { row ->
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Text(row.productName, modifier = Modifier.weight(1f))
+            Text(formatQuantity(row.quantity), color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.width(12.dp))
+            Text(formatMoney(row.revenue, LocalCurrencyCode.current), fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+private val MONTH_ABBR = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+private fun monthLabel(yyyyMm: String): String {
+    val parts = yyyyMm.split("-")
+    val month = parts.getOrNull(1)?.toIntOrNull() ?: return yyyyMm
+    return if (month in 1..MONTH_ABBR.size) {
+        "${MONTH_ABBR[month - 1]} ${parts[0]}"
+    } else {
+        yyyyMm
     }
 }
 

@@ -3,6 +3,8 @@ package com.example.billease.ui.reports
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.billease.data.BillingRepository
+import com.example.billease.data.MonthlyRevenueRow
+import com.example.billease.data.ProductTotalRow
 import com.example.billease.util.currentMonthBoundsFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,6 +34,14 @@ class ReportsViewModel
             repository.getTotalOutstanding()
                 .map { it ?: 0.0 }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000), 0.0)
+
+        val monthlyRevenue: StateFlow<List<MonthlyRevenueRow>> =
+            repository.getMonthlyRevenue()
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000), emptyList())
+
+        val productTotals: StateFlow<List<ProductTotalRow>> =
+            repository.getProductTotals()
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000), emptyList())
 
         @OptIn(ExperimentalCoroutinesApi::class)
         val billsThisMonth: StateFlow<Int> =

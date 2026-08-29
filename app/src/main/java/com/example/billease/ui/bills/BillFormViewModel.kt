@@ -137,6 +137,25 @@ class BillFormViewModel
             _isDirty.value = true
         }
 
+        /** Quick-adds a new person inline from the Bill form and selects them as Bill-To. */
+        fun quickAddPerson(
+            name: String,
+            phone: String,
+            onResult: (Boolean) -> Unit,
+        ) {
+            viewModelScope.launch {
+                try {
+                    val person = Person(name = name.trim(), phone = phone.trim())
+                    val id = repository.insertPerson(person)
+                    selectPerson(person.copy(id = id))
+                    onResult(true)
+                } catch (e: Exception) {
+                    _uiState.update { it.copy(saveError = "Could not add person: ${e.message}") }
+                    onResult(false)
+                }
+            }
+        }
+
         fun updateDiscount(text: String) {
             _uiState.update { it.copy(discountText = text, discountError = null) }
             _isDirty.value = true

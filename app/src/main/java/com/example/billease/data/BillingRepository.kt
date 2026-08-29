@@ -78,6 +78,10 @@ class BillingRepository
 
         fun getTotalOutstanding(): Flow<Double?> = billDao.getTotalOutstanding()
 
+        fun getMonthlyRevenue(): Flow<List<MonthlyRevenueRow>> = billDao.getMonthlyRevenue()
+
+        fun getProductTotals(): Flow<List<ProductTotalRow>> = billDao.getProductTotals()
+
         suspend fun getBillCountForPerson(personId: Long): Int = billDao.getBillCountForPerson(personId)
 
         suspend fun getBillItemCountForProduct(productId: Long): Int = billDao.getBillItemCountForProduct(productId)

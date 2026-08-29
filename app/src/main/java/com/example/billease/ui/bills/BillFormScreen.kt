@@ -156,6 +156,7 @@ fun BillFormScreen(
                     allPersons = allPersons,
                     error = uiState.personError,
                     onPersonSelected = viewModel::selectPerson,
+                    onQuickAddPerson = viewModel::quickAddPerson,
                 )
             }
 
@@ -286,6 +287,7 @@ private fun PersonDropdown(
     allPersons: List<Person>,
     error: String?,
     onPersonSelected: (Person) -> Unit,
+    onQuickAddPerson: (String, String, (Boolean) -> Unit) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     Box {
@@ -302,19 +304,161 @@ private fun PersonDropdown(
             },
         )
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            if (allPersons.isEmpty()) {
-                DropdownMenuItem(text = { Text("No persons — add one first") }, onClick = { expanded = false })
-            }
-            allPersons.forEach { person ->
-                DropdownMenuItem(
-                    text = { Text("${person.name} · ${person.phone}") },
-                    onClick = {
-                        onPersonSelected(person)
-                        expanded = false
-                    },
-                )
-            }
+            QuickAddPerson(
+                allPersons = allPersons,
+                onPersonSelected = { person ->
+                    onPersonSelected(person)
+                    expanded = false
+                },
+                onQuickAddPerson = onQuickAddPerson,
+            )
         }
+    }
+}
+
+@Composable
+private fun QuickAddPerson(
+    allPersons: List<Person>,
+    onPersonSelected: (Person) -> Unit,
+    onQuickAddPerson: (String, String, (Boolean) -> Unit) -> Unit,
+) {
+    var showForm by remember { mutableStateOf(false) }
+    var name by rememberSaveable { mutableStateOf("") }
+    var phone by rememberSaveable { mutableStateOf("") }
+    var nameError by rememberSaveable { mutableStateOf(false) }
+    var phoneError by rememberSaveable { mutableStateOf(false) }
+    var isSaving by remember { mutableStateOf(false) }
+
+    if (showForm) {
+        PersonQuickAddForm(
+            name = name,
+            phone = phone,
+            nameError = nameError,
+            phoneError = phoneError,
+            isSaving = isSaving,
+            onNameChange = {
+                name = it
+                nameError = false
+            },
+            onPhoneChange = {
+                phone = it
+                phoneError = false
+            },
+            onCancel = { showForm = false },
+            onSave = {
+                val nameBlank = name.isBlank()
+                val phoneBlank = phone.isBlank()
+                nameError = nameBlank
+                phoneError = phoneBlank
+                if (!nameBlank && !phoneBlank) {
+                    isSaving = true
+                    onQuickAddPerson(name, phone) { success ->
+                        isSaving = false
+                        if (success) {
+                            showForm = false
+                            name = ""
+                            phone = ""
+                        }
+                    }
+                }
+            },
+        )
+    } else {
+        PersonQuickAddList(
+            allPersons = allPersons,
+            onPersonSelected = onPersonSelected,
+            onStartNew = { showForm = true },
+        )
+    }
+}
+
+@Composable
+@Suppress("LongParameterList")
+private fun PersonQuickAddForm(
+    name: String,
+    phone: String,
+    nameError: Boolean,
+    phoneError: Boolean,
+    isSaving: Boolean,
+    onNameChange: (String) -> Unit,
+    onPhoneChange: (String) -> Unit,
+    onCancel: () -> Unit,
+    onSave: () -> Unit,
+) {
+    OutlinedTextField(
+        value = name,
+        onValueChange = onNameChange,
+        label = { Text("Name") },
+        isError = nameError,
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+    )
+    if (nameError) {
+        Text(
+            "Name cannot be empty",
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodySmall,
+        )
+    }
+    OutlinedTextField(
+        value = phone,
+        onValueChange = onPhoneChange,
+        label = { Text("Phone") },
+        isError = phoneError,
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+    )
+    if (phoneError) {
+        Text(
+            "Phone cannot be empty",
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodySmall,
+        )
+    }
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        OutlinedButton(
+            onClick = onCancel,
+            enabled = !isSaving,
+            modifier = Modifier.weight(1f),
+        ) {
+            Text("Cancel")
+        }
+        Button(
+            onClick = onSave,
+            enabled = !isSaving,
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(if (isSaving) "Saving…" else "Save")
+        }
+    }
+}
+
+@Composable
+private fun PersonQuickAddList(
+    allPersons: List<Person>,
+    onPersonSelected: (Person) -> Unit,
+    onStartNew: () -> Unit,
+) {
+    DropdownMenuItem(
+        text = { Text("+ New person") },
+        onClick = onStartNew,
+    )
+    if (allPersons.isEmpty()) {
+        DropdownMenuItem(text = { Text("No persons yet") }, onClick = {})
+    }
+    allPersons.forEach { person ->
+        DropdownMenuItem(
+            text = { Text("${person.name} · ${person.phone}") },
+            onClick = {
+                onPersonSelected(person)
+            },
+        )
     }
 }
 

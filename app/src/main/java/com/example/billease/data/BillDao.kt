@@ -34,6 +34,19 @@ data class BillWithItemsAndPerson(
     val items: List<BillItem>,
 )
 
+/** One row of the per-product totals report. */
+data class ProductTotalRow(
+    val productName: String,
+    val quantity: Double,
+    val revenue: Double,
+)
+
+/** One row of the monthly collected-revenue breakdown. [month] is a local "yyyy-MM" key. */
+data class MonthlyRevenueRow(
+    val month: String,
+    val revenue: Double,
+)
+
 @Dao
 interface BillDao {
     @Query("SELECT COUNT(*) FROM bills")
@@ -117,6 +130,30 @@ interface BillDao {
         startMillis: Long,
         endMillis: Long,
     ): Flow<Double?>
+
+    @Query(
+        """
+        SELECT strftime('%Y-%m', billDate / 1000, 'unixepoch', 'localtime') AS month,
+               COALESCE(SUM(grandTotal), 0) AS revenue
+        FROM bills
+        WHERE paymentStatus = 'PAID'
+        GROUP BY month
+        ORDER BY month DESC
+    """,
+    )
+    fun getMonthlyRevenue(): Flow<List<MonthlyRevenueRow>>
+
+    @Query(
+        """
+        SELECT productNameSnapshot AS productName,
+               COALESCE(SUM(quantity), 0) AS quantity,
+               COALESCE(SUM(lineTotal), 0) AS revenue
+        FROM bill_items
+        GROUP BY productNameSnapshot
+        ORDER BY revenue DESC
+    """,
+    )
+    fun getProductTotals(): Flow<List<ProductTotalRow>>
 
     @Query("SELECT COUNT(*) FROM bills WHERE personId = :personId")
     suspend fun getBillCountForPerson(personId: Long): Int
