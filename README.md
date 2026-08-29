@@ -46,4 +46,4 @@ The planning/reference docs live in the Obsidian vault (`Android_app_easebill/do
 - See `docs/CI_CD_SETUP.md` (vault) for the workflow and `AGENTS.md` for the full local-check + device-testing playbook.
 
 ## Tests
-- Unit tests: `app/src/test/.../domain/BillCalculatorTest.kt` (only test suite; no instrumented/androidTest coverage yet — see `docs/improvements.md` #16 in the vault).
+- Unit tests: `app/src/test/.../domain/BillCalculatorTest.kt` and `.../util/DateUtilsTest.kt` (JVM, run by CI). `BillCalculator` now covers discount/100%/NaN edge cases (#16 closed). No instrumented/`androidTest` coverage yet — that needs Robolectric/`MigrationTestHelper` infra, deliberately deferred (see `docs/improvements.md` #16 in the vault).
