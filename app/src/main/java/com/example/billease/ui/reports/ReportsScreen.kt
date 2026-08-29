@@ -89,9 +89,7 @@ fun ReportsScreen(
 }
 
 @Composable
-private fun StatsRow(
-    cards: List<Pair<String, String>>,
-) {
+private fun StatsRow(cards: List<Pair<String, String>>) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         cards.forEach { (label, value) ->
             StatCard(label = label, value = value, modifier = Modifier.weight(1f))
