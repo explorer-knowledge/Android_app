@@ -27,13 +27,11 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -54,30 +52,16 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
-    val settings by viewModel.appSettings.collectAsState()
+    val formState by viewModel.formState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-
-    var businessName by rememberSaveable { mutableStateOf("") }
-    var address by rememberSaveable { mutableStateOf("") }
-    var logoPath by rememberSaveable { mutableStateOf<String?>(null) }
-    var invoicePrefix by rememberSaveable { mutableStateOf("BILL-") }
-    var currencyCode by rememberSaveable { mutableStateOf("INR") }
-
-    LaunchedEffect(settings) {
-        businessName = settings.businessName
-        address = settings.address
-        logoPath = settings.logoUri
-        invoicePrefix = settings.invoicePrefix
-        currencyCode = settings.currencyCode
-    }
 
     val pickMedia =
         rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             if (uri != null) {
                 val newPath = copyUriToInternalStorage(context, uri)
                 if (newPath != null) {
-                    logoPath = newPath
+                    viewModel.updateLogoPath(newPath)
                 } else {
                     coroutineScope.launch {
                         snackbarHostState.showSnackbar("Could not load that image. Please try another.")
@@ -105,9 +89,15 @@ fun SettingsScreen(
         ) {
             Text("Business Identity", modifier = Modifier.padding(bottom = 16.dp))
 
+            val businessName = formState.businessName
+            val address = formState.address
+            val invoicePrefix = formState.invoicePrefix
+            val currencyCode = formState.currencyCode
+            val logoPath = formState.logoPath
+
             OutlinedTextField(
                 value = businessName,
-                onValueChange = { businessName = it },
+                onValueChange = viewModel::updateBusinessName,
                 label = { Text("Business Name") },
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -116,7 +106,7 @@ fun SettingsScreen(
 
             OutlinedTextField(
                 value = address,
-                onValueChange = { address = it },
+                onValueChange = viewModel::updateAddress,
                 label = { Text("Business Address") },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
@@ -126,7 +116,7 @@ fun SettingsScreen(
 
             OutlinedTextField(
                 value = invoicePrefix,
-                onValueChange = { invoicePrefix = it },
+                onValueChange = viewModel::updateInvoicePrefix,
                 label = { Text("Invoice Prefix") },
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -135,7 +125,7 @@ fun SettingsScreen(
 
             CurrencyDropdown(
                 currencyCode = currencyCode,
-                onCurrencySelected = { currencyCode = it },
+                onCurrencySelected = viewModel::updateCurrencyCode,
             )
 
             Spacer(Modifier.height(16.dp))
@@ -154,7 +144,7 @@ fun SettingsScreen(
             if (logoPath != null) {
                 Spacer(Modifier.height(8.dp))
                 OutlinedButton(
-                    onClick = { logoPath = null },
+                    onClick = { viewModel.updateLogoPath(null) },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text("Remove Logo")
@@ -165,7 +155,7 @@ fun SettingsScreen(
 
             Button(
                 onClick = {
-                    viewModel.updateSettings(businessName, address, logoPath, invoicePrefix, currencyCode)
+                    viewModel.save()
                     onNavigateBack()
                 },
                 modifier = Modifier.fillMaxWidth(),
