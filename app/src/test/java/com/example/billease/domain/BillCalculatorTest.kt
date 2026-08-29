@@ -82,6 +82,37 @@ class BillCalculatorTest {
     }
 
     @Test
+    fun `exactly 100 percent discount yields a zero grand total`() {
+        // 2 x 1.50 = 3.00 + 10% tax = 3.30, discount exactly equals the total.
+        val items = listOf(input(product(price = 1.5, tax = 10.0), qty = 2.0))
+        val result = BillCalculator.calculate(items, discount = 3.3)
+        assertEquals(3.0, result.subtotal, 0.001)
+        assertEquals(0.3, result.taxTotal, 0.001)
+        assertEquals(0.0, result.grandTotal, 0.001)
+    }
+
+    @Test
+    fun `NaN inputs are clamped to zero instead of poisoning the total`() {
+        val nan = Double.NaN
+        val items =
+            listOf(
+                input(product(price = 1.5), qty = 2.0),
+                BillItemInput(
+                    productId = 99L,
+                    productName = "Broken",
+                    unit = "pcs",
+                    unitPrice = nan,
+                    taxPercent = nan,
+                    quantity = nan,
+                ),
+            )
+        val result = BillCalculator.calculate(items, discount = nan)
+        assertEquals(3.0, result.subtotal, 0.001)
+        assertEquals(0.0, result.taxTotal, 0.001)
+        assertEquals(3.0, result.grandTotal, 0.001)
+    }
+
+    @Test
     fun `zero quantity item contributes nothing`() {
         val items = listOf(input(product(price = 50.0, tax = 18.0), qty = 0.0))
         val result = BillCalculator.calculate(items)

@@ -56,16 +56,22 @@ data class BillCalculationResult(
  * Decision: discount is applied to the post-tax grand total, not per-line.
  */
 object BillCalculator {
+    // A non-finite (NaN/Infinite) input would otherwise poison the sums and render
+    // "NaN"/"Infinity" on the invoice. Current callers already parse via
+    // toDoubleOrNull, so this only guards a future unrestricted caller - but money
+    // math must never silently display a non-numeric total, so fall back to zero.
+    private fun Double.finiteOrZero(): Double = if (this.isFinite()) this else 0.0
+
     fun calculate(
         items: List<BillItemInput>,
         discount: Double = 0.0,
     ): BillCalculationResult {
-        val subtotal = items.sumOf { it.lineSubtotal }
-        val taxTotal = items.sumOf { it.lineTax }
+        val subtotal = items.sumOf { it.lineSubtotal.finiteOrZero() }
+        val taxTotal = items.sumOf { it.lineTax.finiteOrZero() }
         // Defense-in-depth: a negative discount must never increase the total.
         // Callers (BillFormViewModel) reject negative input before it gets here,
         // but this keeps the invariant even if a future caller doesn't validate.
-        val safeDiscount = maxOf(0.0, discount)
+        val safeDiscount = maxOf(0.0, discount.finiteOrZero())
         val grandTotal = maxOf(0.0, subtotal + taxTotal - safeDiscount)
         return BillCalculationResult(subtotal = subtotal, taxTotal = taxTotal, grandTotal = grandTotal)
     }
